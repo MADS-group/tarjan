@@ -5,16 +5,21 @@ BIN_DIR := ./bin
 SRC_DIR := ./src
 TARGET := $(BIN_DIR)/sequential.out
 
-SRCS := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c')
+# Look for .c source file in every subdir of src/
+vpath %.c $(shell find $(SRC_DIR) -type d)
+#SRCS contains the names of all source files under src/
+SRCS := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c' -printf "%f")
+#HDRS contains the paths of all header files under src/
 HDRS := $(shell find $(SRC_DIR) -name '*.h')
-OBJS := $(patsubst $(SRC_DIR)/%.c,$(BIN_DIR)/%.o,$(SRCS))
+#OBJ contains the paths of all object files to be created under bin/
+OBJS := $(patsubst %.c,$(BIN_DIR)/%.o,$(SRCS))
 
 $(TARGET): $(OBJS) $(HDRS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-#Every .o file is compiled from the corresponding .c plus header files
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.c $(HDRS)
+#Every bin/%.o file is compiled from the matching %.c in src/ plus header files
+$(BIN_DIR)/%.o: %.c $(HDRS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
