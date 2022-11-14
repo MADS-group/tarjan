@@ -1,4 +1,4 @@
-TARGETS  := sequential mpi cuda
+TARGETS  := common sequential mpi cuda
 BIN_DIR := ./bin
 
 all: $(TARGETS)
