@@ -12,11 +12,11 @@ int main(int argc, char* argv[]){
     }
 
     graph_t * graph;
-    graph= graph_init(); //aggiungere n
+    graph= graph_init(3); //aggiungere n
     graph= graph_read_from_file(file);
 
     array result;
-    result= arrayCreate(); //aggiungere length
+    result= arrayCreate(3); //aggiungere length
     result= *(graph_tarjan(graph));
     //gfsdoihfd
 }
