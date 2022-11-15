@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     graph= graph_read_from_file(file);
 
     array result;
-    result= arrayCreate(); //aggiungere lethg
+    result= arrayCreate(); //aggiungere length
     result= *(graph_tarjan(graph));
 
 }
