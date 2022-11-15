@@ -11,12 +11,11 @@ int main(int argc, char* argv[]){
         printf("file can't be opened \n");
     }
 
-    graph_t * graph;
-    graph= graph_init(3); //aggiungere n
-    graph= graph_read_from_file(file);
+    graph_t *graph;
+    graph = graph_init(3); //aggiungere n
+    graph = graph_read_from_file(file);
 
-    array result;
-    result= arrayCreate(3); //aggiungere lengtheee
-    result= *(graph_tarjan(graph));
+    array_int *result;
+    result = (graph_tarjan(graph));
     //gfsdoihfdewq
 }

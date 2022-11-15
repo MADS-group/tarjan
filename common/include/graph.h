@@ -7,12 +7,12 @@
 
 typedef struct graph_t graph_t;
 
-graph_t *graph_init(int n);
+graph_t *graph_init();
 graph_t *graph_read_from_file();
 void graph_save_to_file(graph_t *);
-array *graph_tarjan(graph_t *); //Returns an array containing the 
+array_int *graph_tarjan(graph_t *); //Returns an array containing the 
 void graph_free(graph_t *);
-
+/*
 // An iterator over nodes of a graph
 typedef struct graphi_t graphi_t;
 
@@ -21,5 +21,5 @@ graphi_t *graph_DFS(graph_t *); //Returns an iterator over the entire graph usin
 bool graphi_has_next(graphi_t *);
 int graphi_next(graphi_t *);
 void graphi_free(graphi_t *);
-
+*/
 #endif

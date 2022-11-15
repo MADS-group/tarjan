@@ -4,3 +4,4 @@
 struct stack_t {
 
 };
+//????????????? Alla fine array e linkedlist possono essere usate sia come stack che non!!!
