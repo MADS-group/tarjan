@@ -2,6 +2,6 @@
 #include <stdio.h>
 
 int main(int argc, char* argv[]){
-    printf("co");
+    printf("count\n");
     return 0;
 }
