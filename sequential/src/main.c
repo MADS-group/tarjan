@@ -18,5 +18,5 @@ int main(int argc, char* argv[]){
     array result;
     result= arrayCreate(); //aggiungere length
     result= *(graph_tarjan(graph));
-
+    //gfsdoihfd
 }
