@@ -2,18 +2,19 @@
 #include "array.h"
 #include <stdlib.h>
 
-#define C_EXP 5  // costante di espansione
-#define C_RED 10 // costante di riduzione
-
 struct array {
     int *items; // puntatore agli elementi dell'array
     int length;   // lunghezza array    
     int size;     // dimensione allocata (>= length)
+    int C_EXP;   // costante di espansione
+    int C_RED;   // costante di riduzione
 };
 
-array arrayCreate (int length) {
+array arrayCreate (int length, int const_exp, int const_red) {
     array a;
-    int size = length + C_EXP;
+    a.C_EXP=const_exp;
+    a.C_RED=const_red;
+    int size = length + const_exp;
     a.items = malloc(size * sizeof(int));
     assert (size == 0 || a.items != NULL); 
     a.length = length;
@@ -30,8 +31,8 @@ void arrayDestroy (array *a) {
 }
 
 void arrayResize (array *a, int length) {
-    if (length > a->size || length < a->size - C_RED) {
-        int size = length + C_EXP;
+    if (length > a->size || length < a->size - a->C_RED) {
+        int size = length + a->C_EXP;
         a->items = realloc(a->items, size * sizeof(int));
         assert (size == 0 || a->items != NULL); 
         a->size = size;        

@@ -3,7 +3,7 @@
 
 typedef struct array array;
 
-array arrayCreate (int length);
+array arrayCreate (int length, int const_exp, int const_red);
 void arrayDestroy (array *a);
 void arrayResize (array *a, int length);
 
