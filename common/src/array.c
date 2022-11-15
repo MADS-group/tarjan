@@ -18,7 +18,7 @@ array arrayCreate (int length) {
     assert (size == 0 || a.items != NULL); 
     a.length = length;
     a.size = size; 
-    printf ("Creazione array: length = %d, size = %d\n", length, size);
+    printf ("Creazione array:length = %d, size = %d\n", length, size);
     return a;
 }
 
