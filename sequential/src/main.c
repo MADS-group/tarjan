@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     graph= graph_read_from_file(file);
 
     array result;
-    result= arrayCreate(3); //aggiungere length
+    result= arrayCreate(3); //aggiungere lengtheee
     result= *(graph_tarjan(graph));
     //gfsdoihfd
 }
