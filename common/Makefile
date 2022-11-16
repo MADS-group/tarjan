@@ -1,3 +1,5 @@
+# Author: Antonio Langella
+
 CC = gcc
 CFLAGS = -W -Wall -g
 

@@ -10,8 +10,10 @@ typedef struct graph_t graph_t;
 graph_t *graph_init();
 graph_t *graph_read_from_file();
 void graph_save_to_file(graph_t *);
-array_int *graph_tarjan(graph_t *); //Returns an array containing the 
+array_int *graph_tarjan(graph_t *); //Returns an array containing the SCCs separated by -1
+array_int *graph_serialize(int, int); //Serializes n nodes from a given index
 void graph_free(graph_t *);
+
 /*
 // An iterator over nodes of a graph
 typedef struct graphi_t graphi_t;

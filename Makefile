@@ -1,3 +1,5 @@
+# Author: Antonio Langella
+
 TARGETS  := common sequential mpi cuda
 BIN_DIR := ./bin
 

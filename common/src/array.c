@@ -76,3 +76,5 @@ void array_int_print(array_int *a) {
         printf ("%d ", a->items[i]);
     printf ("\n");
 }
+
+//TODO: Aggiungere implementazione array_ptr
