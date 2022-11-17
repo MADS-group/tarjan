@@ -1,3 +1,6 @@
+#ifndef ARGS_H
+#define ARGS_H
+
 #include <stdio.h>  
 #include<string.h>
 
@@ -11,5 +14,5 @@ typedef struct{
     input_t t;
 } main_parameters_t;
 
-input_t get_input(int argc, char *argv[]);
+main_parameters_t get_input(int argc, char *argv[]);
 

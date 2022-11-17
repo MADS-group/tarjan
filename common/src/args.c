@@ -1,10 +1,9 @@
+#include "args.h"
 
-main_parameters_t get_input(int argc, char *argv[]){
+main_parameters_t get_input (int argc, char *argv[]){
     main_parameters_t main;
     if(argc <= 1){
-        printf("\n incorrent parameters:
-                \n sequential.out filename -> read graph from file named filename
-                \nsequential.out -sm id -> read graph fromm shared memory with identifier id");
+        printf("\n incorrent parameters:\n sequential.out filename -> read graph from file named filename\nsequential.out -sm id -> read graph fromm shared memory with identifier id");
         exit(1);
     }
     char first_param[100]; 
@@ -18,13 +17,13 @@ main_parameters_t get_input(int argc, char *argv[]){
             main.t=input_t.INPUT_TYPE_SHMEM;
             main.name=second_param;
         } else{
-            printf("\nfor select the read graph from shared memory insert id: \n")
+            printf("\nfor select the read graph from shared memory insert id: \n");
             exit(1);
         }
     }else{
-        main.t=input_t.INPUT_TYPE_FILE;
-        main.name=first_param;
+        main.t= input_t.INPUT_TYPE_FILE;
+        main.name= first_param;
     }
 
-    return (main)
+    return main;
 }
