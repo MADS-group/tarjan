@@ -82,7 +82,7 @@ void array_int_print(array_int *a) {
 //TODO: Aggiungere implementazione array_ptr
 
 struct array_ptr {
-    int *items; // puntatore agli elementi dell'array
+    void **items; // puntatore agli elementi dell'array
     int length;   // lunghezza array    
     int size;     // dimensione allocata (>= length)
     int C_EXP;   // costante di espansione
@@ -124,14 +124,14 @@ void array_ptr_resize(array_ptr *a, int length){
 
 //Adds an element at the end of the array
 void array_ptr_push(array_ptr *a, void *elem){
-    array_int_resize(a, a->length + 1);
+    array_ptr_resize(a, a->length + 1);
     a->items[a->length - 1] = elem;
 }
 
 //Pops last element of the array
 void *array_ptr_pop(array_ptr *a){
     void *item = a->items[a->length - 1];
-    array_int_resize(a, a->length - 1);
+    array_ptr_resize(a, a->length - 1);
     return item;
 }
 
@@ -148,7 +148,7 @@ int array_ptr_length(array_ptr *a){
 //Sets element at pos
 void array_ptr_set(array_ptr *a, int pos, void *elem){
     if (pos >= a->length)
-        array_int_resize(a, pos + 1);
+        array_ptr_resize(a, pos + 1);
     a->items[pos] = elem;
 }
 

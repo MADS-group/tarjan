@@ -9,3 +9,7 @@ all: $(TARGETS)
 $(TARGETS):
 	@echo Building $@...
 	@cd $@ && $(MAKE)
+
+.PHONY: clean
+clean:
+	@$(foreach target,$(TARGETS),cd $(target); $(MAKE) clean; cd ..;)
