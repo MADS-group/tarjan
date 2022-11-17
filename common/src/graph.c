@@ -69,14 +69,27 @@ void graph_insert_edge(graph_t *G, int u, int v){
 
 
 array_int *graph_tarjan(graph_t *G){
-    int *disc = malloc(sizeof(int)*G->n_vertex);
-    int *low = malloc(sizeof(int)*G->n_vertex);
-    bool *stackMember = malloc(sizeof(bool)*G->n_vertex);
+    int *disc = malloc(sizeof(int)*(G->n_vertex));
+    int *low = malloc(sizeof(int)*(G->n_vertex));
+    bool *stackMember = malloc(sizeof(bool)*(G->n_vertex));
     linkedlist_int *stack = linkedlist_int_init();
-    array_int *result = array_int_init(20);
+    array_int *result = array_int_init((G->n_vertex)*2);
+
+    for (int i = 0; i < G->n_vertex; i++)
+    {
+        disc[i] = -1;
+        low[i] = -1;
+        stackMember[i] = false;
+    }
+
+    for (int i = 0; i < G->n_vertex; i++)
+        if (disc[i] == -1)
+            SCCUtil(i, disc, low, st, stackMember); //Problem: i may not exist! Find a way to iterate the existing nodes.
+
     free(disc);
     free(low);
     free(stackMember);
+    return result;
 }
 
 
