@@ -6,7 +6,8 @@
 
 typedef enum {
     INPUT_TYPE_FILE,
-    INPUT_TYPE_SHMEM
+    INPUT_TYPE_SHMEM,
+    INPUT_ERROR
 } input_t;
 
 typedef struct{
@@ -15,4 +16,4 @@ typedef struct{
 } main_parameters_t;
 
 main_parameters_t get_input(int argc, char *argv[]);
-
+#endif

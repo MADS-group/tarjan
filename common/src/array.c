@@ -1,6 +1,8 @@
 //Dynamic array implementation
 #include "array.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 
 struct array_int {
     int *items; // puntatore agli elementi dell'array

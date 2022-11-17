@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -W -Wall -g
 
 BIN_DIR := ./bin
-SRC_DIR := ./src
+SRC_DIR := ./
 COMM_DIR := ../common
 TARGET := $(BIN_DIR)/test.out
 
