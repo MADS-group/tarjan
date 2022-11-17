@@ -6,7 +6,7 @@ struct graph_t {
     int n_vertex;
     array_ptr *adj; //Dynamic array of pointers to adjacency lists
     array_ptr *inverted_adj; //Inverted index
-
+    
 };
 
 
