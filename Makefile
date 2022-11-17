@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-TARGETS  := common sequential mpi cuda
+TARGETS  := common sequential mpi cuda tests
 BIN_DIR := ./bin
 
 all: $(TARGETS)

@@ -6,7 +6,9 @@ CFLAGS = -W -Wall -g
 BIN_DIR := ./bin
 SRC_DIR := ./src
 COMM_DIR := ../../common
-TARGET := $(BIN_DIR)/test1.out
+PWD := $(shell pwd)
+BASENAME := $(shell basename $(PWD))
+TARGET := $(BIN_DIR)/$(BASENAME).out
 
 SCR_DIRS := $(shell find $(SRC_DIR) -type d)
 # Look for .c source file in every subdir of src/
