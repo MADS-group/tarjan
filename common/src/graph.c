@@ -67,6 +67,9 @@ void graph_insert_edge(graph_t *G, int u, int v){
     kh_value(adj_list,k) = 42; //TODO: convert map to set
 }
 
+void graph_tarjan_helper(graph_t *G, array_int *result, ){
+
+}
 
 array_int *graph_tarjan(graph_t *G){
     int *disc = malloc(sizeof(int)*(G->n_vertex));
