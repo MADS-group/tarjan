@@ -23,8 +23,31 @@ void test_tarjan(){
     graph_free(graph);
 }
 
+void test_serialize(){
+    graph_t *graph = graph_init();
+    for(int i = 0; i <= 5; i++)
+        graph_insert_vertex(graph,i);
+    for(int i = 0; i < 4; i++){
+        graph_insert_edge(graph, 5, i);
+        graph_insert_edge(graph, i, 5);
+    }
+    khint_t pos = 0;
+    array_int *serial1 = graph_serialize(graph,2,&pos);
+    array_int *serial2 = graph_serialize(graph,2,&pos);
+    array_int *serial3 = graph_serialize(graph,2,&pos);
+    array_int *serial4 = graph_serialize(graph,2,&pos);
+    array_int *serial5 = graph_serialize(graph,200,&pos);
+    array_int_print(serial1);
+    array_int_print(serial2);
+    array_int_print(serial3);
+    array_int_print(serial4);
+    array_int_print(serial5);
+    graph_free(graph);
+}
+
 int main(int argc, char* argv[]){
     test_init_destroy();
+    test_serialize();
     test_tarjan();
     printf("All tests passed successfully\n");
 }

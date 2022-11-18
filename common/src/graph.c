@@ -163,7 +163,52 @@ array_int *graph_tarjan(graph_t *G){
     return result;
 }
 
-
+array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
+    array_int *result = array_int_init(G->n_vertex);
+    int words = 0, node_a, node_b, _, serialized = 0;
+    khash_t(m32) *adj_list;
+    array_int_push(result, 0); //Placeholder for number of total words to read after the first one
+    array_int_push(result,0); //Placeholder for number vertexes serialized
+    words++;
+    khint_t i;
+    for(i = *bucket; i != kh_end(G->adj) && serialized < n; ++i){
+        if(!kh_exist(G->adj, i))
+            continue;
+        node_a = kh_key(G->adj,i);
+        adj_list = kh_value(G->adj,i);
+        array_int_push(result,node_a);
+        words++;
+        kh_foreach(adj_list, node_b, _, {
+            array_int_push(result,node_b);
+            words++;
+        });
+        array_int_push(result,-1); //end of adj list
+        words++;
+        serialized++;
+    }
+    *bucket = i;
+    array_int_set(result, 0, words);
+    array_int_set(result, 1, serialized);
+    return result;
+}
+void graph_deserialize(graph_t *G, array_int *buff){
+    int words = array_int_get(buff,0);
+    int n_vertex = array_int_get(buff,1);
+    int i = 2, node_a, node_b;
+    for(int j = 0; j<n_vertex;j++){
+        node_a = array_int_get(buff,i);
+        do{
+            i++;
+            node_b = array_int_get(buff,i);
+            if(node_b != -1){
+                graph_insert_vertex(G,node_a);
+                graph_insert_vertex(G,node_b);
+                graph_insert_edge(G,node_a,node_b);
+            }
+        } while(node_b != -1);
+        i++;
+    }
+} //Deserializes data from buffer buff
 
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }
