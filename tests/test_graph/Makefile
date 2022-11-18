@@ -1,11 +1,11 @@
 # Author: Antonio Langella
 
-CC = mpicc
+CC = gcc
 CFLAGS = -W -Wall -g
 
 BIN_DIR := ./bin
 SRC_DIR := ./src
-COMM_DIR := ../common
+COMM_DIR := ../../common
 PWD := $(shell pwd)
 BASENAME := $(shell basename $(PWD))
 TARGET := $(BIN_DIR)/$(BASENAME).out

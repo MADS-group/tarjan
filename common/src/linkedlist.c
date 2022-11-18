@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist.h"
-
+#include <assert.h>
 struct lnode_int_t{
     int info;
     lnode_int_t* nextLink;
@@ -293,6 +293,12 @@ void linkedlist_int_print(linkedlist_int *a){
     printf ("\nFINE DEBUG\n");
     
 } 
+
+int linkedlist_int_top(linkedlist_int *a){
+    assert(a->LastNode != NULL);
+    return a->LastNode->info;
+}
+
 void linkedlist_int_cpy(linkedlist_int *to,linkedlist_int *from){
     //Copy all the elements from a linkedlist to another
 
@@ -302,7 +308,7 @@ void linkedlist_int_cpy(linkedlist_int *to,linkedlist_int *from){
 typedef struct linkedlist_ptr linkedlist_ptr;
 
 
-
+/*
 lnode_int_t *nodeCreate(int info) {
     lnode_int_t *new = malloc (sizeof(lnode_int_t));
     if(new == NULL){
@@ -625,4 +631,4 @@ void linkedlist_int_print(linkedlist_int *a){
 void linkedlist_int_cpy(linkedlist_int *to,linkedlist_int *from){
     //Copy all the elements from a linkedlist to another
 
-}
+}*/
