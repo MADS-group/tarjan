@@ -100,7 +100,6 @@ array_int *graph_tarjan(graph_t *G){
 
 
 
-
 /*
 
 
