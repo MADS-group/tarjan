@@ -20,14 +20,14 @@ int main(int argc,char* argv[]){
     //Convenzioni: il processo con rank 0 è il nodo master
     //i processi con rank diverso da 0 sono nodi slave
     int v_graph;
+    char filename[6] = "graph";
+    graph_t* graph;
     if(rank == 0){
         //codice del master
-        char *filename = "graph";
-        graph_t* graph;
         graph = graph_load_from_file(filename);
         v_graph = graph_get_num_vertex(graph);
 
-        
+
     }
 
     if(rank != 0){
