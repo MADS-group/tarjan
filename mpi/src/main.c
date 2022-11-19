@@ -24,8 +24,8 @@ int main(int argc,char* argv[]){
         //codice del master
         char *filename = "graph";
         graph_t* graph;
-        graph  = graph_load_from_file(filename);
-        v_graph = get_num_vertex(graph);
+        graph = graph_load_from_file(filename);
+        v_graph = graph_get_num_vertex(graph);
 
         
     }
