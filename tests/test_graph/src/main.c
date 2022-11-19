@@ -14,12 +14,12 @@ void test_tarjan(){
     graph_t *graph = graph_init();
     for(int i = 0; i <= 100; i++)
         graph_insert_vertex(graph,i);
-    for(int i = 0; i < 50; i++){
+    for(int i = 0; i < 100; i++){
         graph_insert_edge(graph, i, i+1);
-        graph_insert_edge(graph, i+50, i+51);
     }
     graph_insert_edge(graph, 49, 0);
     graph_insert_edge(graph, 100, 50);
+    graph_insert_edge(graph, 50, 49);
     array_int *scc = graph_tarjan(graph);
     array_int_print(scc);
     graph_free(graph);
@@ -114,6 +114,12 @@ void test_serialize(){
     array_int_print(serial4);
     array_int_print(serial5);
     graph_free(graph);
+}
+
+void test_deserialize(){
+    graph_t *graph = graph_init();
+    array_int *buff;
+    graph_deserialize(graph,buff);
 }
 
 int main(int argc, char* argv[]){

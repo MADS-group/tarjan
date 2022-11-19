@@ -12,7 +12,7 @@ graph_t *graph_init();
 int graph_get_num_vertex(graph_t *);
 void graph_insert_vertex(graph_t *, int v); //Insert a vertex v
 void graph_insert_edge(graph_t *, int u, int v); //Insert a directed edge from vertex u to vertex v
-void graph_merge_nodes(graph_t *, array_int *nodes); //Merge the nodes in a supernode
+void graph_merge_vertices(graph_t *, array_int *vertices); //Merge the nodes in a supernode
 graph_t *graph_load_from_file(char *);
 void graph_save_to_file(graph_t *, char *);
 array_int *graph_tarjan(graph_t *); //Returns an array containing the SCCs separated by -1
