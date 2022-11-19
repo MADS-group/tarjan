@@ -209,7 +209,9 @@ void graph_deserialize(graph_t *G, array_int *buff){
         i++;
     }
 } //Deserializes data from buffer buff
-
+graph_t *graph_load_from_file(char *){
+    retun NULL;
+}
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
