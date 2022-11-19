@@ -84,6 +84,10 @@ void array_int_foreach(array_int *a, void (*f)(int) ){
         f(a->items[i]);
 }
 
+int *array_int_get_ptr(array_int *a){
+    return a->items;
+}
+
 //TODO: Aggiungere implementazione array_ptr
 
 struct array_ptr {

@@ -12,6 +12,7 @@ int array_int_get(array_int *a, int pos); //Gets element at pos
 int array_int_length(array_int *a); //Gets number of elements in the array
 void array_int_set(array_int *a, int pos, int elem); //Sets element at pos
 void array_int_print(array_int *a); //Prints all the elements of the array
+int *array_int_get_ptr(array_int *a);
 typedef struct array_ptr array_ptr;
 
 array_ptr *array_ptr_init(int length);
