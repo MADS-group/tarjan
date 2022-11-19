@@ -14,7 +14,9 @@ struct graph_t {
     khash_t(mm32) *inverted_adj; //Hash table which maps a node with the backwards adjacency list
     
 };
-
+int min(int a, int b){
+    return a<b ? a:b;
+}
 
 graph_t *graph_init(){
     graph_t *G = malloc(sizeof(graph_t));
@@ -28,6 +30,10 @@ void graph_free(graph_t *G){
     kh_destroy(mm32, G->adj);
     kh_destroy(mm32, G->inverted_adj);
     free(G);
+}
+
+int graph_get_num_vertex(graph_t *G){
+    return G->n_vertex;
 }
 
 void graph_insert_vertex(graph_t *G, int v){
@@ -61,41 +67,148 @@ void graph_insert_edge(graph_t *G, int u, int v){
     k = kh_get(mm32, G->inverted_adj, v);
     is_present = (k != kh_end(G->inverted_adj));
     assert(is_present); //assert v exists
-    khash_t(m32) *adj_list = kh_value(G->inverted_adj,k);
+    adj_list = kh_value(G->inverted_adj,k);
     k = kh_put(m32, adj_list, u, &ret);//ret == 0 if u is already present in the ht, ret>0 otherwise
     assert(ret != 0); //assert edge didn't exist
     kh_value(adj_list,k) = 42; //TODO: convert map to set
 }
 
-void graph_tarjan_helper(graph_t *G, array_int *result, ){
+void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
+   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *result){ 
+    khint_t k, j;
+    int adj_node, temp;
+    // Initialize discovery time and low value
+    ++(*time);
+    k = kh_get(m32,disc,node);
+    kh_value(disc,k) = *time;
+    k = kh_get(m32,low,node);
+    kh_value(low,k) = *time;
 
+    linkedlist_int_push(stack, node);
+    k = kh_get(m32,stackMember,node);
+    kh_value(stackMember,k) = 1; //true
+
+    // Go through all vertices adjacent to this
+    k = kh_get(mm32,G->adj,node);
+    khash_t(m32) *adjacency_list = kh_value(G->adj,k);
+    kh_foreach(adjacency_list, adj_node, temp, {
+        k = kh_get(m32,disc,adj_node);
+        if( kh_value(disc,k) == -1 ){
+            graph_tarjan_helper(G, adj_node, disc, low, stack, stackMember, time, result);
+
+            // Check if the subtree rooted with 'v' has a
+            // connection to one of the ancestors of 'u'
+            // Case 1 (per above discussion on Disc and Low value)
+            k = kh_get(m32,low,node);
+            j = kh_get(m32,low,adj_node);
+            kh_value(low,k) = min(kh_value(low,k),kh_value(low,j));
+        }
+        // Update low value of 'u' only of 'v' is still in stack
+        // (i.e. it's a back edge, not cross edge).
+        // Case 2 (per above discussion on Disc and Low value)
+        else if (kh_value(stackMember,kh_get(m32,stackMember,adj_node)) == 1){
+            k = kh_get(m32,low,node);
+            j = kh_get(m32,disc,adj_node);
+            kh_value(low,k) = min(kh_value(low,k),kh_value(disc,j));
+        }
+    });
+ 
+    // head node found, pop the stack and print an SCC
+    int w = 0; // To store stack extracted vertices
+    k = kh_get(m32,low,node);
+    j = kh_get(m32,disc,node);
+    if (kh_value(low,k) == kh_value(disc,j)){
+        while (linkedlist_int_length(stack) >0 && linkedlist_int_top(stack) != node){
+            w = (int) linkedlist_int_pop(stack);
+            k = kh_get(m32,stackMember,w);
+            kh_value(stackMember, k) = 0; //false
+            array_int_push(result, w);
+        }
+        w = (int) linkedlist_int_pop(stack);
+        k = kh_get(m32,stackMember,w);
+        kh_value(stackMember, k) = 0; //false
+        array_int_push(result, w);
+        array_int_push(result,-1); //SCC terminator
+    }
 }
 
 array_int *graph_tarjan(graph_t *G){
-    int *disc = malloc(sizeof(int)*(G->n_vertex));
-    int *low = malloc(sizeof(int)*(G->n_vertex));
-    bool *stackMember = malloc(sizeof(bool)*(G->n_vertex));
+    khash_t(m32) *disc = kh_init(m32);
+    khash_t(m32) *low = kh_init(m32);
+    khash_t(m32) *stackMember = kh_init(m32);
     linkedlist_int *stack = linkedlist_int_init();
+    int time = 0;
     array_int *result = array_int_init((G->n_vertex)*2);
 
-    for (int i = 0; i < G->n_vertex; i++)
-    {
-        disc[i] = -1;
-        low[i] = -1;
-        stackMember[i] = false;
-    }
+    int node,_;
+    khash_t(m32) *temp;
+    khint_t k;
+    kh_foreach(G->adj, node, temp, {
+        k = kh_put(m32,disc,node,&_);
+        kh_value(disc,k) = -1;
+        k = kh_put(m32,low,node,&_);
+        kh_value(low,k) = -1;
+        k = kh_put(m32,stackMember,node,&_);
+        kh_value(stackMember,k) = 0; //false
+    });
+    kh_foreach(G->adj, node, temp, {
+        k = kh_get(m32,disc,node);
+        if(kh_value(disc,k) == -1)
+            graph_tarjan_helper(G,node, disc, low, stack, stackMember, &time, result);
+    });
 
-    for (int i = 0; i < G->n_vertex; i++)
-        if (disc[i] == -1)
-            SCCUtil(i, disc, low, st, stackMember); //Problem: i may not exist! Find a way to iterate the existing nodes.
-
-    free(disc);
-    free(low);
-    free(stackMember);
+    kh_destroy(m32,disc);
+    kh_destroy(m32,low);
+    kh_destroy(m32,stackMember);
     return result;
 }
 
-
+array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
+    array_int *result = array_int_init(G->n_vertex);
+    int words = 0, node_a, node_b, _, serialized = 0;
+    khash_t(m32) *adj_list;
+    array_int_push(result, 0); //Placeholder for number of total words to read after the first one
+    array_int_push(result,0); //Placeholder for number vertexes serialized
+    words++;
+    khint_t i;
+    for(i = *bucket; i != kh_end(G->adj) && serialized < n; ++i){
+        if(!kh_exist(G->adj, i))
+            continue;
+        node_a = kh_key(G->adj,i);
+        adj_list = kh_value(G->adj,i);
+        array_int_push(result,node_a);
+        words++;
+        kh_foreach(adj_list, node_b, _, {
+            array_int_push(result,node_b);
+            words++;
+        });
+        array_int_push(result,-1); //end of adj list
+        words++;
+        serialized++;
+    }
+    *bucket = i;
+    array_int_set(result, 0, words);
+    array_int_set(result, 1, serialized);
+    return result;
+}
+void graph_deserialize(graph_t *G, array_int *buff){
+    int words = array_int_get(buff,0);
+    int n_vertex = array_int_get(buff,1);
+    int i = 2, node_a, node_b;
+    for(int j = 0; j<n_vertex;j++){
+        node_a = array_int_get(buff,i);
+        do{
+            i++;
+            node_b = array_int_get(buff,i);
+            if(node_b != -1){
+                graph_insert_vertex(G,node_a);
+                graph_insert_vertex(G,node_b);
+                graph_insert_edge(G,node_a,node_b);
+            }
+        } while(node_b != -1);
+        i++;
+    }
+} //Deserializes data from buffer buff
 
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }

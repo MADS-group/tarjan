@@ -1,4 +1,5 @@
 #include "args.h"
+#include <stdlib.h>
 
 int main(int argc, char* argv[]){
     main_parameters_t c;

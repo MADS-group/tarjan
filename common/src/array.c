@@ -20,7 +20,7 @@ array_int *array_int_init(int length) {
     int size = length * a->C_EXP;
     a->items = malloc(size * sizeof(int));
     assert (size == 0 || a->items != NULL); 
-    a->length = length;
+    a->length = 0; //expected lenght is only used for evaluating the initial size. Initial length is always 0 because no element is in the array
     a->size = size; 
     //printf ("Creazione array: length = %d, size = %d\n", length, size);
     return a;
@@ -77,6 +77,11 @@ void array_int_print(array_int *a) {
     for (int i = 0; i < a->length; ++i)
         printf ("%d ", a->items[i]);
     printf ("\n");
+}
+
+void array_int_foreach(array_int *a, void (*f)(int) ){
+    for (int i = 0; i < a->length; ++i)
+        f(a->items[i]);
 }
 
 //TODO: Aggiungere implementazione array_ptr

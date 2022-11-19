@@ -7,7 +7,9 @@
 
 typedef struct graph_t graph_t;
 
+
 graph_t *graph_init();
+int graph_get_num_vertex(graph_t *);
 void graph_insert_vertex(graph_t *, int v); //Insert a vertex v
 void graph_insert_edge(graph_t *, int u, int v); //Insert a directed edge from vertex u to vertex v
 void graph_merge_nodes(graph_t *, array_int *nodes); //Merge the nodes in a supernode
