@@ -210,7 +210,7 @@ void graph_deserialize(graph_t *G, array_int *buff){
     }
 } //Deserializes data from buffer buff
 graph_t *graph_load_from_file(char *filename){
-    retun NULL;
+    return NULL;
 }
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }
