@@ -1,12 +1,16 @@
-/*Implementazione di un grafo*/
+/*  
+ * Graph implementation with adjacency maps. adj is an hash table containing adjacency sets
+ * Author: Antonio Langella 
+*/
 #include <assert.h>
 #include "graph.h"
 #include "stack.h"
 #include "khash.h"
 #include "linkedlist.h"
 
-KHASH_MAP_INIT_INT(m32, int) //m32 is a hash table with int keys and int values
-KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 is a hash table with int keys and (m32 *) values
+KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
+KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values //TODO: convert to s32 * values!
+KHASH_SET_INIT_INT(s32) //s32 type is a set of integers
 
 struct graph_t {
     int n_vertex;
@@ -50,7 +54,9 @@ void graph_insert_vertex(graph_t *G, int v){
     k = kh_put(mm32,G->inverted_adj,v,&ret); //ret == 0 if v is already present in the ht, ret>0 otherwise
     kh_value(G->inverted_adj, k) = kh_init(m32); //create a new adjacency map for the node v
 }
-
+/*
+ * Throws an error is edge already exists
+*/
 void graph_insert_edge(graph_t *G, int u, int v){
     khint_t k;
     bool is_present;
@@ -73,6 +79,65 @@ void graph_insert_edge(graph_t *G, int u, int v){
     kh_value(adj_list,k) = 42; //TODO: convert map to set
 }
 
+/*
+ * Deletes an edge from node u to node v if it exists. Otherwise does nothing.
+ */
+void graph_delete_edge(graph_t *G, int u, int v){
+    khint_t k;
+    bool is_present;
+    khash_t(m32) *adj_list;
+    int ret;
+    k = kh_get(mm32, G->adj, u);
+    is_present = (k != kh_end(G->adj));
+    if(is_present){
+        adj_list = kh_value(G->adj,k); //Take the adjacency list
+        kh_del(m32,adj_list,v); //delete the u->v edge from outcoming edges of u
+    }
+    //Do the same for inverted_adj
+    k = kh_get(mm32, G->inverted_adj, v);
+    is_present = (k != kh_end(G->inverted_adj));
+    if(is_present){
+        adj_list = kh_value(G->inverted_adj,k); //Take the adjacency list
+        kh_del(m32,adj_list,u); //delete the u->v edge from incoming edges of v
+    }
+}
+
+/*
+ * Deletes a vertex and every edge incident on the vertex. 
+ */
+void graph_delete_vertex(graph_t *G, int v){
+    int ret, u, _;
+    khint_t k;
+    khash_t(m32) *adj_list, *inv_adj_list;
+    k = kh_get(mm32,G->adj,v);
+    adj_list = kh_value(G->adj,k); //adj_list contains all the outcoming edges of v (v->*)
+    k = kh_get(mm32,G->inverted_adj,v);
+    inv_adj_list = kh_value(G->inverted_adj,k); //inv_adj_list contains all the incoming edges of v (*->v)
+
+    //For each v->u edge delete the incoming edge of u
+    kh_foreach(adj_list, u, _, { 
+        k = kh_get(mm32,G->inverted_adj,u);
+        kh_del(m32, kh_value(G->inverted_adj,k), v);
+    });
+
+    //For each u->v edge delete the outcoming edge of u
+    kh_foreach(inv_adj_list, u, _, { 
+        k = kh_get(mm32,G->adj,u);
+        kh_del(m32, kh_value(G->adj,k), v);
+    });
+
+    //Dealloc adj_list and inv_adj_list
+    kh_destroy(m32, adj_list);
+    kh_destroy(m32, inv_adj_list);
+
+    //Delete v from G->adj and G->inverted_adj
+    kh_del(mm32, G->adj, v);
+    kh_del(mm32, G->inverted_adj, v);
+}
+
+/*
+ * See documentation for graph_tarjan()
+ */
 void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
    linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *result){ 
     khint_t k, j;
@@ -93,6 +158,8 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
     khash_t(m32) *adjacency_list = kh_value(G->adj,k);
     kh_foreach(adjacency_list, adj_node, temp, {
         k = kh_get(m32,disc,adj_node);
+        //TODO: the above operation should fail when tarjan is executed on subgraphs of a given graph. Add a check.
+        //^This is the point where one could decide to ignore absent vertices or even store them to optimize the algorithm later
         if( kh_value(disc,k) == -1 ){
             graph_tarjan_helper(G, adj_node, disc, low, stack, stackMember, time, result);
 
@@ -131,7 +198,16 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
         array_int_push(result,-1); //SCC terminator
     }
 }
-
+/* 
+ * Tarjan's algorithm implementation using recursion.
+ * This is a modified version of the algorithm on the geeksforgeeks.com website.
+ * The main differences are:
+ * - disc, low and stackMember are now hash tables because we remove the hypotesis that vertex ids go from 0 to N-1:
+ *   when working on a subgraph (as a slave process), there are no guarantees on the order nor continuity of the vertex ids.
+ *   Using hash tables instead of arrays we save a lot of memory.
+ * - we remove the hypotesis that every vertex in an adjacency map exists in the graph. This is also caused by executions
+ *   on subgraphs of a given graph.
+ */
 array_int *graph_tarjan(graph_t *G){
     khash_t(m32) *disc = kh_init(m32);
     khash_t(m32) *low = kh_init(m32);
@@ -191,53 +267,44 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     array_int_set(result, 1, serialized);
     return result;
 }
+
 void graph_deserialize(graph_t *G, array_int *buff){
     int words = array_int_get(buff,0);
     int n_vertex = array_int_get(buff,1);
     int i = 2, node_a, node_b;
     for(int j = 0; j<n_vertex;j++){
         node_a = array_int_get(buff,i);
+        graph_insert_vertex(G,node_a);
         do{
             i++;
             node_b = array_int_get(buff,i);
             if(node_b != -1){
-                graph_insert_vertex(G,node_a);
                 graph_insert_vertex(G,node_b);
                 graph_insert_edge(G,node_a,node_b);
             }
         } while(node_b != -1);
         i++;
     }
-} //Deserializes data from buffer buff
+}
+
+void graph_save_to_file(graph_t *G, char *filename){
+
+}
+
 graph_t *graph_load_from_file(char *filename){
     return NULL;
 }
+
+void graph_merge_vertices(graph_t *, int dest, array_int *src);
+
+
+
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
 
 }
 
-/*
-
-
-typedef enum graphi_type_t {
-    GRAPHI_TYPE_DFS,
-    GRAPHI_TYPE_CHILDREN
-} graphi_type_t;
-
-typedef struct graphi_t {
-    graph_t *graph; //Pointer to the graph to iterate
-    int i; //Counter of visited elements
-    graphi_type_t type; //Type of the iterator
-
-    //DFS Type iterator
-    stack_t *stack; //Stack for DFS
-
-    //CHILDREN Type iterator
-    int *last; //Pointer to the last element returned
-};
-*/
 /*Consider simplifying the design of graph.c. 
  - What is the real advantage of this complex generalization?
  - How many implementations of graph are we really going to mantain?
