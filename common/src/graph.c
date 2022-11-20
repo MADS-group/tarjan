@@ -3,6 +3,8 @@
  * Author: Antonio Langella 
 */
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "graph.h"
 #include "stack.h"
 #include "khash.h"
@@ -91,14 +93,16 @@ void graph_delete_edge(graph_t *G, int u, int v){
     is_present = (k != kh_end(G->adj));
     if(is_present){
         adj_list = kh_value(G->adj,k); //Take the adjacency list
-        kh_del(m32,adj_list,v); //delete the u->v edge from outcoming edges of u
+        k = kh_get(m32, adj_list, v);
+        kh_del(m32,adj_list,k); //delete the u->v edge from outcoming edges of u
     }
     //Do the same for inverted_adj
     k = kh_get(mm32, G->inverted_adj, v);
     is_present = (k != kh_end(G->inverted_adj));
     if(is_present){
         adj_list = kh_value(G->inverted_adj,k); //Take the adjacency list
-        kh_del(m32,adj_list,u); //delete the u->v edge from incoming edges of v
+        k = kh_get(m32, adj_list, u);
+        kh_del(m32,adj_list,k); //delete the u->v edge from incoming edges of v
     }
 }
 
@@ -108,7 +112,7 @@ void graph_delete_edge(graph_t *G, int u, int v){
 void graph_delete_vertex(graph_t *G, int v){
     int ret, u, _;
     khint_t k;
-    khash_t(m32) *adj_list, *inv_adj_list;
+    khash_t(m32) *adj_list, *inv_adj_list, *temp;
     k = kh_get(mm32,G->adj,v);
     adj_list = kh_value(G->adj,k); //adj_list contains all the outcoming edges of v (v->*)
     k = kh_get(mm32,G->inverted_adj,v);
@@ -117,13 +121,17 @@ void graph_delete_vertex(graph_t *G, int v){
     //For each v->u edge delete the incoming edge of u
     kh_foreach(adj_list, u, _, { 
         k = kh_get(mm32,G->inverted_adj,u);
-        kh_del(m32, kh_value(G->inverted_adj,k), v);
+        temp = kh_value(G->inverted_adj,k);
+        k = kh_get(m32, temp,v);
+        kh_del(m32, temp, k);
     });
 
     //For each u->v edge delete the outcoming edge of u
     kh_foreach(inv_adj_list, u, _, { 
         k = kh_get(mm32,G->adj,u);
-        kh_del(m32, kh_value(G->adj,k), v);
+        temp = kh_value(G->adj,k); //Temp contains all the outcoming edges of u
+        k = kh_get(m32, temp,v);
+        kh_del(m32, temp, k);
     });
 
     //Dealloc adj_list and inv_adj_list
@@ -131,8 +139,10 @@ void graph_delete_vertex(graph_t *G, int v){
     kh_destroy(m32, inv_adj_list);
 
     //Delete v from G->adj and G->inverted_adj
-    kh_del(mm32, G->adj, v);
-    kh_del(mm32, G->inverted_adj, v);
+    k = kh_get(mm32, G->adj, v);
+    kh_del(mm32, G->adj, k);
+    k = kh_get(mm32, G->inverted_adj, v);
+    kh_del(mm32, G->inverted_adj, k);
 }
 
 /*
@@ -159,7 +169,7 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
     kh_foreach(adjacency_list, adj_node, temp, {
         k = kh_get(m32,disc,adj_node);
         //TODO: the above operation should fail when tarjan is executed on subgraphs of a given graph. Add a check.
-        //^This is the point where one could decide to ignore absent vertices or even store them to optimize the algorithm later
+        //^This is the point where one could decide to ignore absent vertices or even store them to optimize the algorithm later.
         if( kh_value(disc,k) == -1 ){
             graph_tarjan_helper(G, adj_node, disc, low, stack, stackMember, time, result);
 
@@ -279,7 +289,7 @@ void graph_deserialize(graph_t *G, array_int *buff){
             i++;
             node_b = array_int_get(buff,i);
             if(node_b != -1){
-                graph_insert_vertex(G,node_b);
+                graph_insert_vertex(G,node_b); //TODO: this adds nodes that are not owned by the slave to the graph. This needs further investigation as it may not be a problem at all.
                 graph_insert_edge(G,node_a,node_b);
             }
         } while(node_b != -1);
@@ -288,11 +298,26 @@ void graph_deserialize(graph_t *G, array_int *buff){
 }
 
 void graph_save_to_file(graph_t *G, char *filename){
-
+    khint_t pos = 0;
+    array_int *array = graph_serialize(G, G->n_vertex, &pos);
+    FILE *fp = fopen(filename, "w");
+    fwrite(array_int_get_ptr(array), sizeof(int), array_int_get(array,0)+1, fp);
+    fclose(fp);
+    array_int_free(array);
 }
 
 graph_t *graph_load_from_file(char *filename){
-    return NULL;
+    FILE *fp = fopen(filename, "r");
+    int n;
+    fread(&n, sizeof(int), 1, fp);
+    array_int *array = array_int_init(n+1);
+    array_int_set(array, 0, n); //Fill position 0
+    fread(array_int_get_ptr(array)+1, sizeof(int), n, fp); //Fill from position 1
+    graph_t *graph = graph_init();
+    graph_deserialize(graph, array);
+    fclose(fp);
+    array_int_free(array);
+    return graph;
 }
 
 void graph_merge_vertices(graph_t *, int dest, array_int *src);

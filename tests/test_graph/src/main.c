@@ -21,8 +21,9 @@ void test_tarjan(){
     graph_insert_edge(graph, 100, 50);
     graph_insert_edge(graph, 50, 49);
     array_int *scc = graph_tarjan(graph);
-    array_int_print(scc);
+    //array_int_print(scc);
     graph_free(graph);
+    array_int_free(scc);
 }
 
 void test_tarjan2(){
@@ -124,7 +125,8 @@ void test_deserialize(){
 
 int main(int argc, char* argv[]){
     //test_init_destroy();
-    //test_serialize();
+    test_serialize();
+    test_tarjan();
     test_tarjan2();
     test_tarjan_withoutEdge();
     test_tarjan_vertxAllConnect();
