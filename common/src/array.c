@@ -2,6 +2,7 @@
 #include "array.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 struct array_int {
@@ -77,6 +78,16 @@ void array_int_print(array_int *a) {
     for (int i = 0; i < a->length; ++i)
         printf ("%d ", a->items[i]);
     printf ("\n");
+}
+
+// Stampa l'array su una stringa da passare come argomento
+void array_int_sprint(array_int *a, char *s){
+    char temp[6];
+    for (int i = 0; i < a->length; ++i){
+        sprintf(temp, "%d ", a->items[i]);
+        strcat(s, temp);
+    }
+    strcat(s, "\n");
 }
 
 void array_int_foreach(array_int *a, void (*f)(int) ){
