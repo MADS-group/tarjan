@@ -123,6 +123,32 @@ void test_deserialize(){
     graph_deserialize(graph,buff);
 }
 
+void test_merge_vertices(){
+    khint_t pos = 0;
+    array_int *serial, *tarjan;
+    graph_t *graph = graph_init();
+    for(int i = 0; i <= 100; i++)
+        graph_insert_vertex(graph,i);
+    for(int i = 0; i <= 100; i++){
+        for(int k=0; k<=100; k++)
+            graph_insert_edge(graph, i, k);
+    }
+    serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
+    array_int_print(serial);
+    array_int_free(serial);
+    tarjan = graph_tarjan(graph);
+    array_int_pop(tarjan); //we remove the -1 terminator at the end of the SCC nodes list
+    array_int_print(tarjan);
+    
+    graph_merge_vertices(graph, 0, tarjan);
+    pos=0;
+    serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
+    array_int_print(serial);
+    array_int_free(serial);
+    graph_free(graph);
+    array_int_free(tarjan);
+}
+
 int main(int argc, char* argv[]){
     //test_init_destroy();
     test_serialize();
@@ -130,5 +156,6 @@ int main(int argc, char* argv[]){
     test_tarjan2();
     test_tarjan_withoutEdge();
     test_tarjan_vertxAllConnect();
+    test_merge_vertices();
     printf("All tests passed successfully\n");
 }

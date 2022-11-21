@@ -88,7 +88,6 @@ void graph_delete_edge(graph_t *G, int u, int v){
     khint_t k;
     bool is_present;
     khash_t(m32) *adj_list;
-    int ret;
     k = kh_get(mm32, G->adj, u);
     is_present = (k != kh_end(G->adj));
     if(is_present){
@@ -110,7 +109,7 @@ void graph_delete_edge(graph_t *G, int u, int v){
  * Deletes a vertex and every edge incident on the vertex. 
  */
 void graph_delete_vertex(graph_t *G, int v){
-    int ret, u, _;
+    int u, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khint_t k;
     khash_t(m32) *adj_list, *inv_adj_list, *temp;
     k = kh_get(mm32,G->adj,v);
@@ -151,7 +150,7 @@ void graph_delete_vertex(graph_t *G, int v){
 void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
    linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *result){ 
     khint_t k, j;
-    int adj_node, temp;
+    int adj_node, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     // Initialize discovery time and low value
     ++(*time);
     k = kh_get(m32,disc,node);
@@ -166,7 +165,7 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
     // Go through all vertices adjacent to this
     k = kh_get(mm32,G->adj,node);
     khash_t(m32) *adjacency_list = kh_value(G->adj,k);
-    kh_foreach(adjacency_list, adj_node, temp, {
+    kh_foreach(adjacency_list, adj_node, _, {
         k = kh_get(m32,disc,adj_node);
         //TODO: the above operation should fail when tarjan is executed on subgraphs of a given graph. Add a check.
         //^This is the point where one could decide to ignore absent vertices or even store them to optimize the algorithm later.
@@ -226,8 +225,8 @@ array_int *graph_tarjan(graph_t *G){
     int time = 0;
     array_int *result = array_int_init((G->n_vertex)*2);
 
-    int node,_;
-    khash_t(m32) *temp;
+    int node,_; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
+    khash_t(m32) *temp; (void) temp; //temp is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khint_t k;
     kh_foreach(G->adj, node, temp, {
         k = kh_put(m32,disc,node,&_);
@@ -251,7 +250,7 @@ array_int *graph_tarjan(graph_t *G){
 
 array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     array_int *result = array_int_init(G->n_vertex);
-    int words = 0, node_a, node_b, _, serialized = 0;
+    int words = 0, node_a, node_b, _, serialized = 0; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list;
     array_int_push(result, 0); //Placeholder for number of total words to read after the first one
     array_int_push(result,0); //Placeholder for number vertexes serialized
@@ -279,7 +278,7 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
 }
 
 void graph_deserialize(graph_t *G, array_int *buff){
-    int words = array_int_get(buff,0);
+    //int words = array_int_get(buff,0);
     int n_vertex = array_int_get(buff,1);
     int i = 2, node_a, node_b;
     for(int j = 0; j<n_vertex;j++){
@@ -320,14 +319,51 @@ graph_t *graph_load_from_file(char *filename){
     return graph;
 }
 
-void graph_merge_vertices(graph_t *, int dest, array_int *src);
+void graph_merge_vertices(graph_t *G, int dest, array_int *src){
+    int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
+    khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
+    khint_t k;
+    
+    //Get dest node adjacency list and inverted adjacency list
+    k = kh_get(mm32, G->adj, dest);
+    adj_list_dest = kh_value(G->adj, k);
+    k = kh_get(mm32, G->inverted_adj, dest);
+    inv_adj_list_dest = kh_value(G->inverted_adj, k);
+
+    //Merge each src_node into dest node
+    for(int i=0; i < array_int_length(src); i++){
+        src_node = array_int_get(src, i);
+        if(src_node == dest) //If src_node is equal to dest no merge is needed
+            continue;
+        //Get src_node adjacency list and inverted adjacency list
+        k = kh_get(mm32, G->adj, src_node);
+        adj_list_src = kh_value(G->adj, k);
+        k = kh_get(mm32, G->inverted_adj, src_node);
+        inv_adj_list_src = kh_value(G->inverted_adj, k);
+
+        //Copy each node of src_node's adjacency list into dest's
+        kh_foreach(adj_list_src, cpy, _, {
+            if(cpy == src_node) //Copying auto-referencing edges produces errors. We don't do that
+                continue;
+            kh_put(m32, adj_list_dest, cpy, &_); //We copy the node of adj_list_src to adj_list_dest
+        });
+        //Copy each node of src_node's inverted adjacency list into dest's
+        kh_foreach(inv_adj_list_src, cpy, _, {
+            if(cpy == src_node) //Copying auto-referencing edges produces errors. We don't do that
+                continue;
+            kh_put(m32, inv_adj_list_dest, cpy, &_); //We copy the node of inv_adj_list_src to inv_adj_list_dest
+        });
+        //Now it is safe to delete the src vertex
+        graph_delete_vertex(G, src_node);
+    }
+}
 
 
 
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 }
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
-
+    return NULL;
 }
 
 /*Consider simplifying the design of graph.c. 
