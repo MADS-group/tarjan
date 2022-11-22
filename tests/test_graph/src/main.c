@@ -237,9 +237,9 @@ void test_merge_vertices(){
         }
     }
 
-    serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
-    array_int_print(serial);
-    array_int_free(serial);
+    //serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
+    //array_int_print(serial);
+    //array_int_free(serial);
 
     graph_free(graph);
     array_int_free(tarjan);
