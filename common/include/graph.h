@@ -25,5 +25,8 @@ void graph_merge(graph_t *to, graph_t *from); //give a graph to and a graph from
 graph_t *graph_random(int max_n_node, int max_edges); //give max number of node, max number of edger for node and create a graph
 
 typedef struct scc_set_t scc_set_t;
+scc_set_t *scc_set_init();
+void scc_set_free(scc_set_t *set);
+void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes);
 
 #endif
