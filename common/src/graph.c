@@ -481,7 +481,7 @@ void scc_set_free(scc_set_t *S){
 void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
     int target_scc = scc_id;
     for(int i = 0; i < array_int_length(nodes); i++){
-        kh S->nodes_to_scc_map array_int_get(nodes, i);
+        //kh S->nodes_to_scc_map array_int_get(nodes, i);
     }
 }
 
