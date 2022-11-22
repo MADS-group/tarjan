@@ -322,6 +322,7 @@ graph_t *graph_load_from_file(char *filename){
     return graph;
 }
 
+//src è un array di interi, ovvero la lista degli id dei nodi che devono rientrare nel supernodo, dest è l'id del supernodo che si va a creare
 void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
