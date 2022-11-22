@@ -406,8 +406,55 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 */
 
-void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
+/*! @function
+  @abstract      merge 2 graph and the merged graph is in graph_t * to
+  @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
+  @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
+  @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
+ */
+void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
+    //pene turgido
+    int i=0;
+    int vertex=0;
+    int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
+    int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
+    int key=0;
+    int value=0;
+    int opposite=0;
+    int to_vertex=0;
+    int new_dimension=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
 
+    srand ( time(NULL) );
+
+    for(i=0; i<initial_number_of_vertex_graph_from; i++){
+        k = kh_get(mm32, from->adj, i);
+        adj_list = kh_value(from->adj, k);     //trovo adiacent list associata al vertice i
+
+        graph_insert_vertex(to, i+initial_number_of_vertex_graph_to);
+
+        kh_foreach(adj_list, key, value, {
+            graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
+        });
+
+        if(rand_bernoulli(p)){
+            opposite= rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);
+            
+        }
+    }
+
+    new_dimension=graph_get_num_vertex(to);
+
+    for(i=initial_number_of_vertex_graph_to; i<new_dimension; i++){
+        if(rand_bernoulli(p)){
+            to_vertex=rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, to_vertex, i);
+        }
+    }
+    
 }
 
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
