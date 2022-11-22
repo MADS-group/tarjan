@@ -10,6 +10,7 @@
 #include "stack.h"
 #include "khash.h"
 #include "linkedlist.h"
+#include "random.h"
 
 KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
 KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values //TODO: convert to s32 * values!
@@ -405,7 +406,7 @@ void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from
 
 }
 
-graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
+graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
     int maxNumberOfEdges;
     graph_t *graph;
     int i=0;
@@ -423,7 +424,7 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
 
 
     for(i=0; i<max_n_node; i++){
-        maxNumberOfEdges= 
+        maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         for(j=0; j<= maxNumberOfEdges; j++){
             opposite= rand() % max_n_node;
 
@@ -431,9 +432,9 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
             adj_list = kh_value(G->adj, k);     //trovo adiacent list associata al vertice j
 
             k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
-            if(k == kh_end(adj_list)){
+            if(k == kh_end(adj_list)){          //se edges non è presente lo aggiungo
                 graph_insert_edge(graph, i, opposite);
-            }else{
+            }else{                              //se edges è già presente ne aggiungerò un altro
                 j--;
             }
             

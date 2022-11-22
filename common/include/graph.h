@@ -22,7 +22,7 @@ array_int *graph_serialize(graph_t *, int n, khint_t * bucket); //Serializes at 
 void graph_deserialize(graph_t *, array_int *buff); //Deserializes data from buffer buff
 void graph_free(graph_t *);
 void graph_merge(graph_t *to, graph_t *from); //give a graph to and a graph from and merge both, return graph is in graph to
-graph_t *graph_random(int max_n_node, int max_edges); //give max number of node, max number of edger for node and create a graph
+graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 
 typedef struct scc_set_t scc_set_t;
 scc_set_t *scc_set_init();
