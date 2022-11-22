@@ -403,10 +403,29 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
 
-
 }
+
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
-    
+    int maxNumberOfEdges;
+    graph_t *graph;
+    int i=0;
+    int opposite=0;
+
+    graph= graph_init();
+
+    srand ( time(NULL) );
+
+    for(i=0; i<max_n_node; i++){
+        graph_insert_vertex(graph, i);
+    }
+
+
+    for(i=0; i<max_n_node; i++){
+        maxNumberOfEdges= 
+        opposite= rand() % max_n_node;
+    }
+
+
 }
 
 struct scc_set_t {
