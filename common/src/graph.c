@@ -496,6 +496,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         
     }
 
+    return graph;
 
 }
 
