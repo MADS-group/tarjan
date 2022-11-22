@@ -13,13 +13,14 @@
 KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
 KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values //TODO: convert to s32 * values!
 KHASH_SET_INIT_INT(s32) //s32 type is a set of integers
+KHASH_MAP_INIT_INT(ms32, khash_t(s32) *) //ms32 type is a hash table with int keys and (s32 *) values
 
 struct graph_t {
     int n_vertex;
     khash_t(mm32) *adj; //Hash table which maps a node with the forward adjacency list
     khash_t(mm32) *inverted_adj; //Hash table which maps a node with the backwards adjacency list
-    
 };
+
 int min(int a, int b){
     return a<b ? a:b;
 }
@@ -358,13 +359,65 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     }
 }
 
+/*
+    khash_t(mm32) #mm32 è una ht key: int e val: *khash_t(m32)
+    khash_t(m32) #m32 è una ht key: int e val: int
 
+    # Prendere un elemento 
+    khint_t k;
+    k = kh_get(m32, ht, key); #1: tipo della ht 2:riferimento alla ht 3: key
+    # Se key è assente dalla ht: k == kh_end(ht)
+    value = kh_value(ht, k); #1: riferimento alla ht 2: variabile di appoggio
+    
+    #Modificare un elemento
+    khint_t k;
+    k = kh_get(m32, ht, key); #1: tipo della ht 2:riferimento alla ht 3: key
+    # Se key è assente dalla ht: k == kh_end(ht)
+    kh_value(ht, k) = value; #1: riferimento alla ht 2: variabile di appoggio
+
+    #Inserire un elemento (se non esiste) e modificare value
+    khint_t k;
+    k = kh_put(m32,ht,key,&ret); #1: tipo della ht 2: riferimento alla ht 3: key che vuoi inserire 4: riferimento a una variabile intera
+    # k è la posizione dove si trova la chave appena inserita se è stata inserita (senza valore) OPPURE la posizione dove già era presente la chiave se già c'era.
+    # ret == 0 se l'elemento era già nella ht e ret>0 se invece non era presente (ed è stato inserito adesso)
+    kh_value(ht, k) = value #1: riferimento alla ht 2: variabile di appoggio
+
+    #Vedere se chiave è presente nella ht
+    k = kh_get(m32, ht, key);
+    kh_exist(ht, k); #restituisce true se esiste o false altrimenti
+
+    #Per scorrere tutti gli elementi nella ht
+    kh_foreach(ht, key, value, { #1: hash table, 2: variablie dove viene messa la key, 3: variabile dove viene messo il value, 4: blocco di codice eseguito per ogni coppia (key,value)
+        #...
+    });
+
+    #Hash annidate - voglio ciclare tutti i nodi figli di a (a->*)
+    k = kh_get(mm32, G->adj, a);
+    adj_list = kh_value(G->adj, k);
+    foreach(adj_list, b, _, {
+        #fai qualcosa
+    });
+
+*/
 
 void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
+
+
 }
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
     return NULL;
 }
+
+struct scc_set_t {
+    //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
+    khash_t(ms32) scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key excluded)
+    khash_t(m32) nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
+}
+
+scc_set_add(scc_set_t *scc_set, ){
+
+}
+
 
 /*Consider simplifying the design of graph.c. 
  - What is the real advantage of this complex generalization?
