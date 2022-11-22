@@ -461,8 +461,11 @@ void scc_set_free(scc_set_t *S){
   @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
   @param  nodes the nodes of the SCC. 
  */
-void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes){
-    
+void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
+    int target_scc = scc_id;
+    for(int i = 0; i < array_int_length(nodes); i++){
+        kh S->nodes_to_scc_map array_int_get(nodes, i);
+    }
 }
 
 
