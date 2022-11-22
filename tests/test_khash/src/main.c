@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
 	}
     int key,value;
     kh_foreach(ht, key, value, {
-        printf("key: %d value:%d\n",key,value);
+        k = kh_put(m32, ht, key, &ret);
+        printf("k: %d ret:%d value:%d\n", k , ret, kh_value(ht, k));
     });
     kh_destroy(m32, ht);
 }
