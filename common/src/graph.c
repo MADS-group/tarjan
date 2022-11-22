@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "graph.h"
 #include "stack.h"
 #include "khash.h"
@@ -405,7 +406,7 @@ void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from
 
 }
 graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
-    return NULL;
+    
 }
 
 struct scc_set_t {
