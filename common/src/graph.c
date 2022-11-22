@@ -10,6 +10,7 @@
 #include "stack.h"
 #include "khash.h"
 #include "linkedlist.h"
+#include "random.h"
 
 KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
 KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values //TODO: convert to s32 * values!
@@ -321,6 +322,7 @@ graph_t *graph_load_from_file(char *filename){
     return graph;
 }
 
+//src è un array di interi, ovvero la lista degli id dei nodi che devono rientrare nel supernodo, dest è l'id del supernodo che si va a creare
 void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
@@ -401,31 +403,249 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 */
 
-void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
+/*! @function
+  @abstract      merge 2 graph and the merged graph is in graph_t * to
+  @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
+  @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
+  @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
+ */
+void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
+    int i=0;
+    int vertex=0;
+    int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
+    int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
+    int key=0;
+    int value=0;
+    int opposite=0;
+    int to_vertex=0;
+    int new_dimension=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
 
+    srand ( time(NULL) );
+
+    for(i=0; i<initial_number_of_vertex_graph_from; i++){
+        k = kh_get(mm32, from->adj, i);
+        adj_list = kh_value(from->adj, k);     //trovo adiacent list associata al vertice i
+
+        graph_insert_vertex(to, i+initial_number_of_vertex_graph_to);
+
+        kh_foreach(adj_list, key, value, {
+            graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
+        });
+
+        if(rand_bernoulli(p)){
+            opposite= rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);
+            
+        }
+    }
+
+    new_dimension=graph_get_num_vertex(to);
+
+    for(i=initial_number_of_vertex_graph_to; i<new_dimension; i++){
+        if(rand_bernoulli(p)){
+            to_vertex=rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, to_vertex, i);
+        }
+    }
+    
+}
+/*! @function
+  @abstract      create a new graph with max_n_nodes vertices and number of edges for every vertex form a binomial distribution with mean and variance
+  @param  max_n_node        number of vertices for the new graph
+  @param  mean_edges        mean for binomial distribution used for number of edges for every vertices
+  @param variance_edges     variance for binomial distribution used for number of edges for every vertices
+  @return                   a graph with max_n_node vertices and number of edges for every vertices form binomial distribution(mean,variance)
+ */
+
+graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
+    int maxNumberOfEdges;
+    graph_t *graph;
+    int i=0;
+    int j=0;
+    int opposite=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
+
+    graph= graph_init();
+
+    srand ( time(NULL) );
+
+    for(i=0; i<max_n_node; i++){
+        graph_insert_vertex(graph, i);
+    }
+
+    for(i=0; i<max_n_node; i++){
+        maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
+        for(j=0; j<= maxNumberOfEdges; j++){
+            opposite= rand() % max_n_node ;
+
+            k = kh_get(mm32, graph->adj, j);
+            adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
+
+            k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
+            if(k == kh_end(adj_list)){          //se edges non è presente lo aggiungo
+                graph_insert_edge(graph, i, opposite);
+            }else{                              //se edges è già presente ne aggiungerò un altro
+                j--;
+            }
+            
+        }
+        
+    }
+
+    return graph;
 
 }
-graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node, max number of edger for node and create a graph
-    
+
+void graph_print_debug(graph_t *G){
+    int key;
+    khash_t(m32) *value;
+    printf("Number of vertices: %d\n", G->n_vertex);
+    printf("Adjacency list:\n");
+    kh_foreach(G->adj, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
+
+    printf("Inverted adjacency list:\n");
+    kh_foreach(G->inverted_adj, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
 }
 
 struct scc_set_t {
     //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
-    khash_t(ms32) scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
-    khash_t(m32) nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
+    khash_t(ms32) *scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
+    khash_t(m32) *nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
 };
 
+/*! @function
+  @abstract     Initialize a new scc_set
+  @return       The scc_set 
+ */
+scc_set_t *scc_set_init(){
+    scc_set_t *S = malloc(sizeof(scc_set_t));
+    S->scc_map = kh_init(ms32);
+    S->nodes_to_scc_map = kh_init(m32);
+    return S;
+}
+
+/*! @function
+  @abstract     Destroy an scc_set
+  @param    S   The scc_set to be destroyed.
+ */
+void scc_set_free(scc_set_t *S){
+    kh_destroy(ms32, S->scc_map);
+    kh_destroy(m32, S->nodes_to_scc_map);
+    free(S);
+}
 
 /*! @function
   @abstract     Add a new SCC to the set handling merges if needed.
-  @param  scc_set the reference to the scc_set.
+  @param  S the reference to the scc_set.
   @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
   @param  nodes the nodes of the SCC. 
  */
-void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes){
-    
+void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
+    int target_scc_id = scc_id, node, _, node_scc, ret, source_scc_id; (void)_;
+    khash_t(s32) *scc_to_merge; //Set of all scc_ids that need to be merged
+    khash_t(s32) *target_scc, *source_scc;
+    khint_t k;
+
+    scc_to_merge = kh_init(s32);
+    kh_put(s32, scc_to_merge, scc_id, &_); //scc_id should be merged with other SCCs
+    //Find target SCC and SCCs that need to be merged
+    for(int i = 0; i < array_int_length(nodes); i++){
+        node = array_int_get(nodes, i);
+        k = kh_get(m32, S->nodes_to_scc_map, node); 
+        if (!kh_exist(S->nodes_to_scc_map, k)) //If node is not present in an SCC, target_scc_id stays the same
+            continue;
+        //Otherwise we add the node scc to the set of SCCs to be merged...
+        node_scc = kh_value(S->nodes_to_scc_map, k); //The SCC to which node belongs to
+        kh_put(s32, scc_to_merge, node_scc, &_);
+        //...and we check if target_scc_id should change (it is always the lowest among SCC IDs).
+        target_scc_id = min(target_scc_id, node_scc);
+    }
+
+    //Get target_scc with id target_scc_id 
+    k = kh_put(ms32, S->scc_map, target_scc_id, &ret);
+    if(ret!=0){ //If target_scc_id doesn't exist, create it
+        kh_value(S->scc_map, k) = kh_init(s32);
+    }
+    target_scc = kh_value(S->scc_map, k);
+
+    //Move every node in nodes to target_scc
+    for(int i = 0; i < array_int_length(nodes); i++){
+        node = array_int_get(nodes, i);
+        //Put the node in the target SCC
+        kh_put(s32, target_scc, node, &_);
+        //Update nodes_to_scc_map
+        k = kh_put(m32, S->nodes_to_scc_map, node, &_);
+        kh_value(S->nodes_to_scc_map, k) = target_scc_id;
+    }
+
+    //Move every node in scc_map[scc_to_merge[*]] to target_scc
+    int cpy;
+    khint_t source_scc_bucket;
+    for(khint_t i = 0; i != kh_end(scc_to_merge); ++i){
+        if(!kh_exist(scc_to_merge, i))
+            continue;
+        source_scc_id = kh_key(scc_to_merge, i);
+        if(source_scc_id == target_scc_id) //If the source scc is the same as target do nothing
+            continue;
+        source_scc_bucket = kh_get(ms32, S->scc_map, source_scc_id);
+        source_scc = kh_value(S->scc_map, source_scc_bucket); //source_scc should always exist because we populated scc_to_merge set previously
+        for(khint_t j = 0; j != kh_end(source_scc); ++j){ //Put every element of source_scc in target SCC and update nodes_to_scc_map
+            if(!kh_exist(source_scc, j))
+                continue;
+            cpy = kh_key(source_scc, j);
+            //Put the node in the target SCC
+            kh_put(s32, target_scc, cpy, &_); 
+            //Update nodes_to_scc_map
+            k = kh_put(m32, S->nodes_to_scc_map, cpy, &_);
+            kh_value(S->nodes_to_scc_map, k) = target_scc_id;
+        }
+        //Now we can delete the SCC with id source_scc_id which is in bucket source_scc_bucket
+        kh_destroy(s32, source_scc);
+        kh_del(ms32, S->scc_map, source_scc_bucket);
+    }
+    kh_destroy(s32, scc_to_merge);
 }
 
+/*! @function
+  @abstract     Debug print an scc_set
+  @param  S the reference to the scc_set.
+  @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
+  @param  nodes the nodes of the SCC. 
+ */
+void scc_set_print_debug(scc_set_t *S){
+    int key;
+    khash_t(s32) *value;
+    kh_foreach(S->scc_map, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
+    
+}
 
 /*Consider simplifying the design of graph.c. 
  - What is the real advantage of this complex generalization?

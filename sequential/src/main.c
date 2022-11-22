@@ -1,26 +1,30 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "graph.h"
 #include "array.h"
+#include "args.h"
 
 int main(int argc, char* argv[]){
+    main_parameters_t c;
+    c= get_input(argc, argv);
     FILE* file;
-    file = fopen("test.txt", "r");
-    // TODO: Aggiungere controllo degli arguments
-    //Devono essere supportati:
-    //sequential.out nomefile -> legge da nomefile il grafo
-    //sequential.out -sm id -> legge da shared memory il grafo
-    //In ogni altro caso deve spiegare come si usa il programma. Fare tutto in maniera modulare in una libreria common/
-    //perché servirà per altri programmi.
-    
-    if (NULL == file) {
-        printf("file can't be opened \n");
+    graph_t *graph;
+    array_int *result;
+
+    switch (c.t){
+        case INPUT_ERROR:
+            printf("incorrent parameters:\n sequential.out filename -> read graph from file named filename\n sequential.out -sm id -> read graph fromm shared memory with identifier id\n");
+            exit(1);
+            break;
+        case INPUT_TYPE_FILE:
+            printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
+            graph = graph_load_from_file(c.name);
+            result = (graph_tarjan(graph));
+            break;
+        case INPUT_TYPE_SHMEM:
+            printf("id shared:%s, enum INPUT_TYPE_SHMEM\n", c.name);
+            break;
     }
 
-    graph_t *graph;
-    graph = graph_init(3); //aggiungere n
-    graph = graph_read_from_file(file);
-
-    array_int *result;
-    result = (graph_tarjan(graph));
 }

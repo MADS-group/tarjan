@@ -99,6 +99,13 @@ int *array_int_get_ptr(array_int *a){
     return a->items;
 }
 
+int array_int_get_min(array_int *a){
+    int min = a->items[0];
+    for (int i = 0; i < a->length; ++i)
+        min = a->items[i] < min ? a->items[i] : min;
+    return min;
+}
+
 //TODO: Aggiungere implementazione array_ptr
 
 struct array_ptr {
