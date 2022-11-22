@@ -510,8 +510,8 @@ scc_set_t *scc_set_init(){
 }
 
 /*! @function
-  @abstract     Destroy a scc_set
-  @param    set The scc_set to be destroyed 
+  @abstract     Destroy an scc_set
+  @param    S   The scc_set to be destroyed.
  */
 void scc_set_free(scc_set_t *S){
     kh_destroy(ms32, S->scc_map);
@@ -520,16 +520,46 @@ void scc_set_free(scc_set_t *S){
 }
 
 /*! @function
+  @abstract         Delete an SCC from an scc_set
+  @param  S         The reference to the scc_set.
+  @param  scc_id    The id of the SCC to be deleted.
+ */
+void scc_delete(scc_set_t *S, int scc_id){
+
+}
+
+/*! @function
   @abstract     Add a new SCC to the set handling merges if needed.
-  @param  scc_set the reference to the scc_set.
+  @param  S the reference to the scc_set.
   @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
   @param  nodes the nodes of the SCC. 
  */
 void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
-    int target_scc = scc_id;
+    int target_scc_id = scc_id, node, _, node_scc; (void)_;
+    khash_t(s32) *scc_to_merge; //Set of all scc_ids that need to be merged
+    khash_t(s32) *target_scc;
+    khint_t k;
+
+    scc_to_merge = kh_init(s32);
+    kh_put(s32, scc_to_merge, scc_id, &_); //scc_id should be merged with other SCCs
+    //Find target SCC and SCCs that need to be merged
     for(int i = 0; i < array_int_length(nodes); i++){
-        //kh S->nodes_to_scc_map array_int_get(nodes, i);
+        node = array_int_get(nodes, i);
+        k = kh_get(m32, S->nodes_to_scc_map, node); 
+        if (!kh_exist(S->nodes_to_scc_map, k)) //If node is not present in an SCC, target_scc_id stays the same
+            continue;
+        //Otherwise we add the node scc to the set of SCCs to be merged...
+        node_scc = kh_value(S->nodes_to_scc_map, k); //The SCC to which node belongs to
+        kh_put(s32, scc_to_merge, node_scc, &_);
+        //...and we check if target_scc_id should change (it is always the lowest among SCC IDs).
+        target_scc_id = min(target_scc_id, node_scc);
     }
+
+    //Now we move every node in nodes and every node in scc_map[scc_to_merge[*]] to target_scc_id 
+    k = kh_get(ms32, S->scc_map, target_scc_id);
+    if (!kh_exist(S->scc_map, k)) //If target_scc_id doesn't exist, create it
+        k = kh_put(ms32, S->scc_map, target_scc_id, &_);
+    kh_destroy(s32, scc_to_merge);
 }
 
 
