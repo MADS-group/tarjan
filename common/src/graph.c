@@ -410,6 +410,7 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
   @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
  */
 void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
+    //pene turgido
     int i=0;
     int vertex=0;
     int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
