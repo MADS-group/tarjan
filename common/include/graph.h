@@ -21,7 +21,7 @@ array_int *graph_tarjan(graph_t *); //Returns an array containing the SCCs separ
 array_int *graph_serialize(graph_t *, int n, khint_t * bucket); //Serializes at most n nodes of the graph starting from the specified bucket. Array contains [size_of_array-1 n_vertex id_1 adj_1 -1 id_2 adj2 -1] etc...
 void graph_deserialize(graph_t *, array_int *buff); //Deserializes data from buffer buff
 void graph_free(graph_t *);
-void graph_merge(graph_t *to, graph_t *from); //give a graph to and a graph from and merge both, return graph is in graph to
+void graph_merge(graph_t *to, graph_t *from, double p); //give a graph to and a graph from and merge both, return graph is in graph to
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
 

@@ -322,6 +322,7 @@ graph_t *graph_load_from_file(char *filename){
     return graph;
 }
 
+//src è un array di interi, ovvero la lista degli id dei nodi che devono rientrare nel supernodo, dest è l'id del supernodo che si va a creare
 void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
@@ -402,9 +403,62 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 */
 
-void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
+/*! @function
+  @abstract      merge 2 graph and the merged graph is in graph_t * to
+  @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
+  @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
+  @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
+ */
+void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
+    int i=0;
+    int vertex=0;
+    int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
+    int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
+    int key=0;
+    int value=0;
+    int opposite=0;
+    int to_vertex=0;
+    int new_dimension=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
 
+    srand ( time(NULL) );
+
+    for(i=0; i<initial_number_of_vertex_graph_from; i++){
+        k = kh_get(mm32, from->adj, i);
+        adj_list = kh_value(from->adj, k);     //trovo adiacent list associata al vertice i
+
+        graph_insert_vertex(to, i+initial_number_of_vertex_graph_to);
+
+        kh_foreach(adj_list, key, value, {
+            graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
+        });
+
+        if(rand_bernoulli(p)){
+            opposite= rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);
+            
+        }
+    }
+
+    new_dimension=graph_get_num_vertex(to);
+
+    for(i=initial_number_of_vertex_graph_to; i<new_dimension; i++){
+        if(rand_bernoulli(p)){
+            to_vertex=rand() % initial_number_of_vertex_graph_to;
+            graph_insert_edge(to, to_vertex, i);
+        }
+    }
+    
 }
+/*! @function
+  @abstract      create a new graph with max_n_nodes vertices and number of edges for every vertex form a binomial distribution with mean and variance
+  @param  max_n_node        number of vertices for the new graph
+  @param  mean_edges        mean for binomial distribution used for number of edges for every vertices
+  @param variance_edges     variance for binomial distribution used for number of edges for every vertices
+  @return                   a graph with max_n_node vertices and number of edges for every vertices form binomial distribution(mean,variance)
+ */
 
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
     int maxNumberOfEdges;
@@ -423,11 +477,10 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         graph_insert_vertex(graph, i);
     }
 
-
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         for(j=0; j<= maxNumberOfEdges; j++){
-            opposite= rand() % max_n_node;
+            opposite= rand() % max_n_node ;
 
             k = kh_get(mm32, graph->adj, j);
             adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
@@ -443,6 +496,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         
     }
 
+    return graph;
 
 }
 
