@@ -430,12 +430,19 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
 
 struct scc_set_t {
     //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
-    khash_t(ms32) scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key excluded)
+    khash_t(ms32) scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
     khash_t(m32) nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
-}
+};
 
-scc_set_add(scc_set_t *scc_set, ){
 
+/*! @function
+  @abstract     Add a new SCC to the set handling merges if needed.
+  @param  scc_set the reference to the scc_set.
+  @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
+  @param  nodes the nodes of the SCC. 
+ */
+void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes){
+    
 }
 
 
