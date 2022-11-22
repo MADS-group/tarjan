@@ -446,6 +446,33 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
 
 }
 
+void graph_print_debug(graph_t *G){
+    int key;
+    khash_t(m32) *value;
+    printf("Number of vertices: %d\n", G->n_vertex);
+    printf("Adjacency list:\n");
+    kh_foreach(G->adj, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
+
+    printf("Inverted adjacency list:\n");
+    kh_foreach(G->inverted_adj, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
+}
+
 struct scc_set_t {
     //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
     khash_t(ms32) *scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
@@ -474,24 +501,15 @@ void scc_set_free(scc_set_t *S){
 }
 
 /*! @function
-  @abstract         Delete an SCC from an scc_set
-  @param  S         The reference to the scc_set.
-  @param  scc_id    The id of the SCC to be deleted.
- */
-void scc_delete(scc_set_t *S, int scc_id){
-
-}
-
-/*! @function
   @abstract     Add a new SCC to the set handling merges if needed.
   @param  S the reference to the scc_set.
   @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
   @param  nodes the nodes of the SCC. 
  */
 void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
-    int target_scc_id = scc_id, node, _, node_scc; (void)_;
+    int target_scc_id = scc_id, node, _, node_scc, ret, source_scc_id; (void)_;
     khash_t(s32) *scc_to_merge; //Set of all scc_ids that need to be merged
-    khash_t(s32) *target_scc;
+    khash_t(s32) *target_scc, *source_scc;
     khint_t k;
 
     scc_to_merge = kh_init(s32);
@@ -509,13 +527,71 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
         target_scc_id = min(target_scc_id, node_scc);
     }
 
-    //Now we move every node in nodes and every node in scc_map[scc_to_merge[*]] to target_scc_id 
-    k = kh_get(ms32, S->scc_map, target_scc_id);
-    if (!kh_exist(S->scc_map, k)) //If target_scc_id doesn't exist, create it
-        k = kh_put(ms32, S->scc_map, target_scc_id, &_);
+    //Get target_scc with id target_scc_id 
+    k = kh_put(ms32, S->scc_map, target_scc_id, &ret);
+    if(ret!=0){ //If target_scc_id doesn't exist, create it
+        kh_value(S->scc_map, k) = kh_init(s32);
+    }
+    target_scc = kh_value(S->scc_map, k);
+
+    //Move every node in nodes to target_scc
+    for(int i = 0; i < array_int_length(nodes); i++){
+        node = array_int_get(nodes, i);
+        //Put the node in the target SCC
+        kh_put(s32, target_scc, node, &_);
+        //Update nodes_to_scc_map
+        k = kh_put(m32, S->nodes_to_scc_map, node, &_);
+        kh_value(S->nodes_to_scc_map, k) = target_scc_id;
+    }
+
+    //Move every node in scc_map[scc_to_merge[*]] to target_scc
+    int cpy;
+    khint_t source_scc_bucket;
+    for(khint_t i = 0; i != kh_end(scc_to_merge); ++i){
+        if(!kh_exist(scc_to_merge, i))
+            continue;
+        source_scc_id = kh_key(scc_to_merge, i);
+        if(source_scc_id == target_scc_id) //If the source scc is the same as target do nothing
+            continue;
+        source_scc_bucket = kh_get(ms32, S->scc_map, source_scc_id);
+        source_scc = kh_value(S->scc_map, source_scc_bucket); //source_scc should always exist because we populated scc_to_merge set previously
+        for(khint_t j = 0; j != kh_end(source_scc); ++j){ //Put every element of source_scc in target SCC and update nodes_to_scc_map
+            if(!kh_exist(source_scc, j))
+                continue;
+            cpy = kh_key(source_scc, j);
+            //Put the node in the target SCC
+            kh_put(s32, target_scc, cpy, &_); 
+            //Update nodes_to_scc_map
+            k = kh_put(m32, S->nodes_to_scc_map, cpy, &_);
+            kh_value(S->nodes_to_scc_map, k) = target_scc_id;
+        }
+        //Now we can delete the SCC with id source_scc_id which is in bucket source_scc_bucket
+        kh_destroy(s32, source_scc);
+        kh_del(ms32, S->scc_map, source_scc_bucket);
+    }
     kh_destroy(s32, scc_to_merge);
 }
 
+/*! @function
+  @abstract     Debug print an scc_set
+  @param  S the reference to the scc_set.
+  @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
+  @param  nodes the nodes of the SCC. 
+ */
+void scc_set_print_debug(scc_set_t *S){
+    int key;
+    khash_t(s32) *value;
+    kh_foreach(S->scc_map, key, value, {
+        printf("%d -->", key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf(" %d", kh_key(value, i));
+        }
+        printf("\n");
+    });
+    
+}
 
 /*Consider simplifying the design of graph.c. 
  - What is the real advantage of this complex generalization?

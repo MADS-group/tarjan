@@ -23,10 +23,12 @@ void graph_deserialize(graph_t *, array_int *buff); //Deserializes data from buf
 void graph_free(graph_t *);
 void graph_merge(graph_t *to, graph_t *from); //give a graph to and a graph from and merge both, return graph is in graph to
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
+void graph_print_debug(graph_t *G);
 
 typedef struct scc_set_t scc_set_t;
 scc_set_t *scc_set_init();
 void scc_set_free(scc_set_t *set);
 void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes);
+void scc_set_print_debug(scc_set_t *S);
 
 #endif
