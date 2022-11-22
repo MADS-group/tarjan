@@ -402,8 +402,55 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 */
 
-void graph_merge(graph_t *to, graph_t *from){ //give a graph to and a graph from and merge both, return graph is in graph to
+/*! @function
+  @abstract      merge 2 graph and the merged graph is in graph_t * to
+  @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
+  @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
+  @param p       probability of create an edge between a node of graph from and a node of graph to  
+ */
+void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
+    int i=0;
+    int vertex=0;
+    int m=graph_get_num_vertex(to);
+    int n=graph_get_num_vertex(from);
+    int key=0;
+    int value=0;
+    int opposite=0;
+    int to_vertex=0;
+    int new_dimension=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
 
+    srand ( time(NULL) );
+
+    for(i=0; i<n; i++){
+        k = kh_get(mm32, from->adj, i);
+        adj_list = kh_value(from->adj, k);     //trovo adiacent list associata al vertice i
+
+        graph_insert_vertex(to, i+m);
+
+        kh_foreach(adj_list, key, value, {
+            graph_insert_vertex(to, key+m);
+            graph_insert_edge(to, i+m, key+m);
+        });
+
+        if(rand_bernoulli(p)){
+            opposite= rand() % m;
+            graph_insert_edge(to, i+m, opposite);
+            
+        }
+    }
+
+
+    new_dimension=graph_get_num_vertex(to);
+
+    for(i=m;i<new_dimension;i++){
+        if(rand_bernoulli(p)){
+            to_vertex=rand() % m;
+            graph_insert_edge(to, to_vertex, i);
+        }
+    }
+    
 }
 
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
@@ -423,11 +470,10 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         graph_insert_vertex(graph, i);
     }
 
-
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         for(j=0; j<= maxNumberOfEdges; j++){
-            opposite= rand() % max_n_node;
+            opposite= rand() % max_n_node ;
 
             k = kh_get(mm32, graph->adj, j);
             adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
