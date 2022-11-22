@@ -411,10 +411,30 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
 
 struct scc_set_t {
     //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
-    khash_t(ms32) scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
-    khash_t(m32) nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
+    khash_t(ms32) *scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
+    khash_t(m32) *nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
 };
 
+/*! @function
+  @abstract     Initialize a new scc_set
+  @return       The scc_set 
+ */
+scc_set_t *scc_set_init(){
+    scc_set_t *S = malloc(sizeof(scc_set_t));
+    S->scc_map = kh_init(ms32);
+    S->nodes_to_scc_map = kh_init(m32);
+    return S;
+}
+
+/*! @function
+  @abstract     Destroy a scc_set
+  @param    set The scc_set to be destroyed 
+ */
+void scc_set_free(scc_set_t *S){
+    kh_destroy(ms32, S->scc_map);
+    kh_destroy(m32, S->nodes_to_scc_map);
+    free(S);
+}
 
 /*! @function
   @abstract     Add a new SCC to the set handling merges if needed.
