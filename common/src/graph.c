@@ -409,7 +409,9 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
     int maxNumberOfEdges;
     graph_t *graph;
     int i=0;
+    int j=0;
     int opposite=0;
+    khint_t k;
 
     graph= graph_init();
 
@@ -422,7 +424,21 @@ graph_t *graph_random(int max_n_node, int max_edges){ //give max number of node,
 
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= 
-        opposite= rand() % max_n_node;
+        for(j=0; j<= maxNumberOfEdges; j++){
+            opposite= rand() % max_n_node;
+
+            k = kh_get(mm32, graph->adj, j);
+            adj_list = kh_value(G->adj, k);     //trovo adiacent list associata al vertice j
+
+            k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
+            if(k == kh_end(adj_list)){
+                graph_insert_edge(graph, i, opposite);
+            }else{
+                j--;
+            }
+            
+        }
+        
     }
 
 
