@@ -413,6 +413,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     int j=0;
     int opposite=0;
     khint_t k;
+    khash_t(m32) *adj_list;
 
     graph= graph_init();
 
@@ -429,7 +430,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
             opposite= rand() % max_n_node;
 
             k = kh_get(mm32, graph->adj, j);
-            adj_list = kh_value(G->adj, k);     //trovo adiacent list associata al vertice j
+            adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
 
             k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
             if(k == kh_end(adj_list)){          //se edges non è presente lo aggiungo
