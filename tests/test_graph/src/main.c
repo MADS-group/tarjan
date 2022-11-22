@@ -232,11 +232,8 @@ void test_merge_vertices(){
             graph_merge_vertices(graph, array_int_get(temp,0), temp);
             array_int_print(temp);
             array_int_free(temp);
-            serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
-            array_int_print(serial);
-            array_int_free(serial);
+            graph_print_debug(graph);
             inserito=true;
-            pos=0;
         }
     }
 
