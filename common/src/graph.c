@@ -323,7 +323,6 @@ graph_t *graph_load_from_file(char *filename){
     return graph;
 }
 
-//src è un array di interi, ovvero la lista degli id dei nodi che devono rientrare nel supernodo, dest è l'id del supernodo che si va a creare
 void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
@@ -346,17 +345,21 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
         k = kh_get(mm32, G->inverted_adj, src_node);
         inv_adj_list_src = kh_value(G->inverted_adj, k);
 
-        //Copy each node of src_node's adjacency list into dest's
+        //Copy each node of src_node's adjacency list into dest's. Update inverted_adj accordingly.
         kh_foreach(adj_list_src, cpy, _, {
             if(cpy == src_node) //Copying auto-referencing edges produces errors. We don't do that
                 continue;
             kh_put(m32, adj_list_dest, cpy, &_); //We copy the node of adj_list_src to adj_list_dest
+            k = kh_get(mm32, G->inverted_adj, cpy);
+            kh_put(m32, kh_value(G->inverted_adj, k), dest, &_); //Update inverted_adj accordingly.
         });
-        //Copy each node of src_node's inverted adjacency list into dest's
+        //Copy each node of src_node's inverted adjacency list into dest's. Update adj accordingly.
         kh_foreach(inv_adj_list_src, cpy, _, {
             if(cpy == src_node) //Copying auto-referencing edges produces errors. We don't do that
                 continue;
             kh_put(m32, inv_adj_list_dest, cpy, &_); //We copy the node of inv_adj_list_src to inv_adj_list_dest
+            k = kh_get(mm32, G->adj, cpy);
+            kh_put(m32, kh_value(G->adj, k), dest, &_); //Update adj accordingly.
         });
         //Now it is safe to delete the src vertex
         graph_delete_vertex(G, src_node);
@@ -454,13 +457,6 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
     }
     
 }
-/*! @function
-  @abstract      create a new graph with max_n_nodes vertices and number of edges for every vertex form a binomial distribution with mean and variance
-  @param  max_n_node        number of vertices for the new graph
-  @param  mean_edges        mean for binomial distribution used for number of edges for every vertices
-  @param variance_edges     variance for binomial distribution used for number of edges for every vertices
-  @return                   a graph with max_n_node vertices and number of edges for every vertices form binomial distribution(mean,variance)
- */
 
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
     int maxNumberOfEdges;
@@ -520,7 +516,6 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         */
     }
 
-    return graph;
 
 }
 
