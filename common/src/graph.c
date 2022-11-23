@@ -413,7 +413,6 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
   @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
  */
 void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
-    //pene turgido
     int i=0;
     int vertex=0;
     int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
@@ -438,10 +437,11 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
             graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
         });
-
+        printf("rand_bernoulli: %d\n", rand_bernoulli(p));
         if(rand_bernoulli(p)){
             opposite= rand() % initial_number_of_vertex_graph_to;
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);
+            printf("inserisco arco da %d a %d\n",(i+initial_number_of_vertex_graph_to), opposite );
             
         }
     }
@@ -452,6 +452,7 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
         if(rand_bernoulli(p)){
             to_vertex=rand() % initial_number_of_vertex_graph_to;
             graph_insert_edge(to, to_vertex, i);
+            printf("inserisco arco da %d a %d\n",to_vertex, i);
         }
     }
     
