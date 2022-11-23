@@ -260,7 +260,7 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     words++;
     khint_t i;
     for(i = *bucket; i != kh_end(G->adj) && serialized < n; ++i){
-        if(!kh_exist(G->adj, i))
+        if(!kh_exist(G->adj, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
             continue;
         node_a = kh_key(G->adj,i);
         adj_list = kh_value(G->adj,i);
@@ -361,7 +361,7 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
             kh_put(m32, kh_value(G->adj, k), dest, &_); //Update adj accordingly.
         });
         //Now it is safe to delete the src vertex
-        graph_delete_vertex(G, src_node);
+        graph_delete_vertex(G, src_node); //TODO: This can be optimized 
     }
 }
 
@@ -478,7 +478,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         for(j=0; j<= maxNumberOfEdges; j++){
-            opposite= rand() % max_n_node;
+            opposite = rand() % max_n_node;
 
             k = kh_get(mm32, graph->adj, j);
             adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
@@ -505,7 +505,7 @@ void graph_print_debug(graph_t *G){
     kh_foreach(G->adj, key, value, {
         printf("%d -->", key);
         for(khint_t i = 0; i != kh_end(value); ++i){
-            if(!kh_exist(value, i))
+            if(!kh_exist(value, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
                 continue;
             printf(" %d", kh_key(value, i));
         }
@@ -516,7 +516,7 @@ void graph_print_debug(graph_t *G){
     kh_foreach(G->inverted_adj, key, value, {
         printf("%d -->", key);
         for(khint_t i = 0; i != kh_end(value); ++i){
-            if(!kh_exist(value, i))
+            if(!kh_exist(value, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
                 continue;
             printf(" %d", kh_key(value, i));
         }
@@ -562,14 +562,14 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
     khash_t(s32) *scc_to_merge; //Set of all scc_ids that need to be merged
     khash_t(s32) *target_scc, *source_scc;
     khint_t k;
-
+    
     scc_to_merge = kh_init(s32);
     kh_put(s32, scc_to_merge, scc_id, &_); //scc_id should be merged with other SCCs
     //Find target SCC and SCCs that need to be merged
     for(int i = 0; i < array_int_length(nodes); i++){
         node = array_int_get(nodes, i);
         k = kh_get(m32, S->nodes_to_scc_map, node); 
-        if (!kh_exist(S->nodes_to_scc_map, k)) //If node is not present in an SCC, target_scc_id stays the same
+        if (k == kh_end(S->nodes_to_scc_map)) //If node is not present in an SCC, target_scc_id stays the same
             continue;
         //Otherwise we add the node scc to the set of SCCs to be merged...
         node_scc = kh_value(S->nodes_to_scc_map, k); //The SCC to which node belongs to
@@ -584,7 +584,7 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
         kh_value(S->scc_map, k) = kh_init(s32);
     }
     target_scc = kh_value(S->scc_map, k);
-
+    
     //Move every node in nodes to target_scc
     for(int i = 0; i < array_int_length(nodes); i++){
         node = array_int_get(nodes, i);
@@ -594,7 +594,7 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
         k = kh_put(m32, S->nodes_to_scc_map, node, &_);
         kh_value(S->nodes_to_scc_map, k) = target_scc_id;
     }
-
+    
     //Move every node in scc_map[scc_to_merge[*]] to target_scc
     int cpy;
     khint_t source_scc_bucket;
@@ -602,10 +602,12 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
         if(!kh_exist(scc_to_merge, i))
             continue;
         source_scc_id = kh_key(scc_to_merge, i);
-        if(source_scc_id == target_scc_id) //If the source scc is the same as target do nothing
+        if(source_scc_id == target_scc_id) //If the source SCC is the same as target SCC there is nothing to move
             continue;
         source_scc_bucket = kh_get(ms32, S->scc_map, source_scc_id);
-        source_scc = kh_value(S->scc_map, source_scc_bucket); //source_scc should always exist because we populated scc_to_merge set previously
+        if(source_scc_bucket == kh_end(S->scc_map)) //The source SCC could not exist because scc_id passed by the client could not exist
+            continue;
+        source_scc = kh_value(S->scc_map, source_scc_bucket);
         for(khint_t j = 0; j != kh_end(source_scc); ++j){ //Put every element of source_scc in target SCC and update nodes_to_scc_map
             if(!kh_exist(source_scc, j))
                 continue;
@@ -632,6 +634,7 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
 void scc_set_print_debug(scc_set_t *S){
     int key;
     khash_t(s32) *value;
+    printf("SCC MAP:\n");
     kh_foreach(S->scc_map, key, value, {
         printf("%d -->", key);
         for(khint_t i = 0; i != kh_end(value); ++i){
@@ -640,6 +643,10 @@ void scc_set_print_debug(scc_set_t *S){
             printf(" %d", kh_key(value, i));
         }
         printf("\n");
+    });
+    printf("NODE TO SCC MAPPINGS:\n");
+    kh_foreach(S->nodes_to_scc_map, key, value, {
+        printf("%d --> %d\n", key, value);
     });
     
 }

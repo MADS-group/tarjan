@@ -4,7 +4,7 @@
 
 //Return 1 with probability p, 0 otherwise
 int rand_bernoulli(double p){
-    double r = rand() / RAND_MAX; //random number between 0.0 and 1.0
+    double r = (double) rand() / RAND_MAX; //random number between 0.0 and 1.0
     return r < p;
 }
 
