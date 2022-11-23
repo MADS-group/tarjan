@@ -624,4 +624,10 @@ typedef const char *kh_cstr_t;
 #define KHASH_MAP_INIT_STR(name, khval_t)								\
 	KHASH_INIT(name, kh_cstr_t, khval_t, 1, kh_str_hash_func, kh_str_hash_equal)
 
+KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
+KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values 
+KHASH_SET_INIT_INT(s32) //s32 type is a set of integers
+KHASH_MAP_INIT_INT(ms32, khash_t(s32) *) //ms32 type is a hash table with int keys and (s32 *) values
+
 #endif /* __AC_KHASH_H */
+

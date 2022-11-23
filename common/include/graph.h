@@ -5,6 +5,12 @@
 #include "array.h"
 #include "khash.h"
 
+struct graph_t {
+    int n_vertex;
+    khash_t(mm32) *adj; //Hash table which maps a node with the forward adjacency list //TODO: convert to s32 * values!
+    khash_t(mm32) *inverted_adj; //Hash table which maps a node with the backwards adjacency list
+};
+
 typedef struct graph_t graph_t;
 
 
@@ -24,6 +30,12 @@ void graph_free(graph_t *);
 void graph_merge(graph_t *to, graph_t *from, double p); //give a graph to and a graph from and merge both, return graph is in graph to
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
+
+
+#define graph_tarjan_foreach(G, code){  \
+    graph_tarjan(G);                    \
+    code                                \
+}
 
 typedef struct scc_set_t scc_set_t;
 scc_set_t *scc_set_init();

@@ -12,16 +12,13 @@
 #include "linkedlist.h"
 #include "random.h"
 
-KHASH_MAP_INIT_INT(m32, int) //m32 type is a hash table with int keys and int values
-KHASH_MAP_INIT_INT(mm32, khash_t(m32) *) //mm32 type is a hash table with int keys and (m32 *) values //TODO: convert to s32 * values!
-KHASH_SET_INIT_INT(s32) //s32 type is a set of integers
-KHASH_MAP_INIT_INT(ms32, khash_t(s32) *) //ms32 type is a hash table with int keys and (s32 *) values
 
-struct graph_t {
+
+/*struct graph_t {
     int n_vertex;
     khash_t(mm32) *adj; //Hash table which maps a node with the forward adjacency list
     khash_t(mm32) *inverted_adj; //Hash table which maps a node with the backwards adjacency list
-};
+};*/
 
 int min(int a, int b){
     return a<b ? a:b;
@@ -630,7 +627,7 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
   @param  nodes the nodes of the SCC. 
  */
 void scc_set_print_debug(scc_set_t *S){
-    int key;
+    int key, value_i;
     khash_t(s32) *value;
     printf("SCC MAP:\n");
     kh_foreach(S->scc_map, key, value, {
@@ -643,8 +640,8 @@ void scc_set_print_debug(scc_set_t *S){
         printf("\n");
     });
     printf("NODE TO SCC MAPPINGS:\n");
-    kh_foreach(S->nodes_to_scc_map, key, value, {
-        printf("%d --> %d\n", key, value);
+    kh_foreach(S->nodes_to_scc_map, key, value_i, {
+        printf("%d --> %d\n", key, value_i);
     });
     
 }
