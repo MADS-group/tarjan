@@ -7,14 +7,14 @@
 
 int main(int argc, char* argv[]){
     graph_t * t, *c;
-    t=graph_random(5, 2, 1);
+    t=graph_random(100, 2, 1);
     printf("\n\ngrafo t:\n");
     graph_print_debug(t);
-    c=graph_random(5, 2, 1);
+    c=graph_random(100, 2, 1);
     printf("\n\ngrafo c:\n");
     graph_print_debug(c);
 
-    graph_merge(t, c, 0.5);
+    graph_merge(t, c, 0.2);
     printf("\n\nnuovo grafo t:\n");
     graph_print_debug(t);
 
