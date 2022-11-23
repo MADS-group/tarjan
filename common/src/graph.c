@@ -72,6 +72,7 @@ void graph_insert_edge(graph_t *G, int u, int v){
     assert(is_present); //assert u exists
     khash_t(m32) *adj_list = kh_value(G->adj,k);
     k = kh_put(m32, adj_list, v, &ret);//ret == 0 if v is already present in the ht, ret>0 otherwise
+    printf("ret: %d\n", ret);
     assert(ret != 0); //assert edge didn't exist
     kh_value(adj_list,k) = 42; //TODO: convert map to set
 
@@ -465,6 +466,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     int opposite=0;
     khint_t k;
     khash_t(m32) *adj_list;
+    int ret=0;
 
     graph= graph_init();
 
@@ -474,24 +476,44 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
         graph_insert_vertex(graph, i);
     }
 
+    graph_print_debug(graph);
 
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         for(j=0; j<= maxNumberOfEdges; j++){
-            opposite = rand() % max_n_node;
-
-            k = kh_get(mm32, graph->adj, j);
+            opposite= rand() % max_n_node ;
+            printf("numero di archi %d e arco opposite %d\n", maxNumberOfEdges,opposite);
+            k = kh_get(mm32, graph->adj, i);
             adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
 
-            k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
-            if(k == kh_end(adj_list)){          //se edges non è presente lo aggiungo
+            k=kh_put(m32,adj_list,opposite,&ret);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
+            printf("ci sono\n");
+            if(ret != 0){          //se edges non è presente lo aggiungo
+            // k == kh_end(adj_list)
+                printf("ret: %d\n", ret);
+                printf("inserisco arco %d a %d\n",i , opposite);
                 graph_insert_edge(graph, i, opposite);
             }else{                              //se edges è già presente ne aggiungerò un altro
                 j--;
             }
-            
         }
-        
+        /*    
+            opposite= rand() % max_n_node ;
+            printf("numero di archi %d e arco opposite %d\n", maxNumberOfEdges,opposite);
+            k = kh_get(mm32, graph->adj, i);
+            adj_list = kh_value(graph->adj, k);     //trovo adiacent list associata al vertice j
+
+            k=kh_get(m32,adj_list,opposite);    //cerco valore associato alla chiave oppiste (arco associato al nodo opposite)
+            printf("ci sono\n");
+            if(! kh_exist(adj_list,k)){          //se edges non è presente lo aggiungo
+            // k == kh_end(adj_list)
+                printf("inserisco arco %d a %d\n",i , opposite);
+                graph_insert_edge(graph, i, opposite);
+            }else{                              //se edges è già presente ne aggiungerò un altro
+                j--;
+            }
+        }
+        */
     }
 
 

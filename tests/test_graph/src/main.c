@@ -196,6 +196,10 @@ void test_merge_vertices(){
     bool inserito=false;
     array_int *temp=array_int_init(5), *tarjan, *serial;
     graph_t *graph = graph_init();
+    char test[]="9 -1 7 -1 6 -1 3 -1 10 -1 \n";
+    char s1[30];
+    memset(s1,0,30);
+
     for(int i = 0; i <= 10; i++)
         graph_insert_vertex(graph,i);
     
@@ -218,7 +222,7 @@ void test_merge_vertices(){
     graph_insert_edge(graph, 9, 8);
 
     tarjan = graph_tarjan(graph);
-    array_int_print(tarjan);
+    // array_int_print(tarjan);
 
     for(int i=0; i<array_int_length(tarjan); i++){
         if(inserito)
@@ -230,16 +234,18 @@ void test_merge_vertices(){
         }
         else{
             graph_merge_vertices(graph, array_int_get(temp,0), temp);
-            array_int_print(temp);
+            //array_int_print(temp);
             array_int_free(temp);
-            graph_print_debug(graph);
+            //graph_print_debug(graph);
             inserito=true;
         }
     }
 
-    //serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
-    //array_int_print(serial);
-    //array_int_free(serial);
+    // graph_print_debug(graph);
+    tarjan = graph_tarjan(graph);
+    array_int_sprint(tarjan,s1);
+
+    assert(strcmp(test,s1)==0);
 
     graph_free(graph);
     array_int_free(tarjan);
