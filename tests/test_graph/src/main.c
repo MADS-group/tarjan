@@ -278,8 +278,12 @@ void test_print_debug(){
     graph_free(graph);
 }
 
-void test_graph_save_to_file(){
-    graph_t *graph = graph_init();
+void test_graph_save_to_and_load_from_file(){
+    graph_t *graph = graph_init(), *graph_load;
+    char *test=malloc(sizeof(char)*100);
+    char *s1=malloc(sizeof(char)*100);
+    memset(test,0,100);
+    memset(s1,0,100);
     for(int i = 0; i <= 10; i++)
         graph_insert_vertex(graph,i);
     
@@ -301,8 +305,20 @@ void test_graph_save_to_file(){
     graph_insert_edge(graph, 8, 9);
     graph_insert_edge(graph, 9, 8);
     
-    graph_print_debug(graph);
-    graph_save_to_file(graph,"prova.bin");
+    //graph_print_debug(graph);
+    khint_t pos = 0;
+    array_int *serial = graph_serialize(graph,graph_get_num_vertex(graph),&pos);
+    pos = 0;
+    array_int_sprint(serial,test);
+
+    graph_save_to_file(graph,"../../data/prova.bin");
+
+    graph_load=graph_load_from_file("../../data/prova.bin");
+
+    serial = graph_serialize(graph_load,graph_get_num_vertex(graph_load),&pos);
+    array_int_sprint(serial,s1);
+    assert(strcmp(test,s1)==0);
+    //graph_print_debug(graph_load);
 
     graph_free(graph);
 }
@@ -331,6 +347,7 @@ int main(int argc, char* argv[]){
     test_tarjan_vertxAllConnect();
     test_merge_vertices();
     test_graph_tarjan_foreach();
+    test_graph_save_to_and_load_from_file();
     //test_print_debug();
     printf("All tests passed successfully\n");
 }

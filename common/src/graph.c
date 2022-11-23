@@ -410,9 +410,7 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
   @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
  */
 void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
-    //pene turgido
     int i=0;
-    int vertex=0;
     int initial_number_of_vertex_graph_to=graph_get_num_vertex(to);
     int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
     int key=0;
@@ -435,11 +433,10 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
             graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
         });
-
+        printf("%d rand_bernoulli: %d\n", i,rand_bernoulli(p));
         if(rand_bernoulli(p)){
             opposite= rand() % initial_number_of_vertex_graph_to;
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);
-            
         }
     }
 
@@ -474,7 +471,6 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
         assert(maxNumberOfEdges < max_n_node);
-        printf("max number of edges: %d, for node : %d\n", maxNumberOfEdges,i);
         j=0;
         while(j<maxNumberOfEdges){
             opposite= rand() % max_n_node ;
