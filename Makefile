@@ -2,6 +2,7 @@
 
 TARGETS  := common sequential mpi cuda tests
 BIN_DIR := ./bin
+DATA_DIR := ./data
 
 all: $(TARGETS)
 	@echo Build started
@@ -9,6 +10,7 @@ all: $(TARGETS)
 .PHONY: $(TARGETS)
 $(TARGETS):
 	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(DATA_DIR)
 	@echo Building $@...
 	@cd $@ && $(MAKE)
 
