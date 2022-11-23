@@ -7,6 +7,7 @@
 
 int main(int argc, char* argv[]){
     graph_t * t;
-    t=graph_random(10, 3, 1);
+    t=graph_random(5, 2, 0.5);
     graph_print_debug(t);
+    graph_free(t);
 }
