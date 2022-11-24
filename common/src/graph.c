@@ -300,6 +300,10 @@ void graph_save_to_file(graph_t *G, char *filename){
     khint_t pos = 0;
     array_int *array = graph_serialize(G, G->n_vertex, &pos);
     FILE *fp = fopen(filename, "w");
+    if (fp == NULL){
+       printf("Error! opening file");   // Program exits if the file pointer returns NULL.
+       exit(1);
+   }
     fwrite(array_int_get_ptr(array), sizeof(int), array_int_get(array,0)+1, fp);
     fclose(fp);
     array_int_free(array);
@@ -307,6 +311,10 @@ void graph_save_to_file(graph_t *G, char *filename){
 
 graph_t *graph_load_from_file(char *filename){
     FILE *fp = fopen(filename, "r");
+    if (fp == NULL){
+       printf("Error! opening file");   // Program exits if the file pointer returns NULL.
+       exit(1);
+   }
     int n;
     fread(&n, sizeof(int), 1, fp);
     array_int *array = array_int_init(n+1);
