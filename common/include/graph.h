@@ -30,6 +30,7 @@ void graph_free(graph_t *);
 void graph_merge(graph_t *to, graph_t *from, double p); //give a graph to and a graph from and merge both, return graph is in graph to
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
+graph_t * graph_copy(graph_t * from);
 
 // #define graph_tarjan_foreach_helper(G, node, disc, low, stack, stackMember,time, result, scc, code){                                \
 //     khint_t k, j;                                                                                                                   \

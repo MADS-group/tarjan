@@ -488,6 +488,31 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     return graph;
 }
 
+graph_t * graph_copy(graph_t * from){
+    int i=0;
+    int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
+    int key=0;
+    int value=0;
+    khint_t k;
+    khash_t(m32) *adj_list;
+
+    graph_t * to;
+    to= graph_init(to);
+
+    for(i=0; i<initial_number_of_vertex_graph_from; i++){
+        graph_insert_vertex(to, i);             //copio tutti i vertici
+        
+        k = kh_get(mm32, from->adj, i);
+        adj_list = kh_value(from->adj, k);     //trovo adiacent list associata al vertice i del grafo from
+        
+        kh_foreach(adj_list, key, value, {
+            graph_insert_vertex(to, key);
+            graph_insert_edge(to, i, key);
+        });
+    }
+    return to;
+}
+
 void graph_print_debug(graph_t *G){
     int key;
     khash_t(m32) *value;
