@@ -5,13 +5,13 @@
 #include <string.h>
 #include <assert.h>
 
-struct array_int {
+/*struct array_int {
     int *items; // puntatore agli elementi dell'array
     int length;   // lunghezza array    
     int size;     // dimensione allocata (>= length)
     int C_EXP;   // costante di espansione
     int C_RED;   // costante di riduzione
-};
+};*/
 
 array_int *array_int_init(int length) {
     array_int *a;
@@ -105,6 +105,12 @@ int array_int_get_min(array_int *a){
     for (int i = 0; i < a->length; ++i)
         min = a->items[i] < min ? a->items[i] : min;
     return min;
+}
+
+void array_int_clear(array_int *a){
+    while(a->length > 0){
+        array_int_pop(a);
+    }
 }
 
 //TODO: Aggiungere implementazione array_ptr
