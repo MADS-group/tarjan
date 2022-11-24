@@ -30,11 +30,12 @@ void graph_free(graph_t *);
 void graph_merge(graph_t *to, graph_t *from, double p); //give a graph to and a graph from and merge both, return graph is in graph to
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
+graph_t * graph_copy(graph_t * from);
 
 
-#define graph_tarjan_foreach(G, code){  \
-    graph_tarjan(G);                    \
-    code                                \
+#define graph_tarjan_foreach(G, scc, code){     \
+    graph_tarjan(G);                            \
+    code                                        \
 }
 
 typedef struct scc_set_t scc_set_t;
