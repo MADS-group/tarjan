@@ -6,13 +6,26 @@
 #include "args.h"
 
 int main(int argc, char* argv[]){
-    graph_t * t, *c;
-    t=graph_random(10, 2, 1);
-    printf("\n\nseed generato:\n");
-    graph_print_debug(t);
-    graph_save_to_file(t, "./../../data/seed.bin");
-    c=graph_load_from_file("./../../data/seed.bin");
-    printf("\n\n seed letto c:\n");
-    graph_print_debug(c);
+
+    if(argc == 2){
+        char path[200];
+    
+        sscanf(argv[1],"%s",path);
+
+        graph_t * t, *c;
+        t=graph_random(10, 2, 1);
+        printf("seed generato t:\n");
+        graph_print_debug(t);
+        graph_save_to_file(t, path);
+        c=graph_load_from_file(path);
+        printf("seed letto c:\n");
+        graph_print_debug(c);
+    }else{
+        printf("inserire come parametro path file contente il grafo di uscita \n");
+        return 1;
+
+    }
+    
 }
+//"./../../data/seed.bin"
 ///leggo seed da file e genero 
