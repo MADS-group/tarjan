@@ -16,6 +16,7 @@ struct array_int {
 array_int *array_int_init(int length) {
     array_int *a;
     a = malloc(sizeof(array_int));
+    assert(a!=NULL);
     a->C_EXP=2;
     a->C_RED=3;
     int size = length * a->C_EXP;
