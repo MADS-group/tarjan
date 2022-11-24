@@ -5,13 +5,13 @@
 #include <string.h>
 #include <assert.h>
 
-struct array_int {
+/*struct array_int {
     int *items; // puntatore agli elementi dell'array
     int length;   // lunghezza array    
     int size;     // dimensione allocata (>= length)
     int C_EXP;   // costante di espansione
     int C_RED;   // costante di riduzione
-};
+};*/
 
 array_int *array_int_init(int length) {
     array_int *a;

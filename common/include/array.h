@@ -1,6 +1,12 @@
 #ifndef ARRAY_H
 #define ARRAY_H
-
+struct array_int {
+    int *items; // puntatore agli elementi dell'array
+    int length;   // lunghezza array    
+    int size;     // dimensione allocata (>= length)
+    int C_EXP;   // costante di espansione
+    int C_RED;   // costante di riduzione
+};
 typedef struct array_int array_int;
 
 array_int *array_int_init(int length); // Array initialization
