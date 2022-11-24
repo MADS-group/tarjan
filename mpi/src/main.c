@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "graph.h"
 #include <mpi.h>
+#include <assert.h>
 
 typedef enum {
     MPI_TAG_DATA = 500, //0
@@ -25,14 +26,33 @@ int main(int argc,char* argv[]){
     //Convenzioni: il processo con rank 0 è il nodo master
     //i processi con rank diverso da 0 sono nodi slave
     if(rank == 0){
-        printf("Sono il master %d\n",rank);
+        printf("[MASTER] Master rank is %d\n",rank);
         master_work(rank,size);
-        
+        /*int a, received = 0;
+        MPI_Request request;
+        MPI_Status status;
+        MPI_Irecv(&a,1,MPI_INT, 1, 0, MPI_COMM_WORLD, &request);
+        while(!received)
+            MPI_Test(&request, &received, &status);*/
     }
 
     if(rank != 0){
         //codice degli slave
-        printf("Sono lo slave %d\n",rank);
+        printf("[SLAVE] Slave rank is %d\n",rank);
+        /*int b = 5;
+        int buffer[50];
+        MPI_Request request;
+        MPI_Status status;*/
+        /*MPI_Buffer_attach(&buffer,50 * sizeof(int));
+        MPI_Bsend(&b, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        printf("[SLAVE] Sent %d to the buffer\n", b);
+        for(int i=0;i<100; i++){
+            printf("%d ",i);
+            MPI_Bsend(&b, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        }*/
+        //MPI_Isend(&b, 1, MPI_INT, 0, 0, MPI_COMM_WORLD,&request);
+        //MPI_Wait(&request,&status);
+        //printf("Sent\n");
         slave_work();
     }
 
@@ -51,7 +71,7 @@ void master_work(int rank,int size){
     khint_t pos = 0;
     int v_graph;
     int n_slaves = size-1;
-    char filename[] = "../data/prova.bin"; //TODO: Da prendere in input
+    char filename[] = "../data/seed.bin";//"../data/prova.bin"; //TODO: Da prendere in input
     int verteces_per_slave;
     int remainder_of_the_division;
     array_int* array;
@@ -66,23 +86,23 @@ void master_work(int rank,int size){
     int flag_size = 0,flag_service = 0;
 
     graph = graph_load_from_file(filename);
-    if(graph == NULL){
-        printf("Path non trovato");
-    }else{
-        graph_print_debug(graph);
-    }
+    assert(graph != NULL);
     v_graph = graph_get_num_vertex(graph);
     remainder_of_the_division = v_graph % n_slaves;
     verteces_per_slave = v_graph/n_slaves;
     
     
     for(int i = 0; i<n_slaves; i++){
-
         array = graph_serialize(graph, i==0 ? verteces_per_slave + remainder_of_the_division:verteces_per_slave , &pos); //Serializes at most n nodes of the graph starting from the specified bucket. Array contains [n_vertex id_1 adj_1 -1 id_2 adj2 -1] etc...
         //comunicazione dell'array agli slave
         msg_size = array_int_length(array);
-        MPI_Send(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD);
-        MPI_Send(array_int_get_ptr(array),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD);
+        printf("[MASTER] Sending size %d to rank %d\n",msg_size,i+1);
+        MPI_Isend(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,&status);
+        printf("[MASTER] Sending data to rank %d: ",i+1);
+        array_int_print(array);
+        MPI_Isend(array_int_get_ptr(array),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,&status);
     }
     
     while(still_working > 0){
@@ -92,7 +112,8 @@ void master_work(int rank,int size){
         //Ricevo un messaggio su un certo tag e devo decidere se gestire gli scc oppure 
         //se il processo slave ha terminato la sua esecuzione, devo decrementare still_working.
         //Da fare busy waiting su queste due receive
-        MPI_Recv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+        MPI_Irecv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,);
+
         //if()
         if(flag_size){
             printf("[MASTER] I received a size: %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
