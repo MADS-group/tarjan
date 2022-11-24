@@ -32,9 +32,9 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
 
 
-#define graph_tarjan_foreach(G, code){  \
-    graph_tarjan(G);                    \
-    code                                \
+#define graph_tarjan_foreach(G, scc, code){     \
+    graph_tarjan(G);                            \
+    code                                        \
 }
 
 typedef struct scc_set_t scc_set_t;
