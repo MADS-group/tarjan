@@ -433,7 +433,6 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
             graph_insert_vertex(to, key+initial_number_of_vertex_graph_to);
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, key+initial_number_of_vertex_graph_to);
         });
-        printf("%d rand_bernoulli: %d\n", i,rand_bernoulli(p));
         if(rand_bernoulli(p)){
             opposite= rand() % initial_number_of_vertex_graph_to;
             graph_insert_edge(to, i+initial_number_of_vertex_graph_to, opposite);

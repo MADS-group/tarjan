@@ -1,3 +1,0 @@
-/* 
- * Random graph generator utility.
- */
