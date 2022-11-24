@@ -346,7 +346,7 @@ int main(int argc, char* argv[]){
     test_tarjan_withoutEdge();
     test_tarjan_vertxAllConnect();
     test_merge_vertices();
-    test_graph_tarjan_foreach();
+    //test_graph_tarjan_foreach();
     test_graph_save_to_and_load_from_file();
     //test_print_debug();
     printf("All tests passed successfully\n");
