@@ -337,50 +337,17 @@ void test_graph_save_to_and_load_from_file(){
 
 // }
 
-void f(array_int *scc){
-    array_int_print(scc);
-}
-
-void test_tarjan_foreach(){
-    graph_t *graph = graph_init();
-    for(int i = 0; i <= 10; i++)
-        graph_insert_vertex(graph,i);
-    
-    graph_insert_edge(graph, 0, 1);
-    graph_insert_edge(graph, 0, 3);
-    graph_insert_edge(graph, 1, 2);
-    graph_insert_edge(graph, 1, 4);
-    graph_insert_edge(graph, 2, 0);
-    graph_insert_edge(graph, 2, 6);
-    graph_insert_edge(graph, 3, 2);
-    graph_insert_edge(graph, 4, 5);
-    graph_insert_edge(graph, 4, 6);
-    graph_insert_edge(graph, 5, 6);
-    graph_insert_edge(graph, 5, 7);
-    graph_insert_edge(graph, 5, 8);
-    graph_insert_edge(graph, 5, 9);
-    graph_insert_edge(graph, 6, 4);
-    graph_insert_edge(graph, 7, 9);
-    graph_insert_edge(graph, 8, 9);
-    graph_insert_edge(graph, 9, 8);
-
-    graph_tarjan_foreach(graph, f);
-
-    graph_free(graph);
-}
-
-
 int main(int argc, char* argv[]){
-    //test_init_destroy();
-    //test_serialize();
-    //test_deserialize();
-    //test_tarjan();
-    //test_tarjan2();
-    //test_tarjan_withoutEdge();
-    //test_tarjan_vertxAllConnect();
-    //test_merge_vertices();
-    test_tarjan_foreach();
-    //test_graph_save_to_and_load_from_file();
+    test_init_destroy();
+    test_serialize();
+    test_deserialize();
+    test_tarjan();
+    test_tarjan2();
+    test_tarjan_withoutEdge();
+    test_tarjan_vertxAllConnect();
+    test_merge_vertices();
+    //test_graph_tarjan_foreach();
+    test_graph_save_to_and_load_from_file();
     //test_print_debug();
     printf("All tests passed successfully\n");
 }
