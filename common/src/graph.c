@@ -414,6 +414,7 @@ graph_t *graph_load_from_file(char *filename){
     fread(&n, sizeof(int), 1, fp);
     array_int *array = array_int_init(n+1);
     array_int_set(array, 0, n); //Fill position 0
+    array_int_resize(array, n+1);
     fread(array_int_get_ptr(array)+1, sizeof(int), n, fp); //Fill from position 1
     graph_t *graph = graph_init();
     graph_deserialize(graph, array);

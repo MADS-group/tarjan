@@ -16,6 +16,7 @@
 array_int *array_int_init(int length) {
     array_int *a;
     a = malloc(sizeof(array_int));
+    assert(a != NULL);
     a->C_EXP=2;
     a->C_RED=3;
     int size = length * a->C_EXP;
@@ -28,6 +29,7 @@ array_int *array_int_init(int length) {
 }
 
 void array_int_free(array_int *a) {
+    assert(a != NULL);
     free(a->items);
     a->items = NULL;
     a->length = a->size = 0;
