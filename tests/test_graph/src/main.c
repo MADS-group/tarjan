@@ -323,19 +323,19 @@ void test_graph_save_to_and_load_from_file(){
     graph_free(graph);
 }
 
-void test_graph_tarjan_foreach(){
-    graph_t *graph = graph_init();
-    for(int i = 0; i <= 100; i++)
-        graph_insert_vertex(graph,i);
-    for(int i = 0; i <= 100; i++){
-        for(int k=0; k<=100; k++)
-            graph_insert_edge(graph, i, k);
-    }
-    graph_tarjan_foreach(graph, {
-        printf("Hello world!");
-    });
+// void test_graph_tarjan_foreach(){
+//     graph_t *graph = graph_init();
+//     for(int i = 0; i <= 100; i++)
+//         graph_insert_vertex(graph,i);
+//     for(int i = 0; i <= 100; i++){
+//         for(int k=0; k<=100; k++)
+//             graph_insert_edge(graph, i, k);
+//     }
+//     graph_tarjan_foreach(graph, {
+//         printf("Hello world!");
+//     });
 
-}
+// }
 
 int main(int argc, char* argv[]){
     test_init_destroy();
