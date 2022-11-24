@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "khash.h"
 
-KHASH_MAP_INIT_INT(m32, int)
+
 int main(int argc, char* argv[]){
     (void) argc;
     (void) argv;

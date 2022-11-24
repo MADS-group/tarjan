@@ -1,11 +1,11 @@
 # Author: Antonio Langella
 
-TARGETS  := common sequential mpi cuda tests
+TARGETS  := common sequential mpi tests tools #cuda 
 BIN_DIR := ./bin
 DATA_DIR := ./data
 
 all: $(TARGETS)
-	@echo Build started
+	@echo Build completed successfully
 
 .PHONY: $(TARGETS)
 $(TARGETS):
