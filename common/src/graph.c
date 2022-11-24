@@ -194,7 +194,7 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
     k = kh_get(m32,low,node);
     j = kh_get(m32,disc,node);
     if (kh_value(low,k) == kh_value(disc,j)){
-        while (linkedlist_int_length(stack) >0 && linkedlist_int_top(stack) != node){
+        while (linkedlist_int_length(stack) > 0 && linkedlist_int_top(stack) != node){
             w = (int) linkedlist_int_pop(stack);
             k = kh_get(m32,stackMember,w);
             kh_value(stackMember, k) = 0; //false
