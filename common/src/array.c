@@ -106,6 +106,12 @@ int array_int_get_min(array_int *a){
     return min;
 }
 
+void array_int_clear(array_int *a){
+    while(a->length > 0){
+        array_int_pop(a);
+    }
+}
+
 //TODO: Aggiungere implementazione array_ptr
 
 struct array_ptr {

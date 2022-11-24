@@ -248,6 +248,101 @@ array_int *graph_tarjan(graph_t *G){
     return result;
 }
 
+void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
+   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void *f(array_int *)){ 
+    khint_t k, j;
+    int adj_node, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
+    // Initialize discovery time and low value
+    ++(*time);
+    k = kh_get(m32,disc,node);
+    kh_value(disc,k) = *time;
+    k = kh_get(m32,low,node);
+    kh_value(low,k) = *time;
+
+    linkedlist_int_push(stack, node);
+    k = kh_get(m32,stackMember,node);
+    kh_value(stackMember,k) = 1; //true
+
+    // Go through all vertices adjacent to this
+    k = kh_get(mm32,G->adj,node);
+    khash_t(m32) *adjacency_list = kh_value(G->adj,k);
+    kh_foreach(adjacency_list, adj_node, _, {
+        k = kh_get(m32,disc,adj_node);
+        //TODO: the above operation should fail when tarjan is executed on subgraphs of a given graph. Add a check.
+        //^This is the point where one could decide to ignore absent vertices or even store them to optimize the algorithm later.
+        if( kh_value(disc,k) == -1 ){
+            graph_tarjan_foreach_helper(G, adj_node, disc, low, stack, stackMember, time, scc, f);
+
+            // Check if the subtree rooted with 'v' has a
+            // connection to one of the ancestors of 'u'
+            // Case 1 (per above discussion on Disc and Low value)
+            k = kh_get(m32,low,node);
+            j = kh_get(m32,low,adj_node);
+            kh_value(low,k) = min(kh_value(low,k),kh_value(low,j));
+        }
+        // Update low value of 'u' only of 'v' is still in stack
+        // (i.e. it's a back edge, not cross edge).
+        // Case 2 (per above discussion on Disc and Low value)
+        else if (kh_value(stackMember,kh_get(m32,stackMember,adj_node)) == 1){
+            k = kh_get(m32,low,node);
+            j = kh_get(m32,disc,adj_node);
+            kh_value(low,k) = min(kh_value(low,k),kh_value(disc,j));
+        }
+    });
+ 
+    // head node found, pop the stack and print an SCC
+    int w = 0; // To store stack extracted vertices
+    k = kh_get(m32,low,node);
+    j = kh_get(m32,disc,node);
+    if (kh_value(low,k) == kh_value(disc,j)){
+        while (linkedlist_int_length(stack) > 0 && linkedlist_int_top(stack) != node){
+            w = (int) linkedlist_int_pop(stack);
+            k = kh_get(m32,stackMember,w);
+            kh_value(stackMember, k) = 0; //false
+            array_int_push(scc, w);
+        }
+        w = (int) linkedlist_int_pop(stack);
+        k = kh_get(m32,stackMember,w);
+        kh_value(stackMember, k) = 0; //false
+        array_int_push(scc, w);
+        //SCC completed
+        f(scc); //callback
+        //Clear the scc
+        array_int_clear(scc);
+    }
+}
+
+void graph_tarjan_foreach(graph_t *G, void *f(array_int *)){
+    khash_t(m32) *disc = kh_init(m32);
+    khash_t(m32) *low = kh_init(m32);
+    khash_t(m32) *stackMember = kh_init(m32);
+    linkedlist_int *stack = linkedlist_int_init();
+    int time = 0;
+    array_int *scc = array_int_init((G->n_vertex));
+
+    int node,_; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
+    khash_t(m32) *temp; (void) temp; //temp is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
+    khint_t k;
+    kh_foreach(G->adj, node, temp, {
+        k = kh_put(m32,disc,node,&_);
+        kh_value(disc,k) = -1;
+        k = kh_put(m32,low,node,&_);
+        kh_value(low,k) = -1;
+        k = kh_put(m32,stackMember,node,&_);
+        kh_value(stackMember,k) = 0; //false
+    });
+    kh_foreach(G->adj, node, temp, {
+        k = kh_get(m32,disc,node);
+        if(kh_value(disc,k) == -1)
+            graph_tarjan_foreach_helper(G,node, disc, low, stack, stackMember, &time, scc, f);
+    });
+
+    kh_destroy(m32,disc);
+    kh_destroy(m32,low);
+    kh_destroy(m32,stackMember);
+    array_int_free(scc);
+}
+
 array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     array_int *result = array_int_init(G->n_vertex);
     int words = 0, node_a, node_b, _, serialized = 0; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
