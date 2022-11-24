@@ -6,6 +6,16 @@
 #include "args.h"
 
 int main(int argc, char* argv[]){
+    graph_t * t, *c;
+    t=graph_random(10, 2, 1);
+    printf("\n\ngrafo t:\n");
+    graph_print_debug(t);
+    graph_save_to_file(t, "./graph.bin");
+    c=graph_load_from_file("./graph.bin");
+    printf("\n\ngrafo c:\n");
+    graph_print_debug(c);
+
+    /*
     if(argc <= 1){
         graph_t * t, *c;
         t=graph_random(10, 2, 1);
@@ -49,7 +59,7 @@ int main(int argc, char* argv[]){
     }else{
         printf("cosa cazzo hai messo in ingresso cornuto\n");
     }
-    
+    */
 }
 
 ///genero seed e metto su file
