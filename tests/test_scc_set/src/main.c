@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "graph.h"
 
+scc_set_t *SCCs;
+
 void pippo(){
     //    (void) argc;
 //    (void) argv;
@@ -133,9 +135,14 @@ void test_tarjan_scc(){
     scc_set_free(SCCs);
 }
 
+void callback(array_int *scc){
+    scc_set_add(SCCs,array_int_get_min(scc),scc);
+}
+
 void test_scc_foreach(){
-    scc_set_t *SCCs = scc_set_init();
+    SCCs = scc_set_init();
     graph_t *graph = graph_init();
+   // array_int *temp=array_int_init(5);
 
     for(int i = 0; i <= 10; i++)
         graph_insert_vertex(graph,i);
@@ -158,14 +165,10 @@ void test_scc_foreach(){
     graph_insert_edge(graph, 8, 9);
     graph_insert_edge(graph, 9, 8);
 
-    graph_tarjan_foreach();
-
+    graph_tarjan_foreach(graph, &callback);
+    scc_set_print_debug(SCCs);
     graph_free(graph);
     scc_set_free(SCCs);
-}
-
-void callback(array_int *scc){
-
 }
 
 //KHASH_MAP_INIT_INT(m32, int)
@@ -173,6 +176,7 @@ int main(int argc, char* argv[]){
 //    (void) argc;
 //    (void) argv;
     //test_scc_set_add();
-    test_tarjan_scc();
+    //test_tarjan_scc();
+    test_scc_foreach();
     printf("All tests passed successfully\n");
 }

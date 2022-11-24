@@ -4,9 +4,9 @@
 #include <mpi.h>
 
 typedef enum {
-    MPI_TAG_DATA, //0
-    MPI_TAG_SERVICE, //1
-    MPI_TAG_SIZE //2
+    MPI_TAG_DATA = 500, //0
+    MPI_TAG_SERVICE = 501, //1
+    MPI_TAG_SIZE = 502 //2
 } mpi_tag_t;
 //Gli enum sono mappati a 0 e 1. Se questi numero non hanno messaggi speciali per MPI.
 
@@ -45,27 +45,32 @@ void master_work(int rank,int size){
     //codice del master
     MPI_Status status;
     MPI_Request request;
-    MPI_Status status_data;
-    MPI_Status status_service;
-    MPI_Request request_data;
-    MPI_Request request_service;
+    MPI_Status status_data, status_service,status_size;
+    MPI_Request request_data,request_service,request_size;
     graph_t* graph;
     khint_t pos = 0;
     int v_graph;
     int n_slaves = size-1;
-    char filename[6] = "graph"; //TODO: Da prendere in input
+    char filename[] = "../data/prova.bin"; //TODO: Da prendere in input
     int verteces_per_slave;
     int remainder_of_the_division;
     array_int* array;
     
     array_int* scc;
+    scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
+    int scc_id;
     int still_working = n_slaves; //rappresenta il numero di precessi slave che stanno lavorando.
     int msg_size;
     int scc_size;
     int done;
-    int flag_size,flag_service;
+    int flag_size = 0,flag_service = 0;
 
     graph = graph_load_from_file(filename);
+    if(graph == NULL){
+        printf("Path non trovato");
+    }else{
+        graph_print_debug(graph);
+    }
     v_graph = graph_get_num_vertex(graph);
     remainder_of_the_division = v_graph % n_slaves;
     verteces_per_slave = v_graph/n_slaves;
@@ -76,37 +81,41 @@ void master_work(int rank,int size){
         array = graph_serialize(graph, i==0 ? verteces_per_slave + remainder_of_the_division:verteces_per_slave , &pos); //Serializes at most n nodes of the graph starting from the specified bucket. Array contains [n_vertex id_1 adj_1 -1 id_2 adj2 -1] etc...
         //comunicazione dell'array agli slave
         msg_size = array_int_length(array);
-        MPI_Isend(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD,&request);
-        MPI_Wait(&request,&status);
-        MPI_Isend(array_int_get_ptr(array),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD,&request);
+        MPI_Send(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD);
+        MPI_Send(array_int_get_ptr(array),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD);
     }
-
+    
     while(still_working > 0){
         //I messaggi degli slave hanno tre TAG. Il primo tag è per i messaggi di servizio, il secondo è per i dati ed il terzo è per comunicare la size. 
         
         //Devo poter ricevere messaggi asincroni da qualunque nodo slave. I nodi slave mi inviano gli scc.
         //Ricevo un messaggio su un certo tag e devo decidere se gestire gli scc oppure 
         //se il processo slave ha terminato la sua esecuzione, devo decrementare still_working.
-
-        while(!flag_service && !flag_size){ //Se non ci sono stati nuovi messaggi e c'è almeno uno slave ancora in esecuzione
-            //Da fare busy waiting su queste due receive
-            MPI_Irecv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD,&request_data);
-            //Se il secondo test è andato a buon fine -> devo decrementare still_working
-            MPI_Irecv(&done,1,MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SERVICE,MPI_COMM_WORLD,&request_service);
-
-            MPI_Test(&request_data, &flag_size, &status_data);
-            MPI_Test(&request_service, &flag_service, &status_service);
+        //Da fare busy waiting su queste due receive
+        MPI_Recv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+        //if()
+        if(flag_size){
+            printf("[MASTER] I received a size: %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
         }
 
         if(flag_size){ //Ho trovato uno slave che ha finito. Ora devo lavorare sull'scc appena calcolato dallo slave 
-            
             //Devo essere sicuro di prendere l'scc del nodo che ha fatto uscire dal while loop precendente con status_data.MPI_SOURCE.
-            MPI_Irecv(scc,scc_size,MPI_INT,status_data.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&request_data);
+            scc = array_int_init(scc_size);
+            printf("[MASTER] Receiving SCC of size %d \n", scc_size);
+            array_int_resize(scc, scc_size);
+            MPI_Irecv(array_int_get_ptr(scc),scc_size,MPI_INT,status_data.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&request_data);
+            printf("[MASTER] Irevc called\n");
             MPI_Wait(&request_data,&status_data);
-
+            printf("[MASTER] Received a SCC with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
+            printf("[MASTER] printing scc with length %d...\n",scc_size);
+            array_int_print(scc);
             //Devo aggiungere l'scc che ho trovato in una NUOVA struttura dati. Così da poter ricordare quali sono gli scc trovati
-            graph_merge_vertices(graph, 0 /*int dest ???  BOHHHHHHHH ????*/ ,scc);
-
+            scc_id = array_int_get_min(scc);
+            graph_merge_vertices(graph,scc_id,scc);
+            scc_set_add(SCCs,scc_id,scc);
+            scc_set_print_debug(SCCs);
+            graph_print_debug(graph);
+            array_int_free(scc);
         }
         
         if(flag_service){
@@ -118,6 +127,26 @@ void master_work(int rank,int size){
         
 
     }
+    //DEBUG
+    scc_set_print_debug(SCCs);
+    //free
+    scc_set_free(SCCs);
+}
+void callback(array_int * scc){
+    int scc_size = array_int_length(scc);
+    MPI_Status slave_status;
+    MPI_Request slave_request;
+    
+    printf("[SLAVE]: Sending size: %d\n",scc_size);
+    MPI_Isend(&scc_size,1,MPI_INT,0,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_request);
+    MPI_Wait(&slave_request,&slave_status); //Da capire se funziona sulla Isend
+    printf("[SLAVE]: Sent SCC size. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",slave_status.MPI_SOURCE, slave_status.MPI_TAG, slave_status.MPI_ERROR);
+    printf("[SLAVE]: Sending SCC: ");
+    array_int_print(scc);
+    MPI_Isend(array_int_get_ptr(scc),array_int_length(scc),MPI_INT,0,MPI_TAG_DATA,MPI_COMM_WORLD,&slave_request);
+    MPI_Wait(&slave_request,&slave_status); //Da capire se funziona sulla Isend
+    printf("[SLAVE]: Sent SCC. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",slave_status.MPI_SOURCE, slave_status.MPI_TAG, slave_status.MPI_ERROR);
+
 }
 
 void slave_work(){
@@ -128,25 +157,35 @@ void slave_work(){
     int master = 0;
     int done = 1;
     array_int *buff;
+    //int* array;
     MPI_Request slave_request;
     MPI_Status slave_status;
     //Aspetto di ricevere l'array da deserialize
     MPI_Irecv(&msg_size,1,MPI_INT,0,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_request);
     MPI_Wait(&slave_request,&slave_status);
-    MPI_Irecv(buff,msg_size,MPI_INT,0, MPI_TAG_DATA,MPI_COMM_WORLD,&slave_request);
+    
+    printf("\n[slave] msg_size: %d\n",msg_size);
+    
+    buff = array_int_init(msg_size);
+    array_int_resize(buff, msg_size);
+    MPI_Irecv(array_int_get_ptr(buff),msg_size,MPI_INT,0, MPI_TAG_DATA,MPI_COMM_WORLD,&slave_request);
     MPI_Wait(&slave_request,&slave_status);
+    printf("[Slave] array =\n");
+    array_int_print(buff);
     //deserializzo il grafo inviato dal master
     graph_deserialize(subgraph, buff);
+    array_int_free(buff);
     //Compute scc for the given subgraph
-    array_scc = graph_tarjan(subgraph);
+    
+    //array_scc = graph_tarjan(subgraph);
+    //printf("Slave: printing scc\n");
+    //array_int_print(array_scc);
+    //printf("\n");
+    //buff = array_int_init(graph_get_num_vertex(subgraph));
 
     //Invio array_scc al master
-    scc_size = array_int_length(array_scc);
-    MPI_Isend(scc_size,1,MPI_INT,master,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_request);
-    MPI_Wait(&slave_request,&slave_status); //Da capire se funziona sulla Isend
-    
-    MPI_Isend(array_scc,array_int_length(array_scc),MPI_INT,master,MPI_TAG_DATA,MPI_COMM_WORLD,&slave_request);
-    MPI_Wait(&slave_request,&slave_status); //Da capire se funziona sulla Isend
+    graph_tarjan_foreach(subgraph,&callback);
+
     //Comunico al master che il nodo slave ha terminato
     MPI_Isend(&done,1,MPI_INT,master,MPI_TAG_SERVICE,MPI_COMM_WORLD,&slave_request);
 }
