@@ -33,10 +33,6 @@ void graph_print_debug(graph_t *G);
 graph_t * graph_copy(graph_t * from);
 
 
-#define graph_tarjan_foreach(G, scc, code){     \
-    graph_tarjan(G);                            \
-    code                                        \
-}
 
 typedef struct scc_set_t scc_set_t;
 scc_set_t *scc_set_init();
