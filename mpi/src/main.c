@@ -33,7 +33,7 @@ int main(int argc,char* argv[]){
     if(rank != 0){
         //codice degli slave
         printf("Sono lo slave %d\n",rank);
-        slave_work();
+        slave_work(rank);
     }
 
     MPI_Finalize();
@@ -89,7 +89,7 @@ void master_work(int rank,int size){
     
     while(still_working > 0){
         //I messaggi degli slave hanno tre TAG. Il primo tag è per i messaggi di servizio, il secondo è per i dati ed il terzo è per comunicare la size. 
-        
+        flag_size = 0;
         //Devo poter ricevere messaggi asincroni da qualunque nodo slave. I nodi slave mi inviano gli scc.
         //Ricevo un messaggio su un certo tag e devo decidere se gestire gli scc oppure 
         //se il processo slave ha terminato la sua esecuzione, devo decrementare still_working.
@@ -97,18 +97,22 @@ void master_work(int rank,int size){
         //Da fare busy waiting su queste due receive
         
         MPI_Irecv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD,&request_data);
-            //Se il secondo test è andato a buon fine -> devo decrementare still_working
-        MPI_Irecv(&done,1,MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SERVICE,MPI_COMM_WORLD,&request_service);
+        //Se il secondo test è andato a buon fine -> devo decrementare still_working
+        //MPI_Irecv(&done,1,MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SERVICE,MPI_COMM_WORLD,&request_service);
 
-        while(!flag_service && !flag_size){ //Se non ci sono stati nuovi messaggi e c'è almeno uno slave ancora in esecuzione
+        while(!flag_size){ //Se non ci sono stati nuovi messaggi e c'è almeno uno slave ancora in esecuzione
             MPI_Test(&request_data, &flag_size, &status_data);
-            MPI_Test(&request_service, &flag_service, &status_service);
+            //MPI_Test(&request_service, &flag_service, &status_service);
         }
         //if()
         if(flag_size){
             printf("[MASTER] I received a size: %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
         }
-
+        if(scc_size == 0){
+            printf("[MASTER] Recieved a 0-size message\n");
+            still_working -=1;
+            continue;
+        }
         if(flag_size){ //Ho trovato uno slave che ha finito. Ora devo lavorare sull'scc appena calcolato dallo slave 
             //Devo essere sicuro di prendere l'scc del nodo che ha fatto uscire dal while loop precendente con status_data.MPI_SOURCE.
             scc = array_int_init(scc_size);
@@ -129,9 +133,7 @@ void master_work(int rank,int size){
             array_int_free(scc);
         }
         
-        if(flag_service){
-            still_working -=1;
-        }
+        
         
 
         
@@ -151,7 +153,7 @@ void callback(array_int * scc){
     printf("[SLAVE]: Sending size: %d\n",scc_size);
     MPI_Isend(&scc_size,1,MPI_INT,0,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_request);
     MPI_Wait(&slave_request,&slave_status); //Da capire se funziona sulla Isend
-    printf("[SLAVE]: Sent SCC size. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",slave_status.MPI_SOURCE, slave_status.MPI_TAG, slave_status.MPI_ERROR);
+    printf("[SLAVE]: Sent SCC size with size %d. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",scc_size,slave_status.MPI_SOURCE, slave_status.MPI_TAG, slave_status.MPI_ERROR);
     printf("[SLAVE]: Sending SCC: ");
     array_int_print(scc);
     MPI_Isend(array_int_get_ptr(scc),array_int_length(scc),MPI_INT,0,MPI_TAG_DATA,MPI_COMM_WORLD,&slave_request);
@@ -160,7 +162,7 @@ void callback(array_int * scc){
 
 }
 
-void slave_work(){
+void slave_work(int rank){
     graph_t* subgraph = graph_init();
     array_int* array_scc; 
     int msg_size;
@@ -197,6 +199,8 @@ void slave_work(){
     //Invio array_scc al master
     graph_tarjan_foreach(subgraph,&callback);
 
+    scc_size=0;
     //Comunico al master che il nodo slave ha terminato
-    MPI_Isend(&done,1,MPI_INT,master,MPI_TAG_SERVICE,MPI_COMM_WORLD,&slave_request);
+    MPI_Send(&scc_size,1,MPI_INT,master,MPI_TAG_SIZE,MPI_COMM_WORLD);
+    printf("[SLAVE] %d ended", rank);
 }
