@@ -4,9 +4,10 @@
 #include <mpi.h>
 
 #define MASTER 0
+
 typedef enum {
     MPI_TAG_DATA = 0, //0
-    MPI_TAG_SIZE = 1 //2
+    MPI_TAG_SIZE = 1 //1
 } mpi_tag_t;
 //Gli enum sono mappati a 0 e 1. Se questi numero non hanno messaggi speciali per MPI.
 
@@ -24,7 +25,8 @@ int main(int argc,char* argv[]){
     }
 
     //Convenzioni: il processo con rank 0 è il nodo master
-    //i processi con rank diverso da 0 sono nodi slave
+    //I processi con rank diverso da 0 sono nodi slave
+
     if(rank == 0){
         printf("Sono il master %d\n",rank);
         master_work(rank,size);
@@ -150,8 +152,6 @@ void master_work(int rank,int size){
 
 MPI_Status slave_status_size,slave_status_data;
 MPI_Request slave_request_size,slave_request_data;
-
-
 void callback(array_int * scc){
     int scc_size = array_int_length(scc);
 
