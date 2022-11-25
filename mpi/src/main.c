@@ -97,32 +97,22 @@ void master_work(int rank,int size){
         //Ricevo un messaggio su un certo tag e devo decidere se gestire gli scc oppure 
         //se il processo slave ha terminato la sua esecuzione, devo decrementare still_working.
         //Da fare busy waiting su queste due receive
-        //Da fare busy waiting su queste due receive
-        flag_size = 0;
-        MPI_Irecv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD,&request_size);
-        //Se il secondo test è andato a buon fine -> devo decrementare still_working
         
-        while(!flag_size){ //Se non ci sono stati nuovi messaggi e c'è almeno uno slave ancora in esecuzione
-            MPI_Test(&request_size, &flag_size, &status_size);
-        }
-        /*
-        if(flag_size){
-            printf("[MASTER] I received a size: %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
-        }
-        */
+        flag_size = 0;
+        MPI_Recv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD,&status_size);
+        printf("[MASTER] Receiving SCC of size %d from (status)SOURCE: %d, TAG:%d, ERROR:%d\n", scc_size,status_size.MPI_SOURCE, status_size.MPI_TAG,status_size.MPI_ERROR);
+        
         if(scc_size == 0){
             printf("[MASTER] Recieved a 0-size message\n");
             still_working -=1;
             continue;
         }
-        if(flag_size){ //Ho trovato uno slave che ha finito. Ora devo lavorare sull'scc appena calcolato dallo slave 
+
+        if(scc_size != 0){ //Ho trovato uno slave che ha finito. Ora devo lavorare sull'scc appena calcolato dallo slave 
             //Devo essere sicuro di prendere l'scc del nodo che ha fatto uscire dal while loop precendente con status_data.MPI_SOURCE.
             scc = array_int_init(scc_size);
-            printf("[MASTER] Receiving SCC of size %d \n", scc_size);
             array_int_resize(scc, scc_size);
-            MPI_Irecv(array_int_get_ptr(scc),scc_size,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&request_data);
-            printf("[MASTER] Irevc called\n");
-            MPI_Wait(&request_data,&status_data);
+            MPI_Recv(array_int_get_ptr(scc),scc_size,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&status_data);
             printf("[MASTER] Received a SCC with lenght %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
             
             array_int_print(scc);
