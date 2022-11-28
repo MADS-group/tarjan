@@ -19,6 +19,7 @@ int main(int argc, char* argv[]){
         case INPUT_TYPE_FILE:
             printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
             graph = graph_load_from_file(c.name);
+            graph_print_debug(graph);
             result = (graph_tarjan(graph));
             array_int_print(result);
             graph_free(graph);

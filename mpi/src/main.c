@@ -48,8 +48,9 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
         }
         //comunicazione dell'array agli slave
         MPI_Send(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD);
-        printf("[Master] Sending array with size: %d, ",msg_size);
-        array_int_print(serialized_graph_chunk);      
+        printf("[MASTER] Sending array with size %d: ",msg_size);
+        array_int_print(serialized_graph_chunk);
+        printf("\n");
         MPI_Send(array_int_get_ptr(serialized_graph_chunk),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD);
 
     }
@@ -124,7 +125,7 @@ void master_work(int rank,int size){
     graph_t* graph;
     int v_graph;
     scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
-    char filename[] = "../data/prova.bin"; //TODO: Da prendere in input #define FILENAME "../data/prova.bin"
+    char filename[] = "../data/seed.bin"; //TODO: Da prendere in input #define FILENAME "../data/prova.bin"
 
     graph = graph_load_from_file(filename);
     
