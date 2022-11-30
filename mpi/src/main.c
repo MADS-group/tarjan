@@ -133,15 +133,21 @@ void master_work(int rank,int size){
         printf("Path non trovato");
     }
 
-    //graph_print_debug(graph);
-
-    for(int i = DIM_CHUNK;i<=graph_get_num_vertex(graph);i *=2){
+    graph_print_debug(graph);
+    int i;
+    for(i = DIM_CHUNK; i<=graph_get_num_vertex(graph); i *= 2){
         //debug
         id_ciclo_for++;
         printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
         master_schedule(graph,i,size-1,SCCs);
     }
-
+    if(i>graph_get_num_vertex(graph)){ //Ensure last loop executes on the enterity of the graph
+        i=graph_get_num_vertex(graph);
+        id_ciclo_for++;
+        printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
+        master_schedule(graph,i,size-1,SCCs);
+    }
+    
     //DEBUG
     scc_set_print_debug(SCCs);
     //free
