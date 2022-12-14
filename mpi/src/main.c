@@ -17,6 +17,7 @@ typedef enum {
 
 void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
     //codice del master
+    
     MPI_Status status_send_size,status_send_data;
     
     MPI_Status status_data,status_size;
