@@ -12,7 +12,6 @@
                 graph is from shared memory the second paramenters is ID of shared memory
  */
 
-//gdfsrgdsf
 int main(int argc, char* argv[]){
     main_parameters_t c;
     c= get_input(argc, argv);
