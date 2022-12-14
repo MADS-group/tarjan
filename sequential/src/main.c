@@ -5,6 +5,13 @@
 #include "array.h"
 #include "args.h"
 
+/*! @function
+  @abstract      call sequential tarjan on graph from file or from shared memory
+  @param  argc   number of parameter, considering the 1st is name of program
+  @param  argv   in case of graph from file the second parameters is the path of grapf file, in case
+                graph is from shared memory the second paramenters is ID of shared memory
+ */
+//vdsdfv
 int main(int argc, char* argv[]){
     main_parameters_t c;
     c= get_input(argc, argv);

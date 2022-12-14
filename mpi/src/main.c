@@ -121,7 +121,6 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 }
 
 
-
 void master_work(int rank,int size){
     graph_t* graph;
     int v_graph;
@@ -142,7 +141,7 @@ void master_work(int rank,int size){
         printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
         master_schedule(graph,i,size-1,SCCs);
     }
-    if(i>graph_get_num_vertex(graph)){ //Ensure last loop executes on the enterity of the graph
+    if(i>graph_get_num_vertex(graph)){ //Ensure last loop executes on the enterity of the graph.
         i=graph_get_num_vertex(graph);
         id_ciclo_for++;
         printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
