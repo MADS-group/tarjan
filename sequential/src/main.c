@@ -9,7 +9,7 @@
   @abstract      call sequential tarjan on graph from file or from shared memory
   @param  argc   number of parameter, considering the 1st is name of program
   @param  argv   in case of graph from file the second parameters is the path of grapf file, in case
-                grapf is from shared memory the second paramenters is ID of shared memory
+                graph is from shared memory the second paramenters is ID of shared memory
  */
 
 int main(int argc, char* argv[]){
