@@ -120,7 +120,6 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 }
 
 
-
 void master_work(int rank,int size){
     graph_t* graph;
     int v_graph;
