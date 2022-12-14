@@ -120,16 +120,16 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 }
 
 
-void master_work(int rank,int size){
+void master_work(int rank,int size,char* filename){
     graph_t* graph;
     int v_graph;
     scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
-    char filename[] = "../data/seed.bin"; //TODO: Da prendere in input #define FILENAME "../data/prova.bin"
 
     graph = graph_load_from_file(filename);
     
     if(graph == NULL){ //inutile il check sta già in graph_load_from_file
         printf("Path non trovato");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 
     graph_print_debug(graph);
@@ -229,6 +229,11 @@ int main(int argc,char* argv[]){
     MPI_Comm_size(MPI_COMM_WORLD,&size);
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     
+    char path[100];
+    
+    sscanf(argv[1],"%s",path);
+    
+
     if(size <= 1){
         //Se il numero di processi è 1 allora non posso eseguire il programma in maniera parallela
         printf("This application is meant to be run with at least 2 processes.\n");
@@ -240,10 +245,10 @@ int main(int argc,char* argv[]){
 
     if(rank == 0){
         printf("Sono il master %d\n",rank);
-        master_work(rank,size);
+        master_work(rank,size,path);
 
         printf("\nFINITO DI FARE TUTTO.\n");
-        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+        MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
     }
 
     if(rank != 0){
