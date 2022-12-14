@@ -76,7 +76,6 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
             msg_size = array_int_length(serialized_graph_chunk);
             //printf("[MASTER] if. scc_size: %d, finished: %d, n_serialized: %d\n",scc_size,finished,array_int_get(serialized_graph_chunk, 1));
             if(array_int_get(serialized_graph_chunk, 1) == 0){ //Se la msg_size è 0 vuol dire che non ho più chunk da asseganare agli slave perché la struttura dati ha esaurito vertici
-                //printf("[MASTER] Finished!!!\n");
                 finished = 1;
                 still_working--;
             }else{ 
