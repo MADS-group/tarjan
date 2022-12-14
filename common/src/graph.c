@@ -525,7 +525,6 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
     khint_t k;
     khash_t(m32) *adj_list;
 
-    srand ( time(NULL) );
 
     for(i=0; i<initial_number_of_vertex_graph_from; i++){
         k = kh_get(mm32, from->adj, i);
@@ -565,7 +564,6 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
 
     graph= graph_init();
 
-    srand ( time(NULL) );
 
     for(i=0; i<max_n_node; i++){
         graph_insert_vertex(graph, i);

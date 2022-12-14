@@ -6,7 +6,8 @@
 #include "args.h"
 
 int main(int argc, char* argv[]){
-
+    srand(42);
+    
     if(argc == 2){
         char path[200];
     
