@@ -337,6 +337,8 @@ void test_graph_save_to_and_load_from_file(){
 
 // }
 
+// Pippooooo
+
 int main(int argc, char* argv[]){
     test_init_destroy();
     test_serialize();
