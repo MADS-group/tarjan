@@ -129,8 +129,8 @@ void master_work(int rank,int size,char* filename){
     graph = graph_load_from_file(filename);
     
     if(graph == NULL){ //inutile il check sta già in graph_load_from_file
-        printf("Path non trovato");
-        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+        printf("*************\nPath not found. Exiting the program!\n*************\n");
+        return;
     }
 
     graph_print_debug(graph);
@@ -232,6 +232,13 @@ int main(int argc,char* argv[]){
     
     char path[100];
     
+
+    if(argc != 2 ){
+        printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+
     sscanf(argv[1],"%s",path);
     
 
