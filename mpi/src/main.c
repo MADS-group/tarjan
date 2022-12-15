@@ -127,8 +127,8 @@ void master_work(int rank,int size,char* filename){
 
     graph = graph_load_from_file(filename);
     
-    if(graph == NULL){ //inutile il check sta già in graph_load_from_file
-        printf("Path non trovato");
+    if(graph == NULL){
+        printf("[MASTER] Path not found\n");
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 

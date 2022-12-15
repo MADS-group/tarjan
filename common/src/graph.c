@@ -398,7 +398,7 @@ void graph_save_to_file(graph_t *G, char *filename){
     if (fp == NULL){
        printf("Error creating file %s, aborting.\n", filename);   // Program exits if the file pointer returns NULL.
        exit(1);
-   }
+    }
     fwrite(array_int_get_ptr(array), sizeof(int), array_int_get(array,0)+1, fp);
     fclose(fp);
     array_int_free(array);
@@ -408,8 +408,9 @@ graph_t *graph_load_from_file(char *filename){
     FILE *fp = fopen(filename, "r");
     if (fp == NULL){
        printf("Error opening file %s, aborting.\n", filename);   // Program exits if the file pointer returns NULL.
-       exit(1);
-   }
+       //exit(1);
+       return NULL;
+    }
     int n;
     fread(&n, sizeof(int), 1, fp);
     array_int *array = array_int_init(n+1);
@@ -598,7 +599,7 @@ graph_t * graph_copy(graph_t * from){
     khash_t(m32) *adj_list;
 
     graph_t * to;
-    to= graph_init(to);
+    to = graph_init();
 
     for(i=0; i<initial_number_of_vertex_graph_from; i++){
         graph_insert_vertex(to, i);             //copio tutti i vertici
