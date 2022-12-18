@@ -77,8 +77,11 @@ void array_int_set(array_int *a, int pos, int elem) {
 
 // Stampa dell'array
 void array_int_print(array_int *a) {
-    for (int i = 0; i < a->length; ++i)
+    printf("%p ",a);
+    fflush(stdout);
+    for (int i = 0; i < a->length; ++i){
         printf ("%d ", a->items[i]);
+    }
     printf ("\n");
 }
 

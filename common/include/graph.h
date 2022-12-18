@@ -40,5 +40,11 @@ scc_set_t *scc_set_init();
 void scc_set_free(scc_set_t *set);
 void scc_set_add(scc_set_t *scc_set, int scc_id, array_int *nodes);
 void scc_set_print_debug(scc_set_t *S);
+void scc_set_merge(scc_set_t *dest, scc_set_t *src);
+bool scc_set_contains(scc_set_t *b, scc_set_t *a);
+array_int *scc_set_serialize(scc_set_t *S);
+void scc_set_deserialize(scc_set_t *S, array_int *buff);
+void scc_set_save_to_file(scc_set_t *S, char *filename);
+scc_set_t *scc_set_load_from_file(char *filename);
 
 #endif
