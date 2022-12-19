@@ -9,22 +9,16 @@ main_parameters_t get_input (int argc, char *argv[]){
     }
     char first_param[100]; 
     char second_param[100];
-    
+
+
     sscanf(argv[1],"%s",first_param);
+    sscanf(argv[2],"%s",second_param);
+
     
-    if((strcmp(first_param,"-sm")) == 0){
-        if(argc >= 3 ){
-            sscanf(argv[2],"%s",second_param);
-            main.t=INPUT_TYPE_SHMEM;
-            strcpy(main.name,second_param);
-        } else{
-            printf("\nfor select the read graph from shared memory insert id: \n");
-            exit(1);
-        }
-    }else{
-        main.t= INPUT_TYPE_FILE;
-        strcpy(main.name,first_param);
-    }
+    
+    main.t= INPUT_TYPE_FILE;
+    strcpy(main.first_param, first_param);
+    strcpy(main.second_param, second_param);
 
     return main;
 }

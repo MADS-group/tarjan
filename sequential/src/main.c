@@ -15,24 +15,30 @@
 
 scc_set_t *SCCs;
 
+void callback(array_int * scc){
+    int scc_id;
+    scc_id = array_int_get_min(scc);
+    scc_set_add(SCCs,scc_id,scc);
+}
+
 int main(int argc, char* argv[]){
     main_parameters_t c;
     c= get_input(argc, argv);
     graph_t *graph;
-    array_int *result;
+
     int num;
     double time_tarjan = 0.0, time_init = 0.0,time_destroy=0.0;
 
     switch (c.t){
         case INPUT_ERROR:
-            printf("incorrent parameters:\n sequential.out filename -> read graph from file named filename\n sequential.out -sm id -> read graph fromm shared memory with identifier id\n");
+            printf("incorrent parameters:\n sequential.out filename -> read graph from file named filename\n");
             exit(1);
             break;
         case INPUT_TYPE_FILE:
             
             STARTTIME(1);
             //printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
-            graph = graph_load_from_file(c.name);
+            graph = graph_load_from_file(c.first_param);
             SCCs= scc_set_init();
             //printf("start graph\n");
             //graph_print_debug(graph);
@@ -42,12 +48,12 @@ int main(int argc, char* argv[]){
             graph_tarjan_foreach(graph, callback);
             ENDTIME(2,time_tarjan);
             //printf("ssc discovery\n");
-            //array_int_print(result);
-            
+
+            scc_set_save_to_file(SCCs,c.second_param);
+
             num = graph_get_num_vertex(graph);
             STARTTIME(3);
             graph_free(graph);
-            array_int_free(result);
             scc_set_free(SCCs);
             ENDTIME(3,time_destroy);
 
@@ -57,8 +63,3 @@ int main(int argc, char* argv[]){
 
 }
 
-void callback(array_int * scc){
-    int scc_id;
-    scc_id = array_int_get_min(scc);
-    scc_set_add(SCCs,scc_id,scc);
-}
