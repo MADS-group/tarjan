@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "graph.h"
+#include "measurement.h"
 #include <mpi.h>
 
 #define MASTER 0
 #define DIM_CHUNK 2
 
 int id_ciclo_for = 0;
+
+double time_split_graph = 0.0,time_merge_graph = 0.0;
 
 typedef enum {
     MPI_TAG_DATA = 0, //0
@@ -17,9 +20,8 @@ typedef enum {
 
 void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
     //codice del master
-    //Aggiornamento
     MPI_Status status_send_size,status_send_data;
-    
+    double partial_time_split = 0.0, partial_time_merge = 0.0;
     MPI_Status status_data,status_size;
     MPI_Request request_data,request_size;
     
@@ -37,8 +39,10 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 
 
     for(int i = 0; i<n_slaves; i++){
+        STARTTIME(4);
         serialized_graph_chunk = graph_serialize(graph, N , &pos); //Serializes at most n nodes of the graph starting from the specified bucket. Array contains [n_vertex id_1 adj_1 -1 id_2 adj2 -1] etc...
-        
+        ENDTIME(4,partial_time_split);
+        time_split_graph += partial_time_split;
         msg_size = array_int_length(serialized_graph_chunk);
 
         if(array_int_get(serialized_graph_chunk, 1) != 0){ //Se è 0 vuol dire che non ho più chunk da asseganare agli slave perché la struttura dati ha esaurito vertici
@@ -49,9 +53,9 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
         }
         //comunicazione dell'array agli slave
         MPI_Send(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD);
-        printf("[MASTER] Sending array with size %d: ",msg_size);
-        array_int_print(serialized_graph_chunk);
-        printf("\n");
+        //printf("[MASTER] Sending array with size %d: ",msg_size);
+        //array_int_print(serialized_graph_chunk);
+        //printf("\n");
         MPI_Send(array_int_get_ptr(serialized_graph_chunk),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD);
 
     }
@@ -71,8 +75,10 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
         //printf("[MASTER] Receiving SCC of size %d from (status)SOURCE: %d, TAG:%d, ERROR:%d\n", scc_size,status_size.MPI_SOURCE, status_size.MPI_TAG,status_size.MPI_ERROR);
         
         if(scc_size == 0 && !finished){
-            
+            STARTTIME(5);
             serialized_graph_chunk = graph_serialize(graph, N , &pos); //Serializes at most n nodes of the graph starting from the specified bucket. Array contains [n_vertex id_1 adj_1 -1 id_2 adj2 -1] etc...
+            ENDTIME(5,partial_time_split);
+            time_split_graph += partial_time_split;
             msg_size = array_int_length(serialized_graph_chunk);
             //printf("[MASTER] if. scc_size: %d, finished: %d, n_serialized: %d\n",scc_size,finished,array_int_get(serialized_graph_chunk, 1));
             if(array_int_get(serialized_graph_chunk, 1) == 0){ //Se la msg_size è 0 vuol dire che non ho più chunk da asseganare agli slave perché la struttura dati ha esaurito vertici
@@ -94,6 +100,8 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
             array_int_resize(scc, scc_size);
             MPI_Recv(array_int_get_ptr(scc),scc_size,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&status_data);
             
+            STARTTIME(6);
+
             //DEBUG
             //printf("[MASTER] Received a SCC with lenght %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
             //array_int_print(scc);
@@ -112,6 +120,8 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
             //scc_set_print_debug(SCCs);
             //graph_print_debug(graph);
             array_int_free(scc);
+            ENDTIME(6,partial_time_merge);
+            time_merge_graph += partial_time_merge;
         }
     }
 
@@ -123,32 +133,38 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 void master_work(int rank,int size,char* filename,char* outputfilename){
     graph_t* graph;
     int v_graph;
-    scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
+    double time_init,time_mpi_tarjan;
 
+    STARTTIME(1);
+    scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
     graph = graph_load_from_file(filename);
     
     if(graph == NULL){
         printf("[MASTER] Path not found\n");
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
+    ENDTIME(1,time_init);
 
-    graph_print_debug(graph);
+    STARTTIME(2);
+    //graph_print_debug(graph);
     int i;
     for(i = DIM_CHUNK; i<=graph_get_num_vertex(graph); i *= 2){
         //debug
         id_ciclo_for++;
-        printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
+        //printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
         master_schedule(graph,i,size-1,SCCs);
     }
     if(i>graph_get_num_vertex(graph)){ //Ensure last loop executes on the enterity of the graph.
         i=graph_get_num_vertex(graph);
         id_ciclo_for++;
-        printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
+        //printf("[MASTER] id_ciclo_for: %d. Launching the schedule with chunk_size = %d\n",id_ciclo_for,i);
         master_schedule(graph,i,size-1,SCCs);
     }
-    
+    ENDTIME(2,time_mpi_tarjan);
+
+    printf("%f,%f,%f,%f",time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
     //DEBUG
-    scc_set_print_debug(SCCs);
+    //scc_set_print_debug(SCCs);
     scc_set_save_to_file(SCCs,outputfilename);
     //free
     scc_set_free(SCCs);
@@ -216,7 +232,7 @@ void slave_work(int rank){
         scc_size=0;
         //Comunico al master che il nodo slave ha terminato
         MPI_Send(&scc_size,1,MPI_INT,master,MPI_TAG_SIZE,MPI_COMM_WORLD);
-        printf("[SLAVE] rank: %d ended\n", rank);
+        //printf("[SLAVE] rank: %d ended\n", rank);
         graph_free(subgraph);
     }
 }
@@ -252,7 +268,7 @@ int main(int argc,char* argv[]){
     //I processi con rank diverso da 0 sono nodi slave
 
     if(rank == 0){
-        printf("Sono il master %d\n",rank);
+        //printf("Sono il master %d\n",rank);
         master_work(rank,size,path,outputfilename);
 
         printf("\nFINITO DI FARE TUTTO.\n");
@@ -261,7 +277,7 @@ int main(int argc,char* argv[]){
 
     if(rank != 0){
         //codice degli slave
-        printf("Sono lo slave %d\n",rank);
+        //printf("Sono lo slave %d\n",rank);
         slave_work(rank);
     }
 

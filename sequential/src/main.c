@@ -4,6 +4,7 @@
 #include "graph.h"
 #include "array.h"
 #include "args.h"
+#include "measurement.h"
 
 /*! @function
   @abstract      call sequential tarjan on graph from file or from shared memory
@@ -19,6 +20,8 @@ int main(int argc, char* argv[]){
     c= get_input(argc, argv);
     graph_t *graph;
     array_int *result;
+    int num;
+    double time_tarjan = 0.0, time_init = 0.0,time_destroy=0.0;
 
     switch (c.t){
         case INPUT_ERROR:
@@ -26,19 +29,29 @@ int main(int argc, char* argv[]){
             exit(1);
             break;
         case INPUT_TYPE_FILE:
-            printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
+            
+            STARTTIME(1);
+            //printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
             graph = graph_load_from_file(c.name);
-            printf("start graph\n");
-            graph_print_debug(graph);
-            
             SCCs= scc_set_init();
+            //printf("start graph\n");
+            //graph_print_debug(graph);
+            ENDTIME(1,time_init);
+
+            STARTTIME(2);
             graph_tarjan_foreach(graph, callback);
+            ENDTIME(2,time_tarjan);
+            //printf("ssc discovery\n");
+            //array_int_print(result);
             
-            printf("ssc discovery\n");
-            array_int_print(result);
+            num = graph_get_num_vertex(graph);
+            STARTTIME(3);
             graph_free(graph);
             array_int_free(result);
             scc_set_free(SCCs);
+            ENDTIME(3,time_destroy);
+
+            printf("%d;%f;%f;%f",num,time_init,time_destroy,time_tarjan);
             break;
     }
 
