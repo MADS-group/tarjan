@@ -120,7 +120,7 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 }
 
 
-void master_work(int rank,int size,char* filename){
+void master_work(int rank,int size,char* filename,char* outputfilename){
     graph_t* graph;
     int v_graph;
     scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
@@ -149,6 +149,7 @@ void master_work(int rank,int size,char* filename){
     
     //DEBUG
     scc_set_print_debug(SCCs);
+    scc_set_save_to_file(SCCs,outputfilename);
     //free
     scc_set_free(SCCs);
 }
@@ -230,16 +231,16 @@ int main(int argc,char* argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     
     char path[100];
-    
+    char outputfilename[50];
 
-    if(argc != 2 ){
-        printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute.\n");
+    if(argc != 3 ){
+        printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute and the name the output file.\n");
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
 
 
     sscanf(argv[1],"%s",path);
-    
+    sscanf(argv[2],"%s",outputfilename);
 
     if(size <= 1){
         //Se il numero di processi è 1 allora non posso eseguire il programma in maniera parallela
@@ -252,7 +253,7 @@ int main(int argc,char* argv[]){
 
     if(rank == 0){
         printf("Sono il master %d\n",rank);
-        master_work(rank,size,path);
+        master_work(rank,size,path,outputfilename);
 
         printf("\nFINITO DI FARE TUTTO.\n");
         MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
