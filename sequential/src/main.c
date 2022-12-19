@@ -12,6 +12,8 @@
                 graph is from shared memory the second paramenters is ID of shared memory
  */
 
+scc_set_t *SCCs;
+
 int main(int argc, char* argv[]){
     main_parameters_t c;
     c= get_input(argc, argv);
@@ -28,15 +30,22 @@ int main(int argc, char* argv[]){
             graph = graph_load_from_file(c.name);
             printf("start graph\n");
             graph_print_debug(graph);
-            result = (graph_tarjan(graph));
+            
+            SCCs= scc_set_init();
+            graph_tarjan_foreach(graph, callback);
+            
             printf("ssc discovery\n");
             array_int_print(result);
             graph_free(graph);
             array_int_free(result);
-            break;
-        case INPUT_TYPE_SHMEM:
-            printf("id shared:%s, enum INPUT_TYPE_SHMEM\n", c.name);
+            scc_set_free(SCCs);
             break;
     }
 
+}
+
+void callback(array_int * scc){
+    int scc_id;
+    scc_id = array_int_get_min(scc);
+    scc_set_add(SCCs,scc_id,scc);
 }
