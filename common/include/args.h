@@ -6,7 +6,6 @@
 
 typedef enum {
     INPUT_TYPE_FILE,
-    INPUT_TYPE_SHMEM,
     INPUT_ERROR
 } input_t;
 
