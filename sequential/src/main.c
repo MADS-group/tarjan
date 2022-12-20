@@ -49,10 +49,9 @@ int main(int argc, char* argv[]){
             ENDTIME(2,time_tarjan);
             //printf("ssc discovery\n");
 
-            scc_set_save_to_file(SCCs,c.second_param);
-
             num = graph_get_num_vertex(graph);
             STARTTIME(3);
+            scc_set_save_to_file(SCCs,c.second_param);
             graph_free(graph);
             scc_set_free(SCCs);
             ENDTIME(3,time_destroy);
