@@ -13,9 +13,6 @@ int main(int argc, char* argv[]){
         case INPUT_TYPE_FILE:
             printf("file name:%s, enum INPUT_TYPE_FILE\n", c.first_param);
             break;
-        case INPUT_TYPE_SHMEM:
-            printf("id shared:%s, enum INPUT_TYPE_SHMEM\n", c.second_param);
-            break;
     }
 
 }
