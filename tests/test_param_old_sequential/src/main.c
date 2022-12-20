@@ -22,9 +22,6 @@ int main(int argc, char* argv[]){
             result = (graph_tarjan(graph));
             array_int_print(result);
             break;
-        case INPUT_TYPE_SHMEM:
-            printf("id shared:%s, enum INPUT_TYPE_SHMEM\n", c.second_param);
-            break;
     }
 
 }
