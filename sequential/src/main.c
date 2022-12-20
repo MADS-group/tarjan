@@ -5,7 +5,7 @@
 #include "array.h"
 #include "args.h"
 #include "measurement.h"
-
+#include <sys/resource.h>
 /*! @function
   @abstract      call sequential tarjan on graph from file or from shared memory
   @param  argc   number of parameter, considering the 1st is name of program
@@ -23,7 +23,13 @@ void callback(array_int * scc){
 
 int main(int argc, char* argv[]){
     main_parameters_t c;
-    c= get_input(argc, argv);
+    struct rlimit rl;
+    getrlimit(RLIMIT_STACK, &rl);
+    //printf("%d %d\n",rl.rlim_cur,rl.rlim_max);
+    rl.rlim_cur=128000000;
+    setrlimit(RLIMIT_STACK, &rl);
+    //printf("%d %d\n",rl.rlim_cur,rl.rlim_max);
+    c = get_input(argc, argv);
     graph_t *graph;
 
     int num;
@@ -37,7 +43,6 @@ int main(int argc, char* argv[]){
         case INPUT_TYPE_FILE:
             
             STARTTIME(1);
-            //printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
             graph = graph_load_from_file(c.first_param);
             SCCs= scc_set_init();
             //printf("start graph\n");
@@ -47,7 +52,6 @@ int main(int argc, char* argv[]){
             STARTTIME(2);
             graph_tarjan_foreach(graph, callback);
             ENDTIME(2,time_tarjan);
-            //printf("ssc discovery\n");
 
             scc_set_save_to_file(SCCs,c.second_param);
 

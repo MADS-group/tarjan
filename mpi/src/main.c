@@ -3,6 +3,7 @@
 #include "graph.h"
 #include "measurement.h"
 #include <mpi.h>
+#include <sys/resource.h>
 
 #define MASTER 0
 #define DIM_CHUNK 2000
@@ -242,6 +243,10 @@ void slave_work(int rank){
 
 int main(int argc,char* argv[]){
     int rank, size;
+    struct rlimit rl;
+    getrlimit(RLIMIT_STACK, &rl);
+    rl.rlim_cur=128000000;
+    setrlimit(RLIMIT_STACK, &rl);
     MPI_Init(&argc,&argv);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
