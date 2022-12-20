@@ -53,15 +53,14 @@ int main(int argc, char* argv[]){
             graph_tarjan_foreach(graph, callback);
             ENDTIME(2,time_tarjan);
 
-            scc_set_save_to_file(SCCs,c.second_param);
-
             num = graph_get_num_vertex(graph);
             STARTTIME(3);
+            scc_set_save_to_file(SCCs,c.second_param);
             graph_free(graph);
             scc_set_free(SCCs);
             ENDTIME(3,time_destroy);
 
-            printf("%d;%f;%f;%f",num,time_init,time_destroy,time_tarjan);
+            printf("%d,%f,%f,%f;",num,time_init,time_destroy,time_tarjan);
             break;
     }
 
