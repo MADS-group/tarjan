@@ -132,7 +132,7 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 
 void master_work(int rank,int size,char* filename,char* outputfilename){
     graph_t* graph;
-    int v_graph;
+    int v_graph,num_vertex;
     double time_init,time_mpi_tarjan;
 
     STARTTIME(1);
@@ -161,13 +161,14 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
         master_schedule(graph,i,size-1,SCCs);
     }
     ENDTIME(2,time_mpi_tarjan);
-
-    printf("%f,%f,%f,%f",time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
+    num_vertex = graph_get_num_vertex(graph);
+    printf("%d,%f,%f,%f,%f;",num_vertex,time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
     //DEBUG
     //scc_set_print_debug(SCCs);
     scc_set_save_to_file(SCCs,outputfilename);
     //free
     scc_set_free(SCCs);
+    graph_free(graph);
 }
 
 
