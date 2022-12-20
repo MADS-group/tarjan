@@ -5,7 +5,7 @@
 #include <mpi.h>
 
 #define MASTER 0
-#define DIM_CHUNK 2
+#define DIM_CHUNK 2000
 
 int id_ciclo_for = 0;
 

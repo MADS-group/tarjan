@@ -249,7 +249,7 @@ array_int *graph_tarjan(graph_t *G){
 }
 
 void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
-   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void *f(array_int *)){ 
+   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void (*f)(array_int *)){ 
     khint_t k, j;
     int adj_node, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     // Initialize discovery time and low value
@@ -312,7 +312,7 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
     }
 }
 
-void graph_tarjan_foreach(graph_t *G, void *f(array_int *)){
+void graph_tarjan_foreach(graph_t *G, void (*f)(array_int *)){
     khash_t(m32) *disc = kh_init(m32);
     khash_t(m32) *low = kh_init(m32);
     khash_t(m32) *stackMember = kh_init(m32);
