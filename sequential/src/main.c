@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
             scc_set_free(SCCs);
             ENDTIME(3,time_destroy);
 
-            printf("%d,%f,%f,%f;",num,time_init,time_destroy,time_tarjan);
+            printf("%d,%f,%f,%f,",num,time_init,time_destroy,time_tarjan);
             break;
     }
 

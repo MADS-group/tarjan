@@ -163,7 +163,7 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
     }
     ENDTIME(2,time_mpi_tarjan);
     num_vertex = graph_get_num_vertex(graph);
-    printf("%d,%f,%f,%f,%f;",num_vertex,time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
+    printf("%d,%f,%f,%f,%f,",num_vertex,time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
     //DEBUG
     //scc_set_print_debug(SCCs);
     scc_set_save_to_file(SCCs,outputfilename);
@@ -277,7 +277,7 @@ int main(int argc,char* argv[]){
         //printf("Sono il master %d\n",rank);
         master_work(rank,size,path,outputfilename);
 
-        printf("\nFINITO DI FARE TUTTO.\n");
+        //printf("\nFINITO DI FARE TUTTO.\n");
         MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
     }
 
