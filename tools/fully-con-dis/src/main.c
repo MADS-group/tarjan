@@ -21,15 +21,13 @@ int main(int argc, char* argv[]){
         printf("%s , %d, %d\n", output,n_node,isFullyConnected);
         
         t=graph_fully_connected_disconnected(n_node,isFullyConnected);
-        printf("ecmi\n");
-        graph_print_debug(t);
+        //graph_print_debug(t);
         graph_save_to_file(t, output);
         graph_free(t);
         return 0;
     }else{
         printf("inserire come  primo parametro path file contente il grafo di uscita,\nsecondo parametro numero nodi da generare,\nterzo parametro 0 per grafo completamente disconesso, 1 per grafo completamente connesso\n");
         return 1;
-
     }
     
 }

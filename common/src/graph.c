@@ -606,7 +606,7 @@ graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected
             }
         }
     }
-    graph_print_debug(graph);
+    //graph_print_debug(graph);
     return graph;
 }
 
