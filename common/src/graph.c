@@ -590,6 +590,26 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     return graph;
 }
 
+graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected){ 
+    graph_t *graph;
+    int i=0;
+    int j=0;
+
+    graph= graph_init();
+    for(i=0; i<max_n_node; i++){
+        graph_insert_vertex(graph, i);
+    }
+    if(isFullyConnected == 1){
+        for(i=0; i<max_n_node; i++){
+            for(j=0; j<max_n_node; j++){
+                graph_insert_edge(graph, i, j);
+            }
+        }
+    }
+    graph_print_debug(graph);
+    return graph;
+}
+
 graph_t * graph_copy(graph_t * from){
     int i=0;
     int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);

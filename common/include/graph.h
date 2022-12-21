@@ -32,7 +32,7 @@ void graph_merge(graph_t *to, graph_t *from, double p); //give a graph to and a 
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges);
 void graph_print_debug(graph_t *G);
 graph_t * graph_copy(graph_t * from);
-
+graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected);
 
 
 typedef struct scc_set_t scc_set_t;
