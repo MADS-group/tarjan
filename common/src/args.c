@@ -3,7 +3,7 @@
 
 main_parameters_t get_input (int argc, char *argv[]){
     main_parameters_t main;
-    if(argc <= 1){
+    if(argc <= 1 || argc > 2){
         main.t=INPUT_ERROR;
         return main;
     }

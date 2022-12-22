@@ -5,6 +5,7 @@
 
 struct cuda_graph_t {
     int n_vertex;
+    int adj_lists_len;
     int *adj_lists;
     int *adj_list_indexes;
 };
