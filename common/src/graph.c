@@ -306,7 +306,9 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
         kh_value(stackMember, k) = 0; //false
         array_int_push(scc, w);
         //SCC completed
-        f(scc); //callback
+        if( array_int_length(scc) > 1 ){
+            f(scc); //callback
+        }
         //Clear the scc
         array_int_clear(scc);
     }
