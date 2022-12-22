@@ -3,11 +3,11 @@ TIME_STAMP=$(date +%s)
 NMEASURES=5
 
 #ARRAY_RC=( disconnected connected random10000 random50000 random100000 random500000 random1000000 random10000)
-ARRAY_RC=(random-1000 random-50000 random-250000)
+ARRAY_RC=(random-1000 random-50000)
 
-ARRAY_THS=(2 4 8 16)
+ARRAY_THS=(2 4 8)
 #TIMEFORMAT='%3U;%3E;%3S;%P'
-ARRAY_OPT=(0 1 2 3)
+ARRAY_OPT=(0)
 
 trap "exit" INT
 
