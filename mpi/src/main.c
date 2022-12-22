@@ -167,9 +167,18 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
     //DEBUG
     //scc_set_print_debug(SCCs);
     scc_set_save_to_file(SCCs,outputfilename);
+
+    //Stop the slaves
+    int abort_message = 0;
+    //printf("[MASTER] Sending abort messages\n");
+    for(i = 1; i < size; i++){
+      MPI_Send(&abort_message,1,MPI_INT,i,MPI_TAG_SIZE,MPI_COMM_WORLD);
+    }
     //free
     scc_set_free(SCCs);
     graph_free(graph);
+
+
 }
 
 
@@ -206,18 +215,17 @@ void slave_work(int rank){
     while(1){
         //Aspetto di ricevere l'array da deserialize
         MPI_Recv(&msg_size,1,MPI_INT,0,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_status);
-        //MPI_Wait(&slave_request,&slave_status);
-        
-        //DEBUG
+        //printf("[SLAVE] recieved msg_size=%d\n",msg_size);
+        if(msg_size == 0){
+          //printf("[SLAVE] Aborting\n");
+          return;
+        }
         //printf("\n[slave] msg_size: %d\n",msg_size);
         
         buff = array_int_init(msg_size);
         array_int_resize(buff, msg_size);
         subgraph = graph_init();
         MPI_Recv(array_int_get_ptr(buff),msg_size,MPI_INT,0, MPI_TAG_DATA,MPI_COMM_WORLD,&slave_status);
-        
-        //printf("[Slave] array =\n");
-        //array_int_print(buff);
 
         //deserializzo il grafo inviato dal master
         graph_deserialize(subgraph, buff);
@@ -278,7 +286,7 @@ int main(int argc,char* argv[]){
         master_work(rank,size,path,outputfilename);
 
         //printf("\nFINITO DI FARE TUTTO.\n");
-        MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
+        //MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
     }
 
     if(rank != 0){
