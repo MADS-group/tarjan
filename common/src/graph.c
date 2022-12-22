@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include "graph.h"
-#include "stack.h"
 #include "khash.h"
 #include "linkedlist.h"
 #include "random.h"
