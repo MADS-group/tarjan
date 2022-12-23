@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-TARGETS  := common sequential mpi tests tools #cuda 
+TARGETS  := common sequential common_mpi mpi tests tools #cuda 
 BIN_DIR := ./bin
 DATA_DIR := ./data
 t:= a b c
