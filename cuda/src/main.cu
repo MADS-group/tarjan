@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "cuda_graph.h"
-#include "preprocess.cu"
+#include "array.h"
+#include "graph.h"
 
 scc_set_t *SCCs;
 
