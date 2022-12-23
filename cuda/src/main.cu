@@ -14,7 +14,7 @@ int main(int argc, char **argv){
 
     char path_inputfilename[100];
     char output_filename[100];
-
+    int *bitmask;
     if(argc != 3 ){
         printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute and the name the output file.\n");
         exit(1);
@@ -23,14 +23,14 @@ int main(int argc, char **argv){
     sscanf(argv[2],"%s",output_filename);
 
     cuda_graph_t * cuda_graph = cuda_graph_load_from_file(path_inputfilename);
-
     //Eseguire il kernel
 
-
+    
 
     //Lanciare tarjan sequenziale
     //STARTTIME(1);
-    graph_t* graph = cuda_graph_to_graph(cuda_graph, int *);
+    graph_t* graph = cuda_graph_to_graph(cuda_graph, bitmask);
+    cuda_graph_free(cuda_graph);
     SCCs= scc_set_init();
     //printf("start graph\n");
     //graph_print_debug(graph);
@@ -45,9 +45,10 @@ int main(int argc, char **argv){
     scc_set_save_to_file(SCCs,output_filename);
     graph_free(graph);
     scc_set_free(SCCs);
+    
     //ENDTIME(3,time_destroy);
     //printf("%d,%f,%f,%f,",num,time_init,time_destroy,time_tarjan);
 
-    cuda_graph_free(cuda_graph);
+    
     return 0;
 }
