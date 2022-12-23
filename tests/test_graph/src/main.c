@@ -280,8 +280,8 @@ void test_print_debug(){
 
 void test_graph_save_to_and_load_from_file(){
     graph_t *graph = graph_init(), *graph_load;
-    char *test=malloc(sizeof(char)*100);
-    char *s1=malloc(sizeof(char)*100);
+    char *test=(char *)malloc(sizeof(char)*100);
+    char *s1=(char *)malloc(sizeof(char)*100);
     memset(test,0,100);
     memset(s1,0,100);
     for(int i = 0; i <= 10; i++)

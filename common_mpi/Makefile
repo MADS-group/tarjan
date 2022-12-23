@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-CC = mpicc
+CC = mpicxx
 CFLAGS = -W -Wall -g
 
 BIN_DIR := ./bin

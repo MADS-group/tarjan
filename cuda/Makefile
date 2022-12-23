@@ -1,7 +1,7 @@
 # Author: Antonio Langella
 
 CC = nvcc
-CFLAGS = --ptxas-options=-v
+CFLAGS = 
 
 BIN_DIR := ./bin
 SRC_DIR := ./src
