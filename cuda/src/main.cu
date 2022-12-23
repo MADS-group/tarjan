@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "cuda_graph.h"
 #include "preprocess.cu"
+
 scc_set_t *SCCs;
 
 void callback(array_int * scc){

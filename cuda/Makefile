@@ -25,8 +25,8 @@ LIB_SRCS := $(shell find $(COMM_DIR)/src -name '*.cpp' -or -name '*.c')
 LIB_HDRS := $(shell find $(COMM_DIR)/include -name '*.h')
 LIB_OBJS := $(patsubst %.c,$(COMM_DIR)/obj/%.o,$(LIB_SRCS_NAMES))
 
-INCLUDE_STR := $(patsubst %, -I%, $(SCR_DIRS))
-INCLUDE_STR += -I$(COMM_DIR)/include
+#INCLUDE_STR := $(patsubst %, -I%, $(SCR_DIRS))
+INCLUDE_STR := -I$(COMM_DIR)/include
 
 $(TARGET).out: $(OBJS) $(HDRS) $(LIB_OBJS) $(LIB_HDRS) $(LIB_SRCS)
 	@mkdir -p $(BIN_DIR)

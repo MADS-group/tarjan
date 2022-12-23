@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "bitarray.h"
 
-__global__ void MatrixMulKernel(int* adj_lists, int* adj_list_indexes, int n_vertexes, int *bitmask, int *terminate) {
+__global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_vertexes, int *bitmask, int *terminate) {
     int vertex_id = blockDim.x * blockIdx.x + threadIdx.x;
     //If thread is not associated with a vertex or the vertex has already been eliminated then do nothing
     if(vertex_id < n_vertexes || test_bit(bitmask, vertex_id)){ 
