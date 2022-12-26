@@ -13,7 +13,7 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
     }
 
     if(test_bit(bitmask, vertex_id) != 0){ 
-        printf("vertex: %d has already been eliminated\n", vertex_id);
+        //printf("vertex: %d has already been eliminated\n", vertex_id);
         return;
     }
     int adj_list_start = adj_list_indexes[vertex_id];
@@ -32,7 +32,7 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
         //printf("Sto eliminando1\n");
         (*terminate) = false;
         set_bit(bitmask, vertex_id);
-        printf("vertex: %d eliminated1\n", vertex_id);
+        //printf("vertex: %d eliminated1\n", vertex_id);
         return;
     }
 
@@ -48,7 +48,7 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
     }
 
     if(elim == true){
-        printf("vertex: %d eliminated2\n", vertex_id);
+        //printf("vertex: %d eliminated2\n", vertex_id);
         (*terminate) = false;
         set_bit(bitmask, vertex_id);
     }
