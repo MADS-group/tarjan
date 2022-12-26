@@ -17,13 +17,10 @@ int main(int argc, char* argv[]){
             exit(1);
             break;
         case INPUT_TYPE_FILE:
-            printf("file name:%s, enum INPUT_TYPE_FILE\n", c.name);
-            graph = graph_load_from_file(c.name);
+            printf("file name:%s, enum INPUT_TYPE_FILE\n", c.first_param);
+            graph = graph_load_from_file(c.first_param);
             result = (graph_tarjan(graph));
             array_int_print(result);
-            break;
-        case INPUT_TYPE_SHMEM:
-            printf("id shared:%s, enum INPUT_TYPE_SHMEM\n", c.name);
             break;
     }
 

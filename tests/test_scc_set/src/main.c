@@ -171,12 +171,132 @@ void test_scc_foreach(){
     scc_set_free(SCCs);
 }
 
+void test_scc_set_merge(){
+    scc_set_t *SCCs = scc_set_init();
+    scc_set_t *SCCs2 = scc_set_init();
+    array_int *scc = array_int_init(10);
+    
+    array_int_push(scc, 10);
+    array_int_push(scc, 9);
+    array_int_push(scc, 8);
+    array_int_push(scc, 7);
+    array_int_push(scc, 6);
+    array_int_push(scc, 5);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    array_int_free(scc);
+
+    scc = array_int_init(10);
+    array_int_push(scc, 1);
+    array_int_push(scc, 2);
+    array_int_push(scc, 3);
+    array_int_push(scc, 4);
+    array_int_push(scc, 99);
+    array_int_push(scc, 899);
+    array_int_push(scc, 88);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    
+    array_int_free(scc);
+
+    scc = array_int_init(10);
+    array_int_push(scc, 42);
+    array_int_push(scc, 44);
+    array_int_push(scc, 4444);
+    array_int_push(scc, 413);
+    array_int_push(scc, 444);
+    array_int_push(scc, 49);
+    array_int_push(scc, 488);
+    scc_set_add(SCCs2, array_int_get_min(scc), scc);
+    array_int_free(scc);
+    printf("\na:\n");
+    scc_set_print_debug(SCCs);
+    printf("\nb:\n");
+    scc_set_print_debug(SCCs2);
+    printf("\na+b:\n");
+    scc_set_merge(SCCs, SCCs2);
+    scc_set_print_debug(SCCs);
+    printf("%d %d\n",scc_set_contains(SCCs,SCCs2),scc_set_contains(SCCs2,SCCs));
+    fflush(stdout);
+
+    scc_set_free(SCCs);
+    scc_set_free(SCCs2);
+
+    
+}
+
+void test_scc_serialize(){
+    scc_set_t *SCCs = scc_set_init();
+    array_int *scc = array_int_init(10);
+    
+    array_int_push(scc, 10);
+    array_int_push(scc, 9);
+    array_int_push(scc, 8);
+    array_int_push(scc, 7);
+    array_int_push(scc, 6);
+    array_int_push(scc, 5);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    array_int_free(scc);
+
+    scc = array_int_init(10);
+    array_int_push(scc, 1);
+    array_int_push(scc, 2);
+    array_int_push(scc, 3);
+    array_int_push(scc, 4);
+    array_int_push(scc, 99);
+    array_int_push(scc, 899);
+    array_int_push(scc, 88);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    array_int_free(scc);
+
+    array_int *x=scc_set_serialize(SCCs);
+    array_int_print(x);
+    array_int_free(x);
+    scc_set_free(SCCs);
+}
+
+void test_scc_deserialize(){
+    scc_set_t *SCCs = scc_set_init();
+    array_int *scc = array_int_init(10);
+    
+    array_int_push(scc, 10);
+    array_int_push(scc, 9);
+    array_int_push(scc, 8);
+    array_int_push(scc, 7);
+    array_int_push(scc, 6);
+    array_int_push(scc, 5);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    array_int_free(scc);
+
+    scc = array_int_init(10);
+    array_int_push(scc, 1);
+    array_int_push(scc, 2);
+    array_int_push(scc, 3);
+    array_int_push(scc, 4);
+    array_int_push(scc, 99);
+    array_int_push(scc, 899);
+    array_int_push(scc, 88);
+    scc_set_add(SCCs, array_int_get_min(scc), scc);
+    array_int_free(scc);
+
+    array_int *x=scc_set_serialize(SCCs);
+    array_int_print(x);
+
+    scc_set_t *SCCs2 = scc_set_init();
+    scc_set_deserialize(SCCs2, x);
+    scc_set_print_debug(SCCs2);
+    array_int_free(x);
+    scc_set_free(SCCs);
+    scc_set_free(SCCs2);
+}
+
 //KHASH_MAP_INIT_INT(m32, int)
 int main(int argc, char* argv[]){
 //    (void) argc;
 //    (void) argv;
     //test_scc_set_add();
     //test_tarjan_scc();
-    test_scc_foreach();
+    //test_scc_foreach();
+    //test_scc_set_merge();
+    //test_scc_serialize();
+    test_scc_deserialize();
     printf("All tests passed successfully\n");
 }

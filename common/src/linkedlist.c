@@ -16,17 +16,17 @@ struct linkedlist_int{
 
 
 lnode_int_t *nodeCreate(int info) {
-    lnode_int_t *new = malloc (sizeof(lnode_int_t));
-    if(new == NULL){
+    lnode_int_t *new_elem = (lnode_int_t *) malloc (sizeof(lnode_int_t));
+    if(new_elem == NULL){
         printf("Error. Node not allocate\n");
         exit(1);
     }
-    if (new != NULL) {
-        new->info = info;
-        new->nextLink = NULL;
-        new->prevLink = NULL;
+    if (new_elem != NULL) {
+        new_elem->info = info;
+        new_elem->nextLink = NULL;
+        new_elem->prevLink = NULL;
     }
-    return new;
+    return new_elem;
 }
 
 void nodeDestroy(lnode_int_t* n) {
@@ -35,7 +35,7 @@ void nodeDestroy(lnode_int_t* n) {
 
 linkedlist_int *linkedlist_int_init(){
     //linkedlist initialization
-    linkedlist_int* l = malloc(sizeof(linkedlist_int));
+    linkedlist_int* l = (linkedlist_int *) malloc(sizeof(linkedlist_int));
     l->length = 0;
     l->FirstNode = NULL;
     l->LastNode = NULL;
@@ -63,18 +63,18 @@ void linkedlist_int_push(linkedlist_int *a, int elem){
         printf("Error. Invalid LinkedList");
         exit(1);
     }
-    lnode_int_t * new = nodeCreate(elem);
+    lnode_int_t * new_elem = nodeCreate(elem);
     //lnode_int_t* n = a->LastNode;
     if(a->length == 0){
         //Nel caso in cui la linkedlist è vuota
-        a->LastNode = new;
-        a->FirstNode = new;
+        a->LastNode = new_elem;
+        a->FirstNode = new_elem;
     }else{
         //Nel caso in cui la linkedlist NON è vuota
         lnode_int_t* last = a->LastNode;
-        new->prevLink = last;
-        last->nextLink = new;
-        a->LastNode = new;
+        new_elem->prevLink = last;
+        last->nextLink = new_elem;
+        a->LastNode = new_elem;
     }
     a->length +=1;
     return;
@@ -120,9 +120,9 @@ void linkedlist_int_insert(linkedlist_int *a, int elem){
 
     //Se la lista è vuota  
     if(a->length == 0){
-        lnode_int_t *new = nodeCreate(elem); //inizializza a NULL i puntatori del nodo
-        a->FirstNode = new;
-        a->LastNode = new;
+        lnode_int_t *new_elem = nodeCreate(elem); //inizializza a NULL i puntatori del nodo
+        a->FirstNode = new_elem;
+        a->LastNode = new_elem;
         a->length +=1;
         return;
     }
@@ -134,32 +134,32 @@ void linkedlist_int_insert(linkedlist_int *a, int elem){
         isFirstElement = 0;
         if(node->nextLink == NULL){
             //Sono arrivato alla fine della lista
-            lnode_int_t *new = nodeCreate(elem);
-            new->nextLink = NULL;
-            new->prevLink = node;
-            node->nextLink = new;
-            a->LastNode = new;
+            lnode_int_t *new_elem = nodeCreate(elem);
+            new_elem->nextLink = NULL;
+            new_elem->prevLink = node;
+            node->nextLink = new_elem;
+            a->LastNode = new_elem;
             a->length +=1;
             return;
         }
         node = node->nextLink;
     }
     
-    lnode_int_t *new = nodeCreate(elem);
+    lnode_int_t *new_elem = nodeCreate(elem);
     if(isFirstElement == 1){
         //L'inserimento deve avvenire in testa
-        a->FirstNode = new;
-        new->nextLink = node;
-        node->prevLink = new;
+        a->FirstNode = new_elem;
+        new_elem->nextLink = node;
+        node->prevLink = new_elem;
         a->length +=1;
         return;
     }
     //La lista non è vuota e l'inserimento deve avvenire nel mezzo (Non in testa e non in coda) 
     lnode_int_t * prev = node->prevLink;
-    prev->nextLink = new;
-    node->prevLink = new;
-    new->nextLink = node;
-    new->prevLink = prev;
+    prev->nextLink = new_elem;
+    node->prevLink = new_elem;
+    new_elem->nextLink = node;
+    new_elem->prevLink = prev;
     a->length +=1;
     return;
 
@@ -234,17 +234,17 @@ void linkedlist_int_enqueue(linkedlist_int *a, int elem){
         printf("Error. Invalid LinkedList");
         exit(1);
     }
-    lnode_int_t * new = nodeCreate(elem);
+    lnode_int_t * new_elem = nodeCreate(elem);
     if(a->length == 0){
         //Nel caso in cui la linkedlist è vuota
-        a->LastNode = new;
-        a->FirstNode = new;
+        a->LastNode = new_elem;
+        a->FirstNode = new_elem;
     }else{
         //Nel caso in cui la linkedlist NON è vuota
         lnode_int_t* first = a->FirstNode;
-        new->nextLink = first;
-        first->prevLink = new;
-        a->FirstNode = new;
+        new_elem->nextLink = first;
+        first->prevLink = new_elem;
+        a->FirstNode = new_elem;
     }
     a->length +=1;
     return;
@@ -310,17 +310,17 @@ typedef struct linkedlist_ptr linkedlist_ptr;
 
 /*
 lnode_int_t *nodeCreate(int info) {
-    lnode_int_t *new = malloc (sizeof(lnode_int_t));
-    if(new == NULL){
+    lnode_int_t *new_elem = malloc (sizeof(lnode_int_t));
+    if(new_elem == NULL){
         printf("Error. Node not allocate\n");
         exit(1);
     }
-    if (new != NULL) {
-        new->info = info;
-        new->nextLink = NULL;
-        new->prevLink = NULL;
+    if (new_elem != NULL) {
+        new_elem->info = info;
+        new_elem->nextLink = NULL;
+        new_elem->prevLink = NULL;
     }
-    return new;
+    return new_elem;
 }
 
 linkedlist_ptr *linkedlist_ptr_init(){
@@ -398,18 +398,18 @@ void linkedlist_int_push(linkedlist_int *a, int elem){
         printf("Error. Invalid LinkedList");
         exit(1);
     }
-    lnode_int_t * new = nodeCreate(elem);
+    lnode_int_t * new_elem = nodeCreate(elem);
     //lnode_int_t* n = a->LastNode;
     if(a->length == 0){
         //Nel caso in cui la linkedlist è vuota
-        a->LastNode = new;
-        a->FirstNode = new;
+        a->LastNode = new_elem;
+        a->FirstNode = new_elem;
     }else{
         //Nel caso in cui la linkedlist NON è vuota
         lnode_int_t* last = a->LastNode;
-        new->prevLink = last;
-        last->nextLink = new;
-        a->LastNode = new;
+        new_elem->prevLink = last;
+        last->nextLink = new_elem;
+        a->LastNode = new_elem;
     }
     a->length +=1;
     return;
@@ -455,9 +455,9 @@ void linkedlist_int_insert(linkedlist_int *a, int elem){
 
     //Se la lista è vuota  
     if(a->length == 0){
-        lnode_int_t *new = nodeCreate(elem); //inizializza a NULL i puntatori del nodo
-        a->FirstNode = new;
-        a->LastNode = new;
+        lnode_int_t *new_elem = nodeCreate(elem); //inizializza a NULL i puntatori del nodo
+        a->FirstNode = new_elem;
+        a->LastNode = new_elem;
         a->length +=1;
         return;
     }
@@ -469,32 +469,32 @@ void linkedlist_int_insert(linkedlist_int *a, int elem){
         isFirstElement = 0;
         if(node->nextLink == NULL){
             //Sono arrivato alla fine della lista
-            lnode_int_t *new = nodeCreate(elem);
-            new->nextLink = NULL;
-            new->prevLink = node;
-            node->nextLink = new;
-            a->LastNode = new;
+            lnode_int_t *new_elem = nodeCreate(elem);
+            new_elem->nextLink = NULL;
+            new_elem->prevLink = node;
+            node->nextLink = new_elem;
+            a->LastNode = new_elem;
             a->length +=1;
             return;
         }
         node = node->nextLink;
     }
     
-    lnode_int_t *new = nodeCreate(elem);
+    lnode_int_t *new_elem = nodeCreate(elem);
     if(isFirstElement == 1){
         //L'inserimento deve avvenire in testa
-        a->FirstNode = new;
-        new->nextLink = node;
-        node->prevLink = new;
+        a->FirstNode = new_elem;
+        new_elem->nextLink = node;
+        node->prevLink = new_elem;
         a->length +=1;
         return;
     }
     //La lista non è vuota e l'inserimento deve avvenire nel mezzo (Non in testa e non in coda) 
     lnode_int_t * prev = node->prevLink;
-    prev->nextLink = new;
-    node->prevLink = new;
-    new->nextLink = node;
-    new->prevLink = prev;
+    prev->nextLink = new_elem;
+    node->prevLink = new_elem;
+    new_elem->nextLink = node;
+    new_elem->prevLink = prev;
     a->length +=1;
     return;
 
@@ -569,17 +569,17 @@ void linkedlist_int_enqueue(linkedlist_int *a, int elem){
         printf("Error. Invalid LinkedList");
         exit(1);
     }
-    lnode_int_t * new = nodeCreate(elem);
+    lnode_int_t * new_elem = nodeCreate(elem);
     if(a->length == 0){
         //Nel caso in cui la linkedlist è vuota
-        a->LastNode = new;
-        a->FirstNode = new;
+        a->LastNode = new_elem;
+        a->FirstNode = new_elem;
     }else{
         //Nel caso in cui la linkedlist NON è vuota
         lnode_int_t* first = a->FirstNode;
-        new->nextLink = first;
-        first->prevLink = new;
-        a->FirstNode = new;
+        new_elem->nextLink = first;
+        first->prevLink = new_elem;
+        a->FirstNode = new_elem;
     }
     a->length +=1;
     return;

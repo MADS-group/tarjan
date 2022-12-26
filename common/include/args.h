@@ -6,12 +6,12 @@
 
 typedef enum {
     INPUT_TYPE_FILE,
-    INPUT_TYPE_SHMEM,
     INPUT_ERROR
 } input_t;
 
 typedef struct{
-    char name[100];
+    char first_param[100];
+    char second_param[100];
     input_t t;
 } main_parameters_t;
 

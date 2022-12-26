@@ -25,7 +25,7 @@ int min(int a, int b){
 }
 
 graph_t *graph_init(){
-    graph_t *G = malloc(sizeof(graph_t));
+    graph_t *G = (graph_t *) malloc(sizeof(graph_t));
     G->n_vertex=0;
     G->adj = kh_init(mm32);
     G->inverted_adj = kh_init(mm32);
@@ -249,7 +249,7 @@ array_int *graph_tarjan(graph_t *G){
 }
 
 void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
-   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void *f(array_int *)){ 
+   linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void (*f)(array_int *)){ 
     khint_t k, j;
     int adj_node, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     // Initialize discovery time and low value
@@ -306,13 +306,15 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
         kh_value(stackMember, k) = 0; //false
         array_int_push(scc, w);
         //SCC completed
-        f(scc); //callback
+        if( array_int_length(scc) > 1 ){
+            f(scc); //callback
+        }
         //Clear the scc
         array_int_clear(scc);
     }
 }
 
-void graph_tarjan_foreach(graph_t *G, void *f(array_int *)){
+void graph_tarjan_foreach(graph_t *G, void (*f)(array_int *)){
     khash_t(m32) *disc = kh_init(m32);
     khash_t(m32) *low = kh_init(m32);
     khash_t(m32) *stackMember = kh_init(m32);
@@ -590,6 +592,26 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     return graph;
 }
 
+graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected){ 
+    graph_t *graph;
+    int i=0;
+    int j=0;
+
+    graph= graph_init();
+    for(i=0; i<max_n_node; i++){
+        graph_insert_vertex(graph, i);
+    }
+    if(isFullyConnected == 1){
+        for(i=0; i<max_n_node; i++){
+            for(j=0; j<max_n_node; j++){
+                graph_insert_edge(graph, i, j);
+            }
+        }
+    }
+    //graph_print_debug(graph);
+    return graph;
+}
+
 graph_t * graph_copy(graph_t * from){
     int i=0;
     int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
@@ -653,7 +675,7 @@ struct scc_set_t {
   @return       The scc_set 
  */
 scc_set_t *scc_set_init(){
-    scc_set_t *S = malloc(sizeof(scc_set_t));
+    scc_set_t *S = (scc_set_t *) malloc(sizeof(scc_set_t));
     S->scc_map = kh_init(ms32);
     S->nodes_to_scc_map = kh_init(m32);
     return S;
@@ -769,10 +791,153 @@ void scc_set_print_debug(scc_set_t *S){
     
 }
 
-/*Consider simplifying the design of graph.c. 
- - What is the real advantage of this complex generalization?
- - How many implementations of graph are we really going to mantain?
- - How many versions of tarjan are we going to use?
- - Are we using SCC algorithms other than tarjan?
- - What operations will be done on a graph?
-*/
+/*! @function
+  @abstract     Merge src scc_set into dest.
+  @param  dest the reference of the destination scc_set.
+  @param  src the reference of the source scc_set.
+ */
+void scc_set_merge(scc_set_t *dest, scc_set_t *src){
+    int key, value_i;
+    khash_t(s32) *value;
+    array_int *temp_nodes = array_int_init(25);
+    kh_foreach(src->scc_map, key, value, {
+        printf("key: %d",key);
+        array_int_clear(temp_nodes);
+        array_int_push(temp_nodes, key);
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            printf("value: %d",kh_key(value, i));
+            
+            array_int_push(temp_nodes, kh_key(value, i));
+        }
+        printf("\nAdding:\n");
+        array_int_print(temp_nodes);
+        scc_set_add(dest, key, temp_nodes);
+    });
+    array_int_free(temp_nodes);
+}
+
+/*! @function
+  @abstract     Check if scc set b contains all of scc set a's content.
+  @param  a the first scc_set.
+  @param  b the second scc_set.
+ */
+bool scc_set_contains(scc_set_t *b, scc_set_t *a){
+    int key, value_i;
+    khash_t(s32) *value, *temp_scc_set;
+    int temp_node;
+    bool is_present;
+    khint_t k;
+    kh_foreach(a->scc_map, key, value, {
+        //Check if scc_id 'key' is present in b
+        k = kh_get(ms32, b->scc_map, key);
+        is_present = (k != kh_end(b->scc_map));
+        if(!is_present){
+            printf("Key %d not present\n", key);
+            return false;
+        }
+            
+        temp_scc_set = kh_value(b->scc_map,k); //If the set is present in b we take a reference to it
+        for(khint_t i = 0; i != kh_end(value); ++i){ //For each element in a's set
+            if(!kh_exist(value, i))
+                continue;
+            temp_node = kh_key(value, i); //Temp node is the one we currently check
+            k = kh_get(s32, temp_scc_set, temp_node); //Check if temnp node is in b's set
+            is_present = (k != kh_end(temp_scc_set));
+            if(!is_present){
+                printf("Value %d not present in key %d\n", temp_node, key);
+                return false;
+            }
+        }
+    });
+    return true;
+}
+
+array_int *scc_set_serialize(scc_set_t *S){
+    array_int *result = array_int_init(1);
+    int words = 0, serialized = 0;
+    array_int_push(result, 0); //Placeholder for number of total words to read after the first one
+    array_int_push(result, 0); //Placeholder for number sccs serialized
+    words++;
+
+    int key;
+    khash_t(s32) *value;
+    kh_foreach(S->scc_map, key, value, {
+        array_int_push(result, key);
+        words++;
+        for(khint_t i = 0; i != kh_end(value); ++i){
+            if(!kh_exist(value, i))
+                continue;
+            array_int_push(result, kh_key(value, i));
+            words++;
+        }
+        array_int_push(result,-1); //end of scc
+        words++;
+        serialized++;
+    });
+    array_int_set(result, 0, words);
+    array_int_set(result, 1, serialized);
+    return result;
+}
+
+void scc_set_deserialize(scc_set_t *S, array_int *buff){
+    int n_sccs = array_int_get(buff,1);
+    int i = 2, scc_id, node;
+    array_int *temp = array_int_init(50);
+    for(int j=0; j<n_sccs; j++){
+        array_int_clear(temp);
+        scc_id = array_int_get(buff,i);
+        do{
+            i++;
+            node = array_int_get(buff,i);
+            if(node != -1){
+                array_int_push(temp, node);
+            }
+        } while(node != -1);
+        scc_set_add(S, scc_id, temp);
+        i++;
+    }
+    array_int_free(temp);
+}
+
+/*! @function
+  @abstract     Write scc set to file
+  @param    S           the scc_set to be saved.
+  @param    filename    the file to be saved to.
+ */
+void scc_set_save_to_file(scc_set_t *S, char *filename){
+    array_int *array = scc_set_serialize(S);
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL){
+       printf("Error creating file %s, aborting.\n", filename);   // Program exits if the file pointer returns NULL.
+       exit(1);
+    }
+    fwrite(array_int_get_ptr(array), sizeof(int), array_int_get(array,0)+1, fp);
+    fclose(fp);
+    array_int_free(array);
+}
+/*! @function
+  @abstract     Load scc set from file
+  @param    filename    the file to load the set from.
+ */
+scc_set_t *scc_set_load_from_file(char *filename){
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL){
+       printf("Error opening file %s, aborting.\n", filename);   // Program exits if the file pointer returns NULL.
+       //exit(1);
+       return NULL;
+    }
+    int n;
+    fread(&n, sizeof(int), 1, fp);
+    array_int *array = array_int_init(n+1);
+    array_int_set(array, 0, n); //Fill position 0
+    array_int_resize(array, n+1); //Sets array length = n+1
+    fread(array_int_get_ptr(array)+1, sizeof(int), n, fp); //Fill from position 1 to n
+    scc_set_t *S = scc_set_init();
+    scc_set_deserialize(S, array);
+    fclose(fp);
+    array_int_free(array);
+    return S;
+}
+
