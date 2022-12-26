@@ -14,7 +14,7 @@ cuda_graph_t *cuda_graph_load_from_file(char *filename){
     array_int_set(array, 0, n); //Fill position 0
     array_int_resize(array, n+1); //Sets array length = n+1
     fread(array_int_get_ptr(array)+1, sizeof(int), n, fp); //Fill from position 1 to n
-    array_int_print(array);
+    //array_int_print(array);
     cuda_graph_t *G = (cuda_graph_t *) malloc(sizeof(cuda_graph_t));
     G->n_vertex = array_int_get(array, 1);
     G->adj_lists_len = array_int_get(array, 0) - 1 - (2 * G->n_vertex);
