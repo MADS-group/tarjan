@@ -90,7 +90,7 @@ int main(int argc, char **argv){
     //Lanciare tarjan sequenziale
     //STARTTIME(1);
     graph_t* graph = cuda_graph_to_graph(cuda_graph, bitmask);
-    graph_print_debug(graph);
+    //graph_print_debug(graph);
     cuda_graph_free(cuda_graph);
     SCCs = scc_set_init();
     //printf("start graph\n");
