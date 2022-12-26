@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
     cuda_graph_t *G;
     G = cuda_graph_load_from_file(argv[1]);
     cuda_graph_print_debug(G);
-    int *mask = malloc( sizeof(int) * ( ( (G->n_vertex - 1) / 8 ) + 1 ) );
+    int *mask = (int *) malloc( sizeof(int) * ( ( (G->n_vertex - 1) / 8 ) + 1 ) );
     memset(mask, 0, sizeof(int) * ( ( (G->n_vertex - 1) / 8 ) + 1 ));
     graph_t *G2 = cuda_graph_to_graph(G, mask);
     graph_print_debug(G2);

@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-CC = gcc
+CC = g++
 CFLAGS = -W -Wall -g
 
 BIN_DIR := ./bin

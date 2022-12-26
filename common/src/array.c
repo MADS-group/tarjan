@@ -15,12 +15,12 @@
 
 array_int *array_int_init(int length) {
     array_int *a;
-    a = malloc(sizeof(array_int));
+    a = (array_int *) malloc(sizeof(array_int));
     assert(a != NULL);
     a->C_EXP=2;
     a->C_RED=3;
     int size = length * a->C_EXP;
-    a->items = malloc(size * sizeof(int));
+    a->items = (int *) malloc(size * sizeof(int));
     assert (size == 0 || a->items != NULL); 
     a->length = 0; //expected lenght is only used for evaluating the initial size. Initial length is always 0 because no element is in the array
     a->size = size; 
@@ -39,7 +39,7 @@ void array_int_free(array_int *a) {
 void array_int_resize(array_int *a, int length) {
     if (length > a->size || length < 1.0 * a->size / a->C_RED) {
         int size = length * a->C_EXP;
-        a->items = realloc(a->items, size * sizeof(int));
+        a->items = (int *) realloc(a->items, size * sizeof(int));
         assert (size == 0 || a->items != NULL); 
         a->size = size;        
     }
@@ -129,11 +129,11 @@ struct array_ptr {
 
 array_ptr *array_ptr_init(int length){
     array_ptr *a;
-    a = malloc(sizeof(array_ptr));
+    a = (array_ptr *) malloc(sizeof(array_ptr));
     a->C_EXP=2;
     a->C_RED=3;
     int size = length * a->C_EXP;
-    a->items = malloc(size * sizeof(void *));
+    a->items = (void **) malloc(size * sizeof(void *));
     assert (size == 0 || a->items != NULL); 
     a->length = length;
     a->size = size; 
@@ -152,7 +152,7 @@ void array_ptr_free(array_ptr *a){
 void array_ptr_resize(array_ptr *a, int length){
     if (length > a->size || length < 1.0 * a->size / a->C_RED) {
         int size = length * a->C_EXP;
-        a->items = realloc(a->items, size * sizeof(void *));
+        a->items = (void **) realloc(a->items, size * sizeof(void *));
         assert (size == 0 || a->items != NULL); 
         a->size = size;        
     }

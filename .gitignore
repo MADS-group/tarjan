@@ -3,3 +3,4 @@ obj/
 .vscode
 mpi/*.btr
 data/
+measurements/measure

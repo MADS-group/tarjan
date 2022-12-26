@@ -3,6 +3,8 @@
 #include "cuda_graph.h"
 #include "preprocess.cu"
 #define THREADxBLOCK 1024
+#include "array.h"
+#include "graph.h"
 
 scc_set_t *SCCs;
 

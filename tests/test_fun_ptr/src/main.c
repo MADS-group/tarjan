@@ -9,7 +9,7 @@ void fun(array_int *scc){
     array_int_print(scc);
 }
 
-void fun2(void *local(array_int *)){
+void fun2(void (*local)(array_int *)){
     array_int * a = array_int_init(10);
     array_int_push(a, 10);
     array_int_push(a, 9);

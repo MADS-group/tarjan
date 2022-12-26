@@ -1,8 +1,7 @@
 # Author: Antonio Langella
 
-CC = mpicc
+CC = mpicxx
 CFLAGS = -W -Wall -g
-
 BIN_DIR := ./bin
 SRC_DIR := ./src
 COMM_DIR := ../common

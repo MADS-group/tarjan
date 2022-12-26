@@ -1,9 +1,10 @@
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "graph.h"
 #include "measurement.h"
-#include <mpi.h>
 #include <sys/resource.h>
+#include "mpi_logic.h"
 
 int main(int argc,char* argv[]){
     int rank, size;

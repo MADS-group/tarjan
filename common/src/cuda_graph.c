@@ -15,11 +15,11 @@ cuda_graph_t *cuda_graph_load_from_file(char *filename){
     array_int_resize(array, n+1); //Sets array length = n+1
     fread(array_int_get_ptr(array)+1, sizeof(int), n, fp); //Fill from position 1 to n
     array_int_print(array);
-    cuda_graph_t *G = malloc(sizeof(cuda_graph_t));
+    cuda_graph_t *G = (cuda_graph_t *) malloc(sizeof(cuda_graph_t));
     G->n_vertex = array_int_get(array, 1);
     G->adj_lists_len = array_int_get(array, 0) - 1 - (2 * G->n_vertex);
-    G->adj_list_indexes = malloc(sizeof(int) * (G->n_vertex + 1));
-    G->adj_lists = malloc(sizeof(int) * G->adj_lists_len);
+    G->adj_list_indexes = (int *) malloc(sizeof(int) * (G->n_vertex + 1));
+    G->adj_lists = (int *) malloc(sizeof(int) * G->adj_lists_len);
     int inserted_vertices = 0;
     int inserted_edges = 0;
     int j = 1;

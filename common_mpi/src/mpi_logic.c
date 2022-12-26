@@ -1,6 +1,7 @@
+#include <mpi.h>
 #include "mpi_logic.h"
 #include "measurement.h"
-#include <mpi.h>
+
 
 double time_split_graph = 0.0,time_merge_graph = 0.0;
 

@@ -25,7 +25,7 @@ int min(int a, int b){
 }
 
 graph_t *graph_init(){
-    graph_t *G = malloc(sizeof(graph_t));
+    graph_t *G = (graph_t *) malloc(sizeof(graph_t));
     G->n_vertex=0;
     G->adj = kh_init(mm32);
     G->inverted_adj = kh_init(mm32);
@@ -675,7 +675,7 @@ struct scc_set_t {
   @return       The scc_set 
  */
 scc_set_t *scc_set_init(){
-    scc_set_t *S = malloc(sizeof(scc_set_t));
+    scc_set_t *S = (scc_set_t *) malloc(sizeof(scc_set_t));
     S->scc_map = kh_init(ms32);
     S->nodes_to_scc_map = kh_init(m32);
     return S;

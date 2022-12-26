@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-CC = gcc
+CC = g++
 CFLAGS = -W -Wall -g
 
 OBJ_DIR := ./obj
