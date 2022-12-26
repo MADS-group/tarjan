@@ -1,13 +1,17 @@
 #!/bin/bash
 TIME_STAMP=$(date +%s)
-NMEASURES=5
+#number of measurement for each graph file for any compiler optimization 
+NMEASURES=100 #200 anno scorso
 
-#ARRAY_RC=( disconnected connected random10000 random50000 random100000 random500000 random1000000 random10000)
-ARRAY_RC=(random-1000 random-50000)
+#input file graph
+ARRAY_RC=(fully-disconnected-1000000 fully-connected-12500 random-1000 random-25000 random-50000 random-100000 tile-800 tile-52000 tile-205000 tile-410000 tile-820000)
+#ARRAY_RC=(random-1000 random-50000)
 
+#number mpi process
 ARRAY_THS=(2 4 8)
 #TIMEFORMAT='%3U;%3E;%3S;%P'
-ARRAY_OPT=(0)
+#compiler optimization
+ARRAY_OPT=(0 1 2 3)
 
 trap "exit" INT
 
