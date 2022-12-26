@@ -50,4 +50,4 @@ $(LIB_OBJS) &: $(LIB_HDRS) $(LIB_SRCS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET)*

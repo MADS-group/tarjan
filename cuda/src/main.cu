@@ -53,9 +53,11 @@ int main(int argc, char **argv){
     cudaMalloc(&d_terminate, sizeof(bool));
     int iter = 0;
     while(!terminate){
-        //cout << "Called " << iter++ << " times" <<endl;
+        //printf di C++
+        cout << "Called " << iter++ << " times" <<endl;
         terminate = true;
         cudaMemset(d_terminate, true, sizeof(bool));
+        printf("start del kernel\n");
         DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
         cudaDeviceSynchronize();
         cudaMemcpy(bitmask, d_bitmask, n_bitmask * sizeof(int), cudaMemcpyDeviceToHost);
@@ -63,6 +65,7 @@ int main(int argc, char **argv){
             printf("%x ", bitmask[i]);
         }
         printf("\n");*/
+        //device to host
         cudaMemcpy(&terminate, d_terminate, sizeof(bool), cudaMemcpyDeviceToHost);
     }
     cudaMemcpy(bitmask, d_bitmask, n_bitmask * sizeof(int), cudaMemcpyDeviceToHost);

@@ -18,6 +18,6 @@ $(TARGETS):
 
 .PHONY: clean
 clean:
-	@rm -r $(BIN_DIR)
+	@rm -r -f $(BIN_DIR)
 	@$(foreach target,$(TARGETS),cd $(target); $(MAKE) clean; cd ..;)
 #	@cd $@ && $(MAKE) clean
