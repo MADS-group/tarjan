@@ -30,4 +30,4 @@ $(OBJ_DIR)/%.o: %.c $(HDRS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) 
