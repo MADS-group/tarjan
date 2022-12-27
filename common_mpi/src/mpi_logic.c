@@ -25,7 +25,14 @@ void callback(array_int * scc){
     //printf("[SLAVE]: Sent SCC. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",slave_status_data.MPI_SOURCE, slave_status_data.MPI_TAG, slave_status_data.MPI_ERROR);
 
 }
-
+/**
+ * @brief The function divides the work, gives the work to the slaves and computes the SCCs 
+ * 
+ * @param graph 
+ * @param N 
+ * @param n_slaves 
+ * @param SCCs 
+ */
 void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
     //codice del master
     MPI_Status status_send_size,status_send_data;

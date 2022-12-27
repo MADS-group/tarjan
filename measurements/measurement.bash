@@ -20,7 +20,6 @@ trap "exit" INT
 
 #SCRIPTPATH=$( cd -- "$(dirname "$0")"  >/dev/null 2>&1 ; pwd -P )
 SCRIPTPATH=$( cd -- "$(dirname "$0")" ; pwd -P )
-echo $(( $1 == "sequential" ))
 if [[ $1 == "sequential" ]]; then
 	for input_graph in "${ARRAY_RC[@]}"; do
 		for opt in "${ARRAY_OPT[@]}"; do
@@ -31,8 +30,49 @@ if [[ $1 == "sequential" ]]; then
 			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
 			
 			echo $(basename $OUT_FILE)
-			echo "verteces,init,destroy,tarjan,user,elapsed,system,pCPU" >$OUT_FILE
+			echo "verteces,init,finalize,tarjan,user,elapsed,system,pCPU" >$OUT_FILE
 			
+			for ((i = 0 ; i < $NMEASURES; i++)); do
+				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+			done
+			printf "\n"
+		done
+	done
+elif [[ $1 == "cuda" ]]; then
+	for input_graph in "${ARRAY_RC[@]}"; do
+		for opt in "${ARRAY_OPT[@]}"; do
+			ths_str=$(printf "%02d" $ths)
+			
+			OUT_FILE=$SCRIPTPATH/measure/$1/graph_type-$input_graph-O$opt/$1-graph_type-$input_graph-O$opt.csv
+		
+			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
+			
+			echo $(basename $OUT_FILE)
+			echo "verteces,init,finalize,preprocess,conversion,tarjan,user,elapsed,system,pCPU" >$OUT_FILE
+			
+			for ((i = 0 ; i < $NMEASURES; i++)); do
+				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+			done
+			printf "\n"
+		done
+	done
+elif [[ $1 == "mpi_cuda" ]]; then
+	for input_graph in "${ARRAY_RC[@]}"; do
+		for opt in "${ARRAY_OPT[@]}"; do
+			ths_str=$(printf "%02d" $ths)
+			
+			OUT_FILE=$SCRIPTPATH/measure/$1/graph_type-$input_graph-O$opt/$1-graph_type-$input_graph-O$opt.csv
+		
+			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
+			
+			echo $(basename $OUT_FILE)
+
+			echo "Nvert,NvertAfterCuda,init,mpi_tarjan,split,merge,total_only_mpi,preprocess,conversion,finalize,user,elapsed,system,pCPU" >$OUT_FILE
+
 			for ((i = 0 ; i < $NMEASURES; i++)); do
 				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
