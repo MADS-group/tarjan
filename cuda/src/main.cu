@@ -101,7 +101,7 @@ int main(int argc, char **argv){
     //00000000.00000000.00000000.10011111 <-- 95-64
     //00000000.00000000.00000000.00000111 <-- 127-96
 
-    //Lanciare tarjan sequenziale
+    
     STARTTIME(3);
     graph_t* graph = cuda_graph_to_graph(cuda_graph, bitmask);
     ENDTIME(3,time_graph_conversion);
@@ -111,7 +111,7 @@ int main(int argc, char **argv){
     
     //printf("start graph\n");
     //graph_print_debug(graph);
-    
+    //Lanciare tarjan sequenziale
     STARTTIME(4);
     graph_tarjan_foreach(graph, callback);
     ENDTIME(4,time_tarjan);
