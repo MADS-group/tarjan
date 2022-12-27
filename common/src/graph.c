@@ -574,6 +574,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
 
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
+        //printf("numero di archi %d\n", maxNumberOfEdges);
         assert(maxNumberOfEdges < max_n_node);
         j=0;
         while(j<maxNumberOfEdges){
