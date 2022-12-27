@@ -6,7 +6,7 @@
 #include "graph.h"
 
 #define MASTER 0
-#define DIM_CHUNK 2000
+#define MAX_DIM_CHUNK 5000
 
 typedef enum {
     MPI_TAG_DATA = 0, //0
