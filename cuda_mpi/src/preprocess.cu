@@ -5,7 +5,6 @@
 // kernel uses 10 registers
 __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
     int vertex_id = blockDim.x * blockIdx.x + threadIdx.x;
-    
     //If thread is not associated with a vertex or the vertex has already been eliminated then do nothing
     //printf("vertex: %d vertex_id: %d n_vertices: %d\n", vertex_id, vertex_id, n_vertices);
     if(vertex_id >= n_vertices){
