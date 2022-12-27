@@ -36,10 +36,10 @@ INCLUDE_STR += -I$(COMM_DIR)_mpi/include
 $(TARGET).out: $(OBJS) $(HDRS) $(LIB_OBJS) $(LIB_MPI_OBJS) $(LIB_HDRS) $(LIB_SRCS)
 	@mkdir -p $(BIN_DIR)
 #	$(CC) $(CFLAGS) $(OBJS) $(LIB_OBJS) -lm -O0 -o $(TARGET)_O0.out
-	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O0 -o $(TARGET)_O0.out | cut -d" " -f3- )
-	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O1 -o $(TARGET)_O1.out | cut -d" " -f3- )
-	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O2 -o $(TARGET)_O2.out | cut -d" " -f3- )
-	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O3 -o $(TARGET)_O3.out | cut -d" " -f3- )
+	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O0 -o $(TARGET)_O0.out | cut -d" " -f7- )
+	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O1 -o $(TARGET)_O1.out | cut -d" " -f7- )
+	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O2 -o $(TARGET)_O2.out | cut -d" " -f7- )
+	$(CC) $(shell mpicxx -show $(CFLAGS) $(OBJS) $(LIB_OBJS) $(LIB_MPI_OBJS) -lm -O3 -o $(TARGET)_O3.out | cut -d" " -f7- )
 #	$(CC) $(CFLAGS) $(OBJS) $(LIB_OBJS) -lm -O1 -o $(TARGET)_O1.out
 #	$(CC) $(CFLAGS) $(OBJS) $(LIB_OBJS) -lm -O2 -o $(TARGET)_O2.out
 #	$(CC) $(CFLAGS) $(OBJS) $(LIB_OBJS) -lm -O3 -o $(TARGET)_O3.out
