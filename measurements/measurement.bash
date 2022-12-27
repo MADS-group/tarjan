@@ -4,8 +4,9 @@ TIME_STAMP=$(date +%s)
 NMEASURES=100 #200 anno scorso
 
 #input file graph
-ARRAY_RC=(fully-disconnected-1000000 fully-connected-12500 random-1000 random-25000 random-50000 random-100000 tile-800 tile-52000 tile-205000 tile-410000 tile-820000)
+#ARRAY_RC=(fully-disconnected-1000000 fully-connected-12500 random-1000 random-25000 random-50000 random-100000 tile-800 tile-52000 tile-205000 tile-410000 tile-820000)
 #ARRAY_RC=(random-1000 random-50000)
+ARRAY_RC=(matrix_11k)
 
 #number mpi process
 ARRAY_THS=(2 4 8)

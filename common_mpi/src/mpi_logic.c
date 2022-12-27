@@ -5,6 +5,12 @@
 
 double time_split_graph = 0.0,time_merge_graph = 0.0;
 
+void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* outputfilename, double time_init);
+void callback(array_int * scc);
+void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs);
+void master_work(int rank,int size,char* filename,char* outputfilename);
+void slave_work(int rank);
+
 void callback(array_int * scc){
     int scc_size = array_int_length(scc);
 
@@ -133,8 +139,7 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 
 void master_work(int rank,int size,char* filename,char* outputfilename){
     graph_t* graph;
-    int v_graph,num_vertex;
-    double time_init,time_mpi_tarjan;
+    double time_init;
 
     STARTTIME(1);
     scc_set_t *SCCs = scc_set_init(); //Set di SCC noti
@@ -145,6 +150,16 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     ENDTIME(1,time_init);
+
+    master_work2(rank, size, graph, SCCs, outputfilename, time_init);
+    
+    graph_free(graph);
+    scc_set_free(SCCs);
+}
+
+void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* outputfilename, double time_init){
+    int v_graph,num_vertex;
+    double time_mpi_tarjan;
 
     STARTTIME(2);
     //graph_print_debug(graph);
@@ -169,11 +184,6 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
     for(i = 1; i < size; i++){
       MPI_Send(&abort_message,1,MPI_INT,i,MPI_TAG_SIZE,MPI_COMM_WORLD);
     }
-    //free
-    scc_set_free(SCCs);
-    graph_free(graph);
-
-
 }
 
 void slave_work(int rank){
