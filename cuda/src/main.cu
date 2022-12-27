@@ -5,6 +5,7 @@
 #include "preprocess.cu"
 #include "array.h"
 #include "graph.h"
+#include "measurement.h"
 
 #define THREADxBLOCK 1024
 
@@ -26,12 +27,18 @@ int main(int argc, char **argv){
     bool terminate = false;
     bool *d_terminate;
 
+    int num;
+    double temp=0.0,time_tarjan = 0.0,time_init = 0.0,time_preprocess=0.0,time_graph_conversion=0.0,time_destroy=0.0;
+
     if(argc != 3 ){
         printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute and the name the output file.\n");
         exit(1);
     }
     sscanf(argv[1],"%s",path_inputfilename);
     sscanf(argv[2],"%s",output_filename);
+
+    STARTTIME(1);
+    SCCs = scc_set_init();
 
     cuda_graph_t *cuda_graph = cuda_graph_load_from_file(path_inputfilename);
     int n_vertices = cuda_graph->n_vertex;
@@ -51,6 +58,8 @@ int main(int argc, char **argv){
     cudaMemset(d_bitmask, 0, n_bitmask * sizeof(int));
 
     cudaMalloc(&d_terminate, sizeof(bool));
+    ENDTIME(1,time_init);
+    
     int iter = 0;
     while(!terminate){
         //printf di C++
@@ -58,9 +67,14 @@ int main(int argc, char **argv){
         terminate = true;
         cudaMemset(d_terminate, true, sizeof(bool));
         //printf("start del kernel\n");
+        
+        STARTTIME(2);
         DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
         cudaDeviceSynchronize();
-        cudaMemcpy(bitmask, d_bitmask, n_bitmask * sizeof(int), cudaMemcpyDeviceToHost);
+        ENDTIME(2,temp);
+        time_preprocess += temp;
+    
+        //cudaMemcpy(bitmask, d_bitmask, n_bitmask * sizeof(int), cudaMemcpyDeviceToHost);
         /*for(int i = 0; i < n_bitmask; i++){
             printf("%x ", bitmask[i]);
         }
@@ -88,22 +102,25 @@ int main(int argc, char **argv){
     //00000000.00000000.00000000.00000111 <-- 127-96
 
     //Lanciare tarjan sequenziale
-    //STARTTIME(1);
+    STARTTIME(3);
     graph_t* graph = cuda_graph_to_graph(cuda_graph, bitmask);
+    ENDTIME(3,time_graph_conversion);
+
+    
     //graph_print_debug(graph);
-    cuda_graph_free(cuda_graph);
-    SCCs = scc_set_init();
+    
     //printf("start graph\n");
     //graph_print_debug(graph);
-    //ENDTIME(1,time_init);
-
-    //STARTTIME(2);
+    
+    STARTTIME(4);
     graph_tarjan_foreach(graph, callback);
-    //ENDTIME(2,time_tarjan);
+    ENDTIME(4,time_tarjan);
 
-    //num = graph_get_num_vertex(graph);
-    //STARTTIME(3);
+    num = graph_get_num_vertex(graph);
+    
+    STARTTIME(5);
     scc_set_save_to_file(SCCs,output_filename);
+    cuda_graph_free(cuda_graph);
     cudaFree(d_adj_list_indexes);
     cudaFree(d_adj_lists);
     cudaFree(d_bitmask);
@@ -111,8 +128,8 @@ int main(int argc, char **argv){
     graph_free(graph);
     scc_set_free(SCCs);
     delete[] bitmask;
-    //ENDTIME(3,time_destroy);
-    //printf("%d,%f,%f,%f,",num,time_init,time_destroy,time_tarjan);
+    ENDTIME(5,time_destroy);
+    printf("%d,%f,%f,%f,%f,%f,",num,time_init,time_destroy,time_preprocess,time_graph_conversion,time_tarjan);
 
     
     return 0;
