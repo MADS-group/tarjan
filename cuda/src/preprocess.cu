@@ -53,7 +53,3 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
         set_bit(bitmask, vertex_id);
     }
 }
-
-cuda_graph *preprocess_graph(char *filename){
-    
-}

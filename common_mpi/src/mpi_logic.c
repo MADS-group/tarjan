@@ -5,11 +5,6 @@
 
 double time_split_graph = 0.0,time_merge_graph = 0.0;
 
-void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* outputfilename, double time_init);
-void callback(array_int * scc);
-void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs);
-void master_work(int rank,int size,char* filename,char* outputfilename);
-void slave_work(int rank);
 
 void callback(array_int * scc){
     int scc_size = array_int_length(scc);

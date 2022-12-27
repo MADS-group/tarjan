@@ -1,12 +1,15 @@
+#include <mpi.h>
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
-#include <mpi.h>
+#include <sys/resource.h>
 #include "cuda_graph.h"
 #include "preprocess.cu"
 #include "array.h"
 #include "graph.h"
 #include "measurement.h"
+#include "mpi_logic.h"
+
 
 #define THREADxBLOCK 1024
 
