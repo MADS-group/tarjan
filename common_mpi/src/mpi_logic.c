@@ -176,7 +176,13 @@ void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* output
     STARTTIME(2);
     //graph_print_debug(graph);
     int i;
-    for(i = DIM_CHUNK; i<=graph_get_num_vertex(graph); i *= 2){
+    int dim_chunk = graph_get_num_vertex(graph)/(size - 1);
+    
+    if (dim_chunk > MAX_DIM_CHUNK) {
+        dim_chunk = MAX_DIM_CHUNK;
+    }
+    //printf("Dim chunk=%d", dim_chunk);
+    for(i = dim_chunk; i<=graph_get_num_vertex(graph); i *= 2){
         master_schedule(graph,i,size-1,SCCs);
     }
     if(i>graph_get_num_vertex(graph)){ //Ensure last loop executes on the enterity of the graph.
