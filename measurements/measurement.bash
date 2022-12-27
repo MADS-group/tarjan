@@ -30,10 +30,10 @@ if [[ $1 == "sequential" ]]; then
 			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
 			
 			echo $(basename $OUT_FILE)
-			echo "verteces,init,finalize,tarjan,user,elapsed,system,pCPU" >$OUT_FILE
+			echo "verteces,init,finalize,tarjan,user,system,elapsed,pCPU" >$OUT_FILE
 			
 			for ((i = 0 ; i < $NMEASURES; i++)); do
-				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g'>> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
@@ -50,10 +50,10 @@ elif [[ $1 == "cuda" ]]; then
 			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
 			
 			echo $(basename $OUT_FILE)
-			echo "verteces,init,finalize,preprocess,conversion,tarjan,user,elapsed,system,pCPU" >$OUT_FILE
+			echo "verteces,init,finalize,preprocess,conversion,tarjan,user,system,elapsed,pCPU" >$OUT_FILE
 			
 			for ((i = 0 ; i < $NMEASURES; i++)); do
-				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
@@ -71,10 +71,10 @@ elif [[ $1 == "mpi_cuda" ]]; then
 			
 			echo $(basename $OUT_FILE)
 
-			echo "Nvert,NvertAfterCuda,init,mpi_tarjan,split,merge,total_only_mpi,preprocess,conversion,finalize,user,elapsed,system,pCPU" >$OUT_FILE
+			echo "Nvert,NvertAfterCuda,init,mpi_tarjan,split,merge,total_only_mpi,preprocess,conversion,finalize,user,system,elapsed,pCPU" >$OUT_FILE
 
 			for ((i = 0 ; i < $NMEASURES; i++)); do
-				{ /usr/bin/time -f "%U,%S,%E,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
@@ -92,13 +92,13 @@ else
 				mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
 				
 				echo $(basename $OUT_FILE)
-				echo "Nvert,init,tarjan,split,merge,user,elapsed,system,pCPU" >$OUT_FILE
+				echo "Nvert,init,tarjan,split,merge,user,system,elapsed,pCPU" >$OUT_FILE
 				
 				for ((i = 0 ; i < $NMEASURES; i++)); do
 						
 					if [ $1 == "mpi" ]; then
 						#2>/dev/null;
-						{ /usr/bin/time -f "%U,%S,%E,%P" mpiexec -np $ths ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' -e 's/0://g' >> $OUT_FILE
+						{ /usr/bin/time -f "%U,%S,%e,%P" mpiexec -np $ths ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g' >> $OUT_FILE
 						printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 					else
