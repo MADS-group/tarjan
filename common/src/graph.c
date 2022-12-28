@@ -105,8 +105,11 @@ void graph_delete_edge(graph_t *G, int u, int v){
     }
 }
 
-/*
- * Deletes a vertex and every edge incident on the vertex. 
+/**
+ * @brief Deletes a vertex and every edge incident on the vertex. 
+ * 
+ * @param G input graph
+ * @param v vertex to be deleted
  */
 void graph_delete_vertex(graph_t *G, int v){
     int u, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
