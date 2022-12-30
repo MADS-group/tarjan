@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
             exit(1);
             break;
         case INPUT_TYPE_FILE:
-            
+            {
             STARTTIME(1);
             graph = graph_load_from_file(c.first_param);
             SCCs= scc_set_init();
@@ -62,6 +62,7 @@ int main(int argc, char* argv[]){
 
             printf("%d,%f,%f,%f,",num,time_init,time_destroy,time_tarjan);
             break;
+            }
     }
 
 }
