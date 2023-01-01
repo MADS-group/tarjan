@@ -10,7 +10,41 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "sequential" 
+execution_type = "mpi"
+config_sequential = {
+	'vertices':{
+					'jpg':False,
+					'speedup':False
+				},
+				'init':{
+					'jpg':False,
+					'speedup':False
+				},
+				'destroy':{
+					'jpg':False,
+					'speedup':False
+				},
+				'tarjan':{
+					'jpg':False,
+					'speedup':False
+				},
+				'user':{
+					'jpg':False,
+					'speedup':False
+					},
+				'system':{
+					'jpg':False,
+					'speedup':False
+					},
+				'pCPU':{
+					'jpg':False,
+					'speedup':False
+					},
+				'elapsed':{
+					'jpg':True,
+					'speedup':True
+					}
+}
 config = {}
 if execution_type == "sequential":
 
@@ -155,7 +189,7 @@ def _extract(path_to_folder,plot_columns):
 		os.mkdir("jpg")
 
 	#Remove not csv files
-	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and re.match(execution_type + "*",f) ]
+	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and ("graph_type" in f) ]
 	
 	filenames = sorted(filenames)
 	means = {}
@@ -166,21 +200,17 @@ def _extract(path_to_folder,plot_columns):
 		ds = pd.read_csv(filename)#,lineterminator = ";")
 		def f(x): 
 			x = x[:-1]
-			#print(x)
 			return int(x) 
 		ds['pCPU'] = ds['pCPU'].apply(f)
 		for col in plot_columns.keys():
 			print('Processing : ' + filename + ", Col : " + col)
 			#extract the selected column
 			x_data = ds[col]
-			print(x_data)
 			mean,std=stats.norm.fit(x_data)
-			print(mean)
 			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
 			#TODO: Capire se lasciarlo (da problemi)
 			#x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
 			#mean,std=stats.norm.fit(x_data)
-			print(mean)
 			file_mean[col] = mean
 			
 			if plot_columns[col]['jpg']:
@@ -255,18 +285,20 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 	for folder in folders:
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
-		means = _extract(joined_path,cols)
-
+		means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential",folder),config_sequential)
+		temp = _extract(joined_path,cols)
+		means.update(temp)
+		
+		print(means)
 		if execution_type == "mpi":
-		    header = {'values':['Nvert','init','tarjan','split','merge','user','system','elapsed','pCPU']}
+		    header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "sequential":
 		    #header = {'values':['vertices','init','destroy','tarjan','user','system','elapsed','pCPU']}
 			header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
-		
 		elif execution_type == "mpi_cuda":
-		    header = {'values':['Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','elapsed','pCPU']}
+		    header = {'values':['Version','Threads','Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "cuda":
-		    header = {'values':['verteces','init','finalize','preprocess','conversion','tarjan','user','system','elapsed','pCPU']}
+		    header = {'values':['Version','Threads','verteces','init','finalize','preprocess','conversion','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		else:
 		    print("Error!")
         
@@ -277,29 +309,32 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		for filename_key in means:
 			cell = []
 			splitted_filename=filename_key.split("-")
-			if execution_type == "sequential" or "NTH-00" in filename_key:
+			if "sequential" in filename_key:
 				seq = means[filename_key]['elapsed']
 				nt = 1
 				cell.append('Serial')
 				cell.append(nt)
 			else:
-				nt = int(splitted_filename[-1])
+				print(splitted_filename[-1].split(".")[0])
+				nt = int(splitted_filename[-1].split(".")[0])
 				cell.append('Parallel')
 				cell.append(nt)
 
 			for col in cols:
 				if col == 'Version' or col == 'Threads':
 					continue
-				cell.append(means[filename_key][col])
-				print("filename:",filename_key,"col:",col,"data:",means[filename_key][col])
-				if cols[col]['speedup']:
-					psize = splitted_filename[1]
-					speedup,efficiency = _compute_speedup(seq,means[filename_key][col],nt,psize)
-					cell.append(speedup)
-					cell.append(efficiency)
+				if col in means[filename_key]:
+					cell.append(means[filename_key][col])
+					if cols[col]['speedup']:
+						psize = splitted_filename[1]
+						speedup,efficiency = _compute_speedup(seq,means[filename_key][col],nt,psize)
+						cell.append(speedup)
+						cell.append(efficiency)
+				else:
+					cell.append("no data")
+				
 			cells['values'].append(cell)
 		
-		print(cells['values'])
 		
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
