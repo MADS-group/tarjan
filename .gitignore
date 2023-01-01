@@ -3,3 +3,5 @@ obj/
 .vscode
 mpi/*.btr
 data/
+measurements/measure
+measurements/__pycache__
