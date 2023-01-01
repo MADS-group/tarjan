@@ -9,8 +9,8 @@ for folder in folders:
   print("FILES:", files)
   for filename in files:
     with open(filename, 'r') as file:
-      line = file.readline()
-      print(line)
-    with open(filename, 'w') as file:
+      head, tail = file.read().split('\n', 1)
+      print(head)
+    with open(filename, 'a') as file:
       pass
   
