@@ -1,4 +1,4 @@
-Nvert,init,tarjan,split,merge,user,elapsed,system,pCPU
+Nvert,init,tarjan,split,merge,user,system,elapsed,pCPU
 51200,0.016807,0.183244,0.009873,0.007406,0.36,0.15,0.82,62;
 51200,0.011894,0.150317,0.007810,0.005010,0.29,0.14,0.80,53;
 51200,0.011829,0.135054,0.007106,0.005115,0.25,0.13,0.69,56;
