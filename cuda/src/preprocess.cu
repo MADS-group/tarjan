@@ -40,7 +40,7 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
     elim = true;
     //printf("adj_list_indexes[n_vertices]%d\n",adj_list_indexes[n_vertices]);
     for(int i = 0; i < adj_list_indexes[n_vertices]; i++){
-        if(adj_lists[i] == vertex_id){ //! Manca una condizione
+        if(adj_lists[i] == vertex_id){ //! Per migliorare si potrebbe controllare che l'arco trovato non parte da un nodo che è stato già cancellato!
             //printf("vertex: %d found\n", vertex_id);
             elim = false;
             break;
