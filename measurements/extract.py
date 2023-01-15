@@ -10,7 +10,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "mpi"
+execution_type = "cuda_mpi"
 config_sequential = {
 	'vertices':{
 					'jpg':False,
@@ -66,7 +66,7 @@ if execution_type == "sequential":
 					'speedup':False
 				}
 			})
-elif execution_type == "mpi_cuda":
+elif execution_type == "cuda_mpi":
 	config.update( {	
 				'Nvert':{
 					'jpg':False,
@@ -210,7 +210,7 @@ def _extract(path_to_folder,plot_columns):
 			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
 			#TODO: Capire se lasciarlo (da problemi)
 			#x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
-			#mean,std=stats.norm.fit(x_data)
+			mean,std=stats.norm.fit(x_data)
 			file_mean[col] = mean
 			
 			if plot_columns[col]['jpg']:
@@ -281,7 +281,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 	print("Listing folder for problem size")
 	folders = [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match("graph_type*",f))]
 	print(f"Found folders : {folders}")
-	print(cols)
+	#print(cols)
 	for folder in folders:
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
@@ -289,13 +289,13 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		temp = _extract(joined_path,cols)
 		means.update(temp)
 		
-		print(means)
+		#print(means)
 		if execution_type == "mpi":
 		    header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "sequential":
 		    #header = {'values':['vertices','init','destroy','tarjan','user','system','elapsed','pCPU']}
 			header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
-		elif execution_type == "mpi_cuda":
+		elif execution_type == "cuda_mpi":
 		    header = {'values':['Version','Threads','Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "cuda":
 		    header = {'values':['Version','Threads','verteces','init','finalize','preprocess','conversion','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
@@ -315,7 +315,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 				cell.append('Serial')
 				cell.append(nt)
 			else:
-				print(splitted_filename[-1].split(".")[0])
+				#print(splitted_filename[-1].split(".")[0])
 				nt = int(splitted_filename[-1].split(".")[0])
 				cell.append('Parallel')
 				cell.append(nt)
