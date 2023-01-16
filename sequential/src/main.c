@@ -37,11 +37,11 @@ int main(int argc, char* argv[]){
 
     switch (c.t){
         case INPUT_ERROR:
-            printf("incorrent parameters:\n sequential.out filename -> read graph from file named filename\n");
+            printf("incorrent parameters:\ninserire come primo parametro path del grafo ingresso\ninserire come secondo parametro path del file contenente gli SCC trovati\n");
             exit(1);
             break;
         case INPUT_TYPE_FILE:
-            
+            {
             STARTTIME(1);
             graph = graph_load_from_file(c.first_param);
             SCCs= scc_set_init();
@@ -62,6 +62,7 @@ int main(int argc, char* argv[]){
 
             printf("%d,%f,%f,%f,",num,time_init,time_destroy,time_tarjan);
             break;
+            }
     }
 
 }

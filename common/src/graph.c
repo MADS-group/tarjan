@@ -25,7 +25,7 @@ int min(int a, int b){
 }
 
 graph_t *graph_init(){
-    graph_t *G = malloc(sizeof(graph_t));
+    graph_t *G = (graph_t *) malloc(sizeof(graph_t));
     G->n_vertex=0;
     G->adj = kh_init(mm32);
     G->inverted_adj = kh_init(mm32);
@@ -105,8 +105,11 @@ void graph_delete_edge(graph_t *G, int u, int v){
     }
 }
 
-/*
- * Deletes a vertex and every edge incident on the vertex. 
+/**
+ * @brief Deletes a vertex and every edge incident on the vertex. 
+ * 
+ * @param G input graph
+ * @param v vertex to be deleted
  */
 void graph_delete_vertex(graph_t *G, int v){
     int u, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
@@ -306,7 +309,9 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
         kh_value(stackMember, k) = 0; //false
         array_int_push(scc, w);
         //SCC completed
-        f(scc); //callback
+        if( array_int_length(scc) > 1 ){
+            f(scc); //callback
+        }
         //Clear the scc
         array_int_clear(scc);
     }
@@ -572,6 +577,7 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
 
     for(i=0; i<max_n_node; i++){
         maxNumberOfEdges= rand_binomial_2(mean_edges,variance_edges);
+        //printf("numero di archi %d\n", maxNumberOfEdges);
         assert(maxNumberOfEdges < max_n_node);
         j=0;
         while(j<maxNumberOfEdges){
@@ -673,7 +679,7 @@ struct scc_set_t {
   @return       The scc_set 
  */
 scc_set_t *scc_set_init(){
-    scc_set_t *S = malloc(sizeof(scc_set_t));
+    scc_set_t *S = (scc_set_t *) malloc(sizeof(scc_set_t));
     S->scc_map = kh_init(ms32);
     S->nodes_to_scc_map = kh_init(m32);
     return S;

@@ -1,0 +1,77 @@
+\hypertarget{mpi__logic_8c}{}\doxysection{common\+\_\+mpi/src/mpi\+\_\+logic.c File Reference}
+\label{mpi__logic_8c}\index{common\_mpi/src/mpi\_logic.c@{common\_mpi/src/mpi\_logic.c}}
+{\ttfamily \#include $<$mpi.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}mpi\+\_\+logic.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}measurement.\+h\char`\"{}}\newline
+Include dependency graph for mpi\+\_\+logic.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=328pt]{mpi__logic_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mpi__logic_8c_a755b505d86588dd13b5a0d5af215db4d}\label{mpi__logic_8c_a755b505d86588dd13b5a0d5af215db4d}} 
+void {\bfseries callback} (array\+\_\+int $\ast$scc)
+\item 
+void \mbox{\hyperlink{mpi__logic_8c_afe4519dc9cac0f0c0e30f8718a357cad}{master\+\_\+schedule}} (graph\+\_\+t $\ast$graph, int N, int n\+\_\+slaves, scc\+\_\+set\+\_\+t $\ast$SCCs)
+\begin{DoxyCompactList}\small\item\em The function divides the work, gives the work to the slaves and computes the SCCs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{mpi__logic_8c_a0a487f136cb96d7df1937358a6a3a3e5}\label{mpi__logic_8c_a0a487f136cb96d7df1937358a6a3a3e5}} 
+void {\bfseries master\+\_\+work} (int rank, int size, char $\ast$filename, char $\ast$outputfilename)
+\item 
+\mbox{\Hypertarget{mpi__logic_8c_a3d6bdb6c07e7023c6a252d9ae031cd6e}\label{mpi__logic_8c_a3d6bdb6c07e7023c6a252d9ae031cd6e}} 
+void {\bfseries master\+\_\+work2} (int rank, int size, graph\+\_\+t $\ast$graph, scc\+\_\+set\+\_\+t $\ast$SCCs, char $\ast$outputfilename, double time\+\_\+init)
+\item 
+\mbox{\Hypertarget{mpi__logic_8c_aa80b6078ca0ba039351ce42580f896ec}\label{mpi__logic_8c_aa80b6078ca0ba039351ce42580f896ec}} 
+void {\bfseries slave\+\_\+work} (int rank)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mpi__logic_8c_a13387bd68de59db8c1ae6ca4e0d82619}\label{mpi__logic_8c_a13387bd68de59db8c1ae6ca4e0d82619}} 
+double {\bfseries time\+\_\+split\+\_\+graph} = 0.\+0
+\item 
+\mbox{\Hypertarget{mpi__logic_8c_ab31d5a47c24ebad4468bc9eceb39836e}\label{mpi__logic_8c_ab31d5a47c24ebad4468bc9eceb39836e}} 
+double {\bfseries time\+\_\+merge\+\_\+graph} = 0.\+0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+your name (\href{mailto:you@domain.com}{\texttt{ you@domain.\+com}}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2022-\/12-\/27
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2022 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{mpi__logic_8c_afe4519dc9cac0f0c0e30f8718a357cad}\label{mpi__logic_8c_afe4519dc9cac0f0c0e30f8718a357cad}} 
+\index{mpi\_logic.c@{mpi\_logic.c}!master\_schedule@{master\_schedule}}
+\index{master\_schedule@{master\_schedule}!mpi\_logic.c@{mpi\_logic.c}}
+\doxysubsubsection{\texorpdfstring{master\_schedule()}{master\_schedule()}}
+{\footnotesize\ttfamily void master\+\_\+schedule (\begin{DoxyParamCaption}\item[{graph\+\_\+t $\ast$}]{graph,  }\item[{int}]{N,  }\item[{int}]{n\+\_\+slaves,  }\item[{scc\+\_\+set\+\_\+t $\ast$}]{SCCs }\end{DoxyParamCaption})}
+
+
+
+The function divides the work, gives the work to the slaves and computes the SCCs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em graph} & \\
+\hline
+{\em N} & \\
+\hline
+{\em n\+\_\+slaves} & \\
+\hline
+{\em SCCs} & \\
+\hline
+\end{DoxyParams}

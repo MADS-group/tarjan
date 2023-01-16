@@ -3,6 +3,12 @@
 #include <math.h>
 
 //Return 1 with probability p, 0 otherwise
+/**
+ * @brief 
+ * 
+ * @param p 
+ * @return int 
+ */
 int rand_bernoulli(double p){
     double r = (double) rand() / RAND_MAX; //random number between 0.0 and 1.0
     return r < p;

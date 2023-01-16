@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-CC = gcc
+CC = g++
 CFLAGS = -W -Wall -g
 
 OBJ_DIR := ./obj
@@ -16,7 +16,7 @@ SRCS := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c' -printf "%f ")
 #HDRS contains the paths of all header files under include/
 HDRS := $(shell find $(HDR_DIR) -name '*.h')
 #OBJ contains the paths of all object files to be created under bin/
-OBJS := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRCS))
+OBJS := $(patsubst %.c,$(OBJ_DIR)/%.o, $(SRCS))
 
 INCLUDE_STR := $(patsubst %, -I%, $(HDR_DIRS))
 
@@ -30,4 +30,4 @@ $(OBJ_DIR)/%.o: %.c $(HDRS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) 

@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-CC = gcc
+CC = g++
 CFLAGS = -W -Wall -g
 
 BIN_DIR := ./bin
@@ -43,4 +43,4 @@ $(LIB_OBJS) &: $(LIB_HDRS) $(LIB_SRCS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET)*
