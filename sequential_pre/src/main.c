@@ -29,7 +29,6 @@ void preprocess(cuda_graph_t *cuda_graph, int *bitmask, int n_vertices){
     int adj_list_end;
     int i=0;
     while(!stop){
-        printf("%d",i++);
         stop = true;
         for(int vertex_id = 0; vertex_id < n_vertices; vertex_id++){ // Foreach vertex in the graph
             if(test_bit(bitmask, vertex_id) != 0){ // Skip the vertex if it has already been eliminated
