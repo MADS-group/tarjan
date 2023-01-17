@@ -52,6 +52,7 @@ void preprocess(cuda_graph_t *cuda_graph, int *bitmask, int n_vertices){
             if(elim){
                 stop = false;
                 set_bit(bitmask, vertex_id); // Mark the vertex as deleted
+                printf("Deleting %d\n",vertex_id);
                 continue; // Skip to the next vertex
             }
 
@@ -67,6 +68,7 @@ void preprocess(cuda_graph_t *cuda_graph, int *bitmask, int n_vertices){
             if(elim){
                 stop = false;
                 set_bit(bitmask, vertex_id); // Mark the vertex as deleted
+                printf("Deleting %d\n",vertex_id);
                 continue; // Skip to the next vertex
             }
         }
@@ -100,10 +102,15 @@ int main(int argc, char* argv[]){
             n_vertices_before_preprocess = cuda_graph->n_vertex;
             n_bitmask = ((n_vertices_before_preprocess-1)/32)+1;
             bitmask = (int *) malloc(sizeof(int) * n_bitmask); //Instantiate an array and initialize it to 0
+            memset(bitmask, 0, sizeof(int) * n_bitmask);
             SCCs= scc_set_init();
             ENDTIME(1,time_init);
             STARTTIME(2);
             preprocess(cuda_graph, bitmask, n_vertices_before_preprocess);
+            // printf("Bitmask:\n");
+            // for(int i=0; i<n_bitmask; i++){
+            //     printf("%x ", bitmask[i]);
+            // }
             graph = cuda_graph_to_graph(cuda_graph, bitmask);
             ENDTIME(2,time_preprocess);
 
