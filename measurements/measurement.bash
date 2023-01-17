@@ -94,7 +94,7 @@ elif [[ $1 == "sequential_pre" ]]; then
 			echo "verteces,verteces_after,init,destroy,tarjan,preprocess_time,user,system,elapsed,pCPU" >$OUT_FILE
 
 			for ((i = 0 ; i < $NMEASURES; i++)); do
-				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/sequential_O$opt.out ../data/$input_graph.bin ../data/sequential_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g'>> $OUT_FILE
+				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g'>> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
