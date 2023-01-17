@@ -35,7 +35,6 @@
  * the first parameter is the path of the first SCC file to be compered \n
  * the second parameter is the path of the second SCC file to be compered \n
  *
- * @copyright Copyright (c) 2023
  * 
  */
 

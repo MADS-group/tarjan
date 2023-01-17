@@ -34,7 +34,6 @@
  * 
  * the first parameter is the path of the graph file to be printed \n
  *
- * @copyright Copyright (c) 2023
  * 
  */
 #include <stdlib.h>

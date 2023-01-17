@@ -38,7 +38,6 @@
  * the thrid parameter is an integer that indicate the the mean of edge for each node \n
  * the fourth parameter is the variance of number of edge for each node \n
  *
- * @copyright Copyright (c) 2023
  * 
  */
 #include <stdlib.h>
