@@ -663,10 +663,11 @@ struct scc_set_t {
     khash_t(m32) *nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
 };
 
-/*! @function
-  @abstract     Initialize a new scc_set
-  @return       The scc_set 
- */
+ /**
+  * @brief Initialize a new scc_set
+  * 
+  * @return scc_set_t* The scc_set
+  */
 scc_set_t *scc_set_init(){
     scc_set_t *S = (scc_set_t *) malloc(sizeof(scc_set_t));
     S->scc_map = kh_init(ms32);
@@ -674,22 +675,24 @@ scc_set_t *scc_set_init(){
     return S;
 }
 
-/*! @function
-  @abstract     Destroy an scc_set
-  @param    S   The scc_set to be destroyed.
- */
+ /**
+  * @brief Destroy an scc_set
+  * 
+  * @param S The scc_set to be destroyed.
+  */
 void scc_set_free(scc_set_t *S){
     kh_destroy(ms32, S->scc_map);
     kh_destroy(m32, S->nodes_to_scc_map);
     free(S);
 }
 
-/*! @function
-  @abstract     Add a new SCC to the set handling merges if needed.
-  @param  S the reference to the scc_set.
-  @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
-  @param  nodes the nodes of the SCC. 
- */
+ /**
+  * @brief Add a new SCC to the set handling merges if needed.
+  * 
+  * @param S the reference to the scc_set.
+  * @param scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
+  * @param nodes the nodes of the SCC. 
+  */
 void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
     int target_scc_id = scc_id, node, _, node_scc, ret, source_scc_id; (void)_;
     khash_t(s32) *scc_to_merge; //Set of all scc_ids that need to be merged
@@ -758,12 +761,11 @@ void scc_set_add(scc_set_t *S, int scc_id, array_int *nodes){
     kh_destroy(s32, scc_to_merge);
 }
 
-/*! @function
-  @abstract     Debug print an scc_set
-  @param  S the reference to the scc_set.
-  @param  scc_id the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC.
-  @param  nodes the nodes of the SCC. 
- */
+ /**
+  * @brief print an scc_set
+  * 
+  * @param S ssc_set to be printed
+  */
 void scc_set_print_debug(scc_set_t *S){
     int key, value_i;
     khash_t(s32) *value;
@@ -784,11 +786,12 @@ void scc_set_print_debug(scc_set_t *S){
     
 }
 
-/*! @function
-  @abstract     Merge src scc_set into dest.
-  @param  dest the reference of the destination scc_set.
-  @param  src the reference of the source scc_set.
- */
+ /**
+  * @brief Merge src scc_set into dest.
+  * 
+  * @param dest the reference of the destination scc_set.
+  * @param src the reference of the source scc_set.
+  */
 void scc_set_merge(scc_set_t *dest, scc_set_t *src){
     int key, value_i;
     khash_t(s32) *value;
@@ -811,11 +814,14 @@ void scc_set_merge(scc_set_t *dest, scc_set_t *src){
     array_int_free(temp_nodes);
 }
 
-/*! @function
-  @abstract     Check if scc set b contains all of scc set a's content.
-  @param  a the first scc_set.
-  @param  b the second scc_set.
- */
+ /**
+  * @brief Check if scc set b contains all of scc set a's content.
+  * 
+  * @param b the first scc_set.
+  * @param a the second scc_set.
+  * @return true scc set b contains all of scc set a's content.
+  * @return false scc set b not contains all of scc set a's content.
+  */
 bool scc_set_contains(scc_set_t *b, scc_set_t *a){
     int key, value_i;
     khash_t(s32) *value, *temp_scc_set;
@@ -894,11 +900,12 @@ void scc_set_deserialize(scc_set_t *S, array_int *buff){
     array_int_free(temp);
 }
 
-/*! @function
-  @abstract     Write scc set to file
-  @param    S           the scc_set to be saved.
-  @param    filename    the file to be saved to.
- */
+ /**
+  * @brief Write scc set to file
+  * 
+  * @param S the scc_set to be saved.
+  * @param filename the file to be saved to.
+  */
 void scc_set_save_to_file(scc_set_t *S, char *filename){
     array_int *array = scc_set_serialize(S);
     FILE *fp = fopen(filename, "w");
@@ -910,10 +917,13 @@ void scc_set_save_to_file(scc_set_t *S, char *filename){
     fclose(fp);
     array_int_free(array);
 }
-/*! @function
-  @abstract     Load scc set from file
-  @param    filename    the file to load the set from.
- */
+
+ /**
+  * @brief Load scc set from file
+  * 
+  * @param filename the file to load the set from.
+  * @return scc_set_t* ssc set readed
+  */
 scc_set_t *scc_set_load_from_file(char *filename){
     FILE *fp = fopen(filename, "r");
     if (fp == NULL){
