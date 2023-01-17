@@ -30,10 +30,10 @@ int main(int argc, char* argv[]){
         int mode;
         
         sscanf(argv[1],"%s",output);
-        sscanf(argv[2],"%d", &n_node);
+        sscanf(argv[2],"%ld", &n_node);
         sscanf(argv[3],"%d", &mode);
 
-        printf("%s , %d, %d\n", output,n_node,mode);
+        printf("%s , %ld, %d\n", output,n_node,mode);
         if(mode == 0 || mode == 1){
             t=graph_fully_connected_disconnected(n_node,mode);
             graph_save_to_file(t, output);
