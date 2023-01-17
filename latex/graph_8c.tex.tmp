@@ -1,0 +1,273 @@
+\hypertarget{graph_8c}{}\doxysection{common/src/graph.c File Reference}
+\label{graph_8c}\index{common/src/graph.c@{common/src/graph.c}}
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}graph.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}stack.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}khash.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}linkedlist.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}random.\+h\char`\"{}}\newline
+Include dependency graph for graph.\+c\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{graph_8c_abd8bbcfabb3ddef2ccaafb9928a37b95}\label{graph_8c_abd8bbcfabb3ddef2ccaafb9928a37b95}} 
+int {\bfseries min} (int a, int b)
+\item 
+\mbox{\Hypertarget{graph_8c_acb56aa20d2f47ee35347989c47c38c7b}\label{graph_8c_acb56aa20d2f47ee35347989c47c38c7b}} 
+graph\+\_\+t $\ast$ {\bfseries graph\+\_\+init} ()
+\item 
+\mbox{\Hypertarget{graph_8c_a6c364ebe0da93e37d279244116905e49}\label{graph_8c_a6c364ebe0da93e37d279244116905e49}} 
+void {\bfseries graph\+\_\+free} (graph\+\_\+t $\ast$G)
+\item 
+\mbox{\Hypertarget{graph_8c_a675413568799b0a7566348aa77f25d15}\label{graph_8c_a675413568799b0a7566348aa77f25d15}} 
+int {\bfseries graph\+\_\+get\+\_\+num\+\_\+vertex} (graph\+\_\+t $\ast$G)
+\item 
+\mbox{\Hypertarget{graph_8c_a5e2ce4d852eac3d59f53edd8983e8c1b}\label{graph_8c_a5e2ce4d852eac3d59f53edd8983e8c1b}} 
+void {\bfseries graph\+\_\+insert\+\_\+vertex} (graph\+\_\+t $\ast$G, int v)
+\item 
+\mbox{\Hypertarget{graph_8c_a9031f7f1870c39cc2cba0aa5608058d8}\label{graph_8c_a9031f7f1870c39cc2cba0aa5608058d8}} 
+void {\bfseries graph\+\_\+insert\+\_\+edge} (graph\+\_\+t $\ast$G, int u, int v)
+\item 
+\mbox{\Hypertarget{graph_8c_a5e77b2c8fde09a7f5ba0516bda570d13}\label{graph_8c_a5e77b2c8fde09a7f5ba0516bda570d13}} 
+void {\bfseries graph\+\_\+delete\+\_\+edge} (graph\+\_\+t $\ast$G, int u, int v)
+\item 
+void \mbox{\hyperlink{graph_8c_ac5f98c1011c7e0f02f3ddfdfd04b557b}{graph\+\_\+delete\+\_\+vertex}} (graph\+\_\+t $\ast$G, int v)
+\begin{DoxyCompactList}\small\item\em Deletes a vertex and every edge incident on the vertex. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{graph_8c_ab67410d3c53f6f1f92908be8a90ad995}\label{graph_8c_ab67410d3c53f6f1f92908be8a90ad995}} 
+void {\bfseries graph\+\_\+tarjan\+\_\+helper} (graph\+\_\+t $\ast$G, int node, khash\+\_\+t(m32) $\ast$disc, khash\+\_\+t(m32) $\ast$low, \mbox{\hyperlink{structlinkedlist__int}{linkedlist\+\_\+int}} $\ast$stack, khash\+\_\+t(m32) $\ast$stack\+Member, int $\ast$time, array\+\_\+int $\ast$result)
+\item 
+\mbox{\Hypertarget{graph_8c_a7889de5b4031ad8100fa6ac37d8392f6}\label{graph_8c_a7889de5b4031ad8100fa6ac37d8392f6}} 
+array\+\_\+int $\ast$ {\bfseries graph\+\_\+tarjan} (graph\+\_\+t $\ast$G)
+\item 
+\mbox{\Hypertarget{graph_8c_aa167e922a8e42481edb364dd723eb3d4}\label{graph_8c_aa167e922a8e42481edb364dd723eb3d4}} 
+void {\bfseries graph\+\_\+tarjan\+\_\+foreach\+\_\+helper} (graph\+\_\+t $\ast$G, int node, khash\+\_\+t(m32) $\ast$disc, khash\+\_\+t(m32) $\ast$low, \mbox{\hyperlink{structlinkedlist__int}{linkedlist\+\_\+int}} $\ast$stack, khash\+\_\+t(m32) $\ast$stack\+Member, int $\ast$time, array\+\_\+int $\ast$scc, void($\ast$f)(array\+\_\+int $\ast$))
+\item 
+\mbox{\Hypertarget{graph_8c_adb71a3e52b70daf9a1f91efced7fd1a5}\label{graph_8c_adb71a3e52b70daf9a1f91efced7fd1a5}} 
+void {\bfseries graph\+\_\+tarjan\+\_\+foreach} (graph\+\_\+t $\ast$G, void($\ast$f)(array\+\_\+int $\ast$))
+\item 
+array\+\_\+int $\ast$ \mbox{\hyperlink{graph_8c_a3873eaea6c1f17fa7028b7946872600d}{graph\+\_\+serialize}} (graph\+\_\+t $\ast$G, int n, khint\+\_\+t $\ast$bucket)
+\item 
+\mbox{\Hypertarget{graph_8c_ae8e0eca0161365f9770e5d45c834cf6d}\label{graph_8c_ae8e0eca0161365f9770e5d45c834cf6d}} 
+void {\bfseries graph\+\_\+deserialize} (graph\+\_\+t $\ast$G, array\+\_\+int $\ast$buff)
+\item 
+\mbox{\Hypertarget{graph_8c_ae33cfb273887bd4349d2e42b4064e2d2}\label{graph_8c_ae33cfb273887bd4349d2e42b4064e2d2}} 
+void {\bfseries graph\+\_\+save\+\_\+to\+\_\+file} (graph\+\_\+t $\ast$G, char $\ast$filename)
+\item 
+\mbox{\Hypertarget{graph_8c_af05df5d8c6999573ba0e334c7f6ae513}\label{graph_8c_af05df5d8c6999573ba0e334c7f6ae513}} 
+graph\+\_\+t $\ast$ {\bfseries graph\+\_\+load\+\_\+from\+\_\+file} (char $\ast$filename)
+\item 
+\mbox{\Hypertarget{graph_8c_a0ed97650c201c27efbe59c6f2717504c}\label{graph_8c_a0ed97650c201c27efbe59c6f2717504c}} 
+void {\bfseries graph\+\_\+merge\+\_\+vertices} (graph\+\_\+t $\ast$G, int dest, array\+\_\+int $\ast$src)
+\item 
+void \mbox{\hyperlink{graph_8c_a9c8eef1d5e51a9ade0a654f9ad5c685b}{graph\+\_\+merge}} (graph\+\_\+t $\ast$to, graph\+\_\+t $\ast$from, double p)
+\begin{DoxyCompactList}\small\item\em Merge 2 graph and the merged graph is in graph\+\_\+t $\ast$ to. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{graph_8c_ac919cab75554fcb6dd20f1c5607c68e7}\label{graph_8c_ac919cab75554fcb6dd20f1c5607c68e7}} 
+graph\+\_\+t $\ast$ {\bfseries graph\+\_\+random} (int max\+\_\+n\+\_\+node, int mean\+\_\+edges, double variance\+\_\+edges)
+\item 
+\mbox{\Hypertarget{graph_8c_a08acc1ae6d4796ac961a68dd767233b2}\label{graph_8c_a08acc1ae6d4796ac961a68dd767233b2}} 
+graph\+\_\+t $\ast$ {\bfseries graph\+\_\+fully\+\_\+connected\+\_\+disconnected} (int max\+\_\+n\+\_\+node, int is\+Fully\+Connected)
+\item 
+\mbox{\Hypertarget{graph_8c_a5362c8bcda308f3fb35f7262afb05396}\label{graph_8c_a5362c8bcda308f3fb35f7262afb05396}} 
+graph\+\_\+t $\ast$ {\bfseries graph\+\_\+copy} (graph\+\_\+t $\ast$from)
+\item 
+void \mbox{\hyperlink{graph_8c_aaa8e50b85caf53ed334f81361bd9c19d}{graph\+\_\+print\+\_\+debug}} (graph\+\_\+t $\ast$G)
+\item 
+\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$ \mbox{\hyperlink{graph_8c_a5e1742aecae1a04047d8206cc2d95c48}{scc\+\_\+set\+\_\+init}} ()
+\item 
+void \mbox{\hyperlink{graph_8c_a8c6cfd0e1a260549cffd6e1dc95a48b2}{scc\+\_\+set\+\_\+free}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S)
+\item 
+void \mbox{\hyperlink{graph_8c_a8549c916368233448ccf00534b504749}{scc\+\_\+set\+\_\+add}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S, int scc\+\_\+id, array\+\_\+int $\ast$nodes)
+\item 
+void \mbox{\hyperlink{graph_8c_a74ea6f1044877da655f14a3a1ce2fb30}{scc\+\_\+set\+\_\+print\+\_\+debug}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S)
+\item 
+void \mbox{\hyperlink{graph_8c_a7dbb2e7d19233634bfaddc3634a43a68}{scc\+\_\+set\+\_\+merge}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$dest, \mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$src)
+\item 
+bool \mbox{\hyperlink{graph_8c_a682977e02dc5974253b0022488fe5468}{scc\+\_\+set\+\_\+contains}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$b, \mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$a)
+\item 
+\mbox{\Hypertarget{graph_8c_a6c6a48fdae7bd73b1ca4d88f00213a83}\label{graph_8c_a6c6a48fdae7bd73b1ca4d88f00213a83}} 
+array\+\_\+int $\ast$ {\bfseries scc\+\_\+set\+\_\+serialize} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S)
+\item 
+\mbox{\Hypertarget{graph_8c_acc68d0a35098cd09c81eef58ac345427}\label{graph_8c_acc68d0a35098cd09c81eef58ac345427}} 
+void {\bfseries scc\+\_\+set\+\_\+deserialize} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S, array\+\_\+int $\ast$buff)
+\item 
+void \mbox{\hyperlink{graph_8c_a403d34ed9cdcf8b1db1afb0367fb59c9}{scc\+\_\+set\+\_\+save\+\_\+to\+\_\+file}} (\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$S, char $\ast$filename)
+\item 
+\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$ \mbox{\hyperlink{graph_8c_a3ba807e3fbeeed224587d3a609b84b9b}{scc\+\_\+set\+\_\+load\+\_\+from\+\_\+file}} (char $\ast$filename)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+your name (\href{mailto:you@domain.com}{\texttt{ you@domain.\+com}}) 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2023-\/01-\/17
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2022 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{graph_8c_ac5f98c1011c7e0f02f3ddfdfd04b557b}\label{graph_8c_ac5f98c1011c7e0f02f3ddfdfd04b557b}} 
+\index{graph.c@{graph.c}!graph\_delete\_vertex@{graph\_delete\_vertex}}
+\index{graph\_delete\_vertex@{graph\_delete\_vertex}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{graph\_delete\_vertex()}{graph\_delete\_vertex()}}
+{\footnotesize\ttfamily void graph\+\_\+delete\+\_\+vertex (\begin{DoxyParamCaption}\item[{graph\+\_\+t $\ast$}]{G,  }\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Deletes a vertex and every edge incident on the vertex. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em G} & input graph \\
+\hline
+{\em v} & vertex to be deleted \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a9c8eef1d5e51a9ade0a654f9ad5c685b}\label{graph_8c_a9c8eef1d5e51a9ade0a654f9ad5c685b}} 
+\index{graph.c@{graph.c}!graph\_merge@{graph\_merge}}
+\index{graph\_merge@{graph\_merge}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{graph\_merge()}{graph\_merge()}}
+{\footnotesize\ttfamily void graph\+\_\+merge (\begin{DoxyParamCaption}\item[{graph\+\_\+t $\ast$}]{to,  }\item[{graph\+\_\+t $\ast$}]{from,  }\item[{double}]{p }\end{DoxyParamCaption})}
+
+
+
+Merge 2 graph and the merged graph is in graph\+\_\+t $\ast$ to. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em to} & graph with vertex index from 0 to graph\+\_\+get\+\_\+num\+\_\+vertex(to) \\
+\hline
+{\em from} & graph with vertex index from 0 to graph\+\_\+get\+\_\+num\+\_\+vertex(from) \\
+\hline
+{\em p} & probability of create an edge between a node of graph from and a node of graph to and viceversa \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_aaa8e50b85caf53ed334f81361bd9c19d}\label{graph_8c_aaa8e50b85caf53ed334f81361bd9c19d}} 
+\index{graph.c@{graph.c}!graph\_print\_debug@{graph\_print\_debug}}
+\index{graph\_print\_debug@{graph\_print\_debug}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{graph\_print\_debug()}{graph\_print\_debug()}}
+{\footnotesize\ttfamily void graph\+\_\+print\+\_\+debug (\begin{DoxyParamCaption}\item[{graph\+\_\+t $\ast$}]{G }\end{DoxyParamCaption})}
+
+STRANGE BEHAVIOUR OF kh\+\_\+esist. Sometimes it segfaults.
+
+STRANGE BEHAVIOUR OF kh\+\_\+esist. Sometimes it segfaults.\mbox{\Hypertarget{graph_8c_a3873eaea6c1f17fa7028b7946872600d}\label{graph_8c_a3873eaea6c1f17fa7028b7946872600d}} 
+\index{graph.c@{graph.c}!graph\_serialize@{graph\_serialize}}
+\index{graph\_serialize@{graph\_serialize}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{graph\_serialize()}{graph\_serialize()}}
+{\footnotesize\ttfamily array\+\_\+int$\ast$ graph\+\_\+serialize (\begin{DoxyParamCaption}\item[{graph\+\_\+t $\ast$}]{G,  }\item[{int}]{n,  }\item[{khint\+\_\+t $\ast$}]{bucket }\end{DoxyParamCaption})}
+
+STRANGE BEHAVIOUR OF kh\+\_\+esist. Sometimes it segfaults.\mbox{\Hypertarget{graph_8c_a8549c916368233448ccf00534b504749}\label{graph_8c_a8549c916368233448ccf00534b504749}} 
+\index{graph.c@{graph.c}!scc\_set\_add@{scc\_set\_add}}
+\index{scc\_set\_add@{scc\_set\_add}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_add()}{scc\_set\_add()}}
+{\footnotesize\ttfamily void scc\+\_\+set\+\_\+add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{S,  }\item[{int}]{scc\+\_\+id,  }\item[{array\+\_\+int $\ast$}]{nodes }\end{DoxyParamCaption})}
+
+@function @abstract Add a new SCC to the set handling merges if needed. 
+\begin{DoxyParams}{Parameters}
+{\em S} & the reference to the scc\+\_\+set. \\
+\hline
+{\em scc\+\_\+id} & the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC. \\
+\hline
+{\em nodes} & the nodes of the SCC. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a682977e02dc5974253b0022488fe5468}\label{graph_8c_a682977e02dc5974253b0022488fe5468}} 
+\index{graph.c@{graph.c}!scc\_set\_contains@{scc\_set\_contains}}
+\index{scc\_set\_contains@{scc\_set\_contains}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_contains()}{scc\_set\_contains()}}
+{\footnotesize\ttfamily bool scc\+\_\+set\+\_\+contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{b,  }\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{a }\end{DoxyParamCaption})}
+
+@function @abstract Check if scc set b contains all of scc set a\textquotesingle{}s content. 
+\begin{DoxyParams}{Parameters}
+{\em a} & the first scc\+\_\+set. \\
+\hline
+{\em b} & the second scc\+\_\+set. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a8c6cfd0e1a260549cffd6e1dc95a48b2}\label{graph_8c_a8c6cfd0e1a260549cffd6e1dc95a48b2}} 
+\index{graph.c@{graph.c}!scc\_set\_free@{scc\_set\_free}}
+\index{scc\_set\_free@{scc\_set\_free}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_free()}{scc\_set\_free()}}
+{\footnotesize\ttfamily void scc\+\_\+set\+\_\+free (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{S }\end{DoxyParamCaption})}
+
+@function @abstract Destroy an scc\+\_\+set 
+\begin{DoxyParams}{Parameters}
+{\em S} & The scc\+\_\+set to be destroyed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a5e1742aecae1a04047d8206cc2d95c48}\label{graph_8c_a5e1742aecae1a04047d8206cc2d95c48}} 
+\index{graph.c@{graph.c}!scc\_set\_init@{scc\_set\_init}}
+\index{scc\_set\_init@{scc\_set\_init}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_init()}{scc\_set\_init()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}}$\ast$ scc\+\_\+set\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+@function @abstract Initialize a new scc\+\_\+set \begin{DoxyReturn}{Returns}
+The scc\+\_\+set 
+\end{DoxyReturn}
+\mbox{\Hypertarget{graph_8c_a3ba807e3fbeeed224587d3a609b84b9b}\label{graph_8c_a3ba807e3fbeeed224587d3a609b84b9b}} 
+\index{graph.c@{graph.c}!scc\_set\_load\_from\_file@{scc\_set\_load\_from\_file}}
+\index{scc\_set\_load\_from\_file@{scc\_set\_load\_from\_file}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_load\_from\_file()}{scc\_set\_load\_from\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}}$\ast$ scc\+\_\+set\+\_\+load\+\_\+from\+\_\+file (\begin{DoxyParamCaption}\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+@function @abstract Load scc set from file 
+\begin{DoxyParams}{Parameters}
+{\em filename} & the file to load the set from. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a7dbb2e7d19233634bfaddc3634a43a68}\label{graph_8c_a7dbb2e7d19233634bfaddc3634a43a68}} 
+\index{graph.c@{graph.c}!scc\_set\_merge@{scc\_set\_merge}}
+\index{scc\_set\_merge@{scc\_set\_merge}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_merge()}{scc\_set\_merge()}}
+{\footnotesize\ttfamily void scc\+\_\+set\+\_\+merge (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{dest,  }\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{src }\end{DoxyParamCaption})}
+
+@function @abstract Merge src scc\+\_\+set into dest. 
+\begin{DoxyParams}{Parameters}
+{\em dest} & the reference of the destination scc\+\_\+set. \\
+\hline
+{\em src} & the reference of the source scc\+\_\+set. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a74ea6f1044877da655f14a3a1ce2fb30}\label{graph_8c_a74ea6f1044877da655f14a3a1ce2fb30}} 
+\index{graph.c@{graph.c}!scc\_set\_print\_debug@{scc\_set\_print\_debug}}
+\index{scc\_set\_print\_debug@{scc\_set\_print\_debug}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_print\_debug()}{scc\_set\_print\_debug()}}
+{\footnotesize\ttfamily void scc\+\_\+set\+\_\+print\+\_\+debug (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{S }\end{DoxyParamCaption})}
+
+@function @abstract Debug print an scc\+\_\+set 
+\begin{DoxyParams}{Parameters}
+{\em S} & the reference to the scc\+\_\+set. \\
+\hline
+{\em scc\+\_\+id} & the id of the SCC to be added. By convention, it is the lowest among the ids of the nodes in the SCC. \\
+\hline
+{\em nodes} & the nodes of the SCC. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{graph_8c_a403d34ed9cdcf8b1db1afb0367fb59c9}\label{graph_8c_a403d34ed9cdcf8b1db1afb0367fb59c9}} 
+\index{graph.c@{graph.c}!scc\_set\_save\_to\_file@{scc\_set\_save\_to\_file}}
+\index{scc\_set\_save\_to\_file@{scc\_set\_save\_to\_file}!graph.c@{graph.c}}
+\doxysubsubsection{\texorpdfstring{scc\_set\_save\_to\_file()}{scc\_set\_save\_to\_file()}}
+{\footnotesize\ttfamily void scc\+\_\+set\+\_\+save\+\_\+to\+\_\+file (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structscc__set__t}{scc\+\_\+set\+\_\+t}} $\ast$}]{S,  }\item[{char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+@function @abstract Write scc set to file 
+\begin{DoxyParams}{Parameters}
+{\em S} & the scc\+\_\+set to be saved. \\
+\hline
+{\em filename} & the file to be saved to. \\
+\hline
+\end{DoxyParams}
