@@ -11,8 +11,9 @@ from prettytable import MSWORD_FRIENDLY
 import re
 
 execution_type = "cuda_mpi"
+
 config_sequential = {
-	'vertices':{
+				'vertices':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -159,6 +160,33 @@ elif execution_type == "mpi":
 					'speedup':False
 				}
 			})
+elif execution_type == "sequential_pre":
+		config.update( {	
+				'verteces':{
+					'jpg':False,
+					'speedup':False
+				},
+				'vertices_after':{
+					'jpg':False,
+					'speedup':False
+				},
+				'init':{
+					'jpg':False,
+					'speedup':False
+				},
+				'destroy':{
+					'jpg':False,
+					'speedup':False
+				},
+				'tarjan':{
+					'jpg':False,
+					'speedup':False
+				},
+				'time_preprocess':{
+					'jpg':False,
+					'speedup':False
+				}
+			})
 
 config.update({
 				'user':{
@@ -292,6 +320,8 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		#print(means)
 		if execution_type == "mpi":
 		    header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		elif execution_type ==  "sequential_pre":
+			header = {'values':['Version','Threads','vertices','vertices_after','init','destroy','tarjan','time_preprocess','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "sequential":
 		    #header = {'values':['vertices','init','destroy','tarjan','user','system','elapsed','pCPU']}
 			header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}

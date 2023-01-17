@@ -5,3 +5,5 @@ mpi/*.btr
 data/
 measurements/measure
 measurements/__pycache__
+latex/
+html/
