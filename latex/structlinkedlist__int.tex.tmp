@@ -3,17 +3,7 @@
 
 
 Collaboration diagram for linkedlist\+\_\+int\+:
-<<<<<<< HEAD
-\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=219pt]{structlinkedlist__int__coll__graph}
-\end{center}
-\end{figure}
-=======
 % FIG 0
->>>>>>> ed646cbfa7760d3b20067f728ec884ca17abc847
 \doxysubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 

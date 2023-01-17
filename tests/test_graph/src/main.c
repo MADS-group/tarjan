@@ -125,6 +125,9 @@ void test_serialize(){
         graph_insert_edge(graph, i, 5);
     }
     khint_t pos = 0;
+    array_int *serial = graph_serialize(graph,2000,&pos);
+    array_int_print(serial);
+    pos = 0;
     array_int *serial1 = graph_serialize(graph,2,&pos);
     array_int *serial2 = graph_serialize(graph,2,&pos);
     array_int *serial3 = graph_serialize(graph,2,&pos);
