@@ -353,7 +353,7 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     int words = 0, node_a, node_b, _, serialized = 0; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list;
     array_int_push(result, 0); //Placeholder for number of total words to read after the first one
-    array_int_push(result,0); //Placeholder for number vertexes serialized
+    array_int_push(result, 0); //Placeholder for number vertexes serialized
     words++;
     khint_t i;
     for(i = *bucket; i != kh_end(G->adj) && serialized < n; ++i){
