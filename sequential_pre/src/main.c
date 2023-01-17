@@ -82,7 +82,7 @@ void preprocess(cuda_graph_t *cuda_graph, int *bitmask, int n_vertices){
             if(elim){
                 stop = false;
                 set_bit(bitmask, vertex_id); // Mark the vertex as deleted
-                printf("Deleting %d\n",vertex_id);
+                //printf("Deleting %d\n",vertex_id);
                 continue; // Skip to the next vertex
             }
 
@@ -98,7 +98,7 @@ void preprocess(cuda_graph_t *cuda_graph, int *bitmask, int n_vertices){
             if(elim){
                 stop = false;
                 set_bit(bitmask, vertex_id); // Mark the vertex as deleted
-                printf("Deleting %d\n",vertex_id);
+                //printf("Deleting %d\n",vertex_id);
                 continue; // Skip to the next vertex
             }
         }
