@@ -92,14 +92,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a755b505d86588dd13b5a0d5af215db4d"><td class="memItemLeft" align="right" valign="top"><a id="a755b505d86588dd13b5a0d5af215db4d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>callback</b> (array_int *scc)</td></tr>
 <tr class="separator:a755b505d86588dd13b5a0d5af215db4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe4519dc9cac0f0c0e30f8718a357cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mpi__logic_8c.html#afe4519dc9cac0f0c0e30f8718a357cad">master_schedule</a> (graph_t *graph, int N, int n_slaves, scc_set_t *SCCs)</td></tr>
+<tr class="memitem:afe4519dc9cac0f0c0e30f8718a357cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mpi__logic_8c.html#afe4519dc9cac0f0c0e30f8718a357cad">master_schedule</a> (graph_t *graph, int N, int n_slaves, <a class="el" href="structscc__set__t.html">scc_set_t</a> *SCCs)</td></tr>
 <tr class="memdesc:afe4519dc9cac0f0c0e30f8718a357cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function divides the work, gives the work to the slaves and computes the SCCs.  <a href="mpi__logic_8c.html#afe4519dc9cac0f0c0e30f8718a357cad">More...</a><br /></td></tr>
 <tr class="separator:afe4519dc9cac0f0c0e30f8718a357cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a487f136cb96d7df1937358a6a3a3e5"><td class="memItemLeft" align="right" valign="top"><a id="a0a487f136cb96d7df1937358a6a3a3e5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>master_work</b> (int rank, int size, char *filename, char *outputfilename)</td></tr>
 <tr class="separator:a0a487f136cb96d7df1937358a6a3a3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d6bdb6c07e7023c6a252d9ae031cd6e"><td class="memItemLeft" align="right" valign="top"><a id="a3d6bdb6c07e7023c6a252d9ae031cd6e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>master_work2</b> (int rank, int size, graph_t *graph, scc_set_t *SCCs, char *outputfilename, double time_init)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>master_work2</b> (int rank, int size, graph_t *graph, <a class="el" href="structscc__set__t.html">scc_set_t</a> *SCCs, char *outputfilename, double time_init)</td></tr>
 <tr class="separator:a3d6bdb6c07e7023c6a252d9ae031cd6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa80b6078ca0ba039351ce42580f896ec"><td class="memItemLeft" align="right" valign="top"><a id="aa80b6078ca0ba039351ce42580f896ec"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>slave_work</b> (int rank)</td></tr>
@@ -147,7 +147,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>time_merge_graph</b
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">scc_set_t *&#160;</td>
+          <td class="paramtype"><a class="el" href="structscc__set__t.html">scc_set_t</a> *&#160;</td>
           <td class="paramname"><em>SCCs</em>&#160;</td>
         </tr>
         <tr>
