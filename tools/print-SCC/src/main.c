@@ -28,6 +28,14 @@
  * 
  */
 
+/**
+ * @file main.c
+ * @brief this tool print to standard output the SCC discovered from a file
+ * 
+ * the first parameter is the path of the SCC file to be printed \n
+ *
+ * 
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

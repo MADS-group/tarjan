@@ -28,6 +28,18 @@
  * 
  */
 
+
+/**
+ * @file main.c
+ * @brief this tool generate a random graph with max_n_node node and each node have mean number of edge with a variance_edge
+ * 
+ * the first parameter is the path of graph generated \n
+ * the second parameter is a integer that indicate the number of node of graph \n
+ * the thrid parameter is an integer that indicate the the mean of edge for each node \n
+ * the fourth parameter is the variance of number of edge for each node \n
+ *
+ * 
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

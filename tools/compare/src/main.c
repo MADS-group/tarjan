@@ -28,6 +28,16 @@
  * 
  */
 
+/**
+ * @file main.c
+ * @brief this tool compare two different SCC discovered file 
+ * 
+ * the first parameter is the path of the first SCC file to be compered \n
+ * the second parameter is the path of the second SCC file to be compered \n
+ *
+ * 
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

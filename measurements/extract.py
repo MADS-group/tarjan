@@ -74,7 +74,52 @@ config_sequential = {
 					'jpg':True,
 					'speedup':True
 					}
-}
+				}
+
+config_sequential_pre = {		
+				'verteces':{
+					'jpg':False,
+					'speedup':False
+				},
+				'verteces_after':{
+					'jpg':False,
+					'speedup':False
+				},
+				'init':{
+					'jpg':False,
+					'speedup':False
+				},
+				'destroy':{
+					'jpg':False,
+					'speedup':False
+				},
+				'tarjan':{
+					'jpg':False,
+					'speedup':False
+				},
+				'preprocess_time':{
+					'jpg':False,
+					'speedup':False
+				},
+				'user':{
+					'jpg':False,
+					'speedup':False
+					},
+				'system':{
+					'jpg':False,
+					'speedup':False
+					},
+				'pCPU':{
+					'jpg':False,
+					'speedup':False
+					},
+				'elapsed':{
+					'jpg':True,
+					'speedup':True
+					}
+				}
+
+
 config = {}
 if execution_type == "sequential":
 
@@ -211,7 +256,7 @@ elif execution_type == "sequential_pre":
 					'jpg':False,
 					'speedup':False
 				},
-				'time_preprocess':{
+				'preprocess_time':{
 					'jpg':False,
 					'speedup':False
 				}
@@ -342,7 +387,11 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 	for folder in folders:
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
-		means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential",folder),config_sequential)
+		if execution_type == "mpi":
+			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential",folder),config_sequential)
+		elif execution_type == "cuda" or execution_type == "cuda_mpi":
+			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential_pre",folder),config_sequential_pre)
+		
 		temp = _extract(joined_path,cols)
 		means.update(temp)
 		
@@ -350,7 +399,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		if execution_type == "mpi":
 		    header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type ==  "sequential_pre":
-			header = {'values':['Version','Threads','vertices','vertices_after','init','destroy','tarjan','time_preprocess','user','system','pCPU','elapsed','Speedup','Efficiency']}
+			header = {'values':['Version','Threads','verteces','verteces_after','init','destroy','tarjan','preprocess_time','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "sequential":
 		    #header = {'values':['vertices','init','destroy','tarjan','user','system','elapsed','pCPU']}
 			header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}

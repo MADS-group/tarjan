@@ -28,6 +28,14 @@
  * 
  */
 
+/**
+ * @file main.c
+ * @brief this program 
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -36,12 +44,6 @@
 #include "args.h"
 #include "measurement.h"
 #include <sys/resource.h>
-/*! @function
-  @abstract      call sequential tarjan on graph from file or from shared memory
-  @param  argc   number of parameter, considering the 1st is name of program
-  @param  argv   in case of graph from file the second parameters is the path of grapf file, in case
-                graph is from shared memory the second paramenters is ID of shared memory
- */
 
 scc_set_t *SCCs;
 
@@ -51,6 +53,13 @@ void callback(array_int * scc){
     scc_set_add(SCCs,scc_id,scc);
 }
 
+/**
+ * @brief call sequential tarjan on graph from file or from shared memory
+ * 
+ * @param argc number of parameter, considering the 1st is name of program
+ * @param argv in case of graph from file the second parameters is the path of grapf file, in case graph is from shared memory the second paramenters is ID of shared memory
+ * @return int 
+ */
 int main(int argc, char* argv[]){
     main_parameters_t c;
     struct rlimit rl;
