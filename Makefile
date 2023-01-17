@@ -1,6 +1,6 @@
 # Author: Antonio Langella
 
-TARGETS  := common sequential tests tools
+TARGETS  := common sequential sequential_pre tests tools
 BIN_DIR := ./bin
 DATA_DIR := ./data
 
