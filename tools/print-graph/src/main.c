@@ -28,6 +28,15 @@
  * 
  */
 
+/**
+ * @file main.c
+ * @brief this tool print to standard output the graph from a file
+ * 
+ * the first parameter is the path of the graph file to be printed \n
+ *
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
