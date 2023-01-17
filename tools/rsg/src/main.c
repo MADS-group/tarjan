@@ -35,7 +35,7 @@
  * 
  * the first parameter is the path of graph generated
  * the second parameter is a integer that indicate the number of node of graph
- * the thrid parameter is an integer that indicatethe the mean of edge for each node
+ * the thrid parameter is an integer that indicate the the mean of edge for each node
  * the fourth parameter is the variance of number of edge for each node 
  *
  * @copyright Copyright (c) 2023
