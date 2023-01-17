@@ -1,7 +1,13 @@
-/*  
- * Graph implementation with adjacency maps. adj is an hash table containing adjacency sets
- * Author: Antonio Langella 
-*/
+/**
+ * @file graph.c
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2023-01-17
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -513,11 +519,13 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
 
 */
 
-/*! @function
-  @abstract      merge 2 graph and the merged graph is in graph_t * to
-  @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
-  @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
-  @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
+
+ /**
+ * @brief Merge 2 graph and the merged graph is in graph_t * to
+ * 
+ * @param  to     graph with vertex index from 0 to graph_get_num_vertex(to)
+ * @param  from   graph with vertex index from 0 to graph_get_num_vertex(from)
+ * @param p       probability of create an edge between a node of graph from and a node of graph to  and viceversa
  */
 void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a graph from and merge both, return graph is in graph to
     int i=0;
