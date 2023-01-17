@@ -478,48 +478,6 @@ void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     }
 }
 
-/*
-    khash_t(mm32) #mm32 è una ht key: int e val: *khash_t(m32)
-    khash_t(m32) #m32 è una ht key: int e val: int
-
-    # Prendere un elemento 
-    khint_t k;
-    k = kh_get(m32, ht, key); #1: tipo della ht 2:riferimento alla ht 3: key
-    # Se key è assente dalla ht: k == kh_end(ht)
-    value = kh_value(ht, k); #1: riferimento alla ht 2: variabile di appoggio
-    
-    #Modificare un elemento
-    khint_t k;
-    k = kh_get(m32, ht, key); #1: tipo della ht 2:riferimento alla ht 3: key
-    # Se key è assente dalla ht: k == kh_end(ht)
-    kh_value(ht, k) = value; #1: riferimento alla ht 2: variabile di appoggio
-
-    #Inserire un elemento (se non esiste) e modificare value
-    khint_t k;
-    k = kh_put(m32,ht,key,&ret); #1: tipo della ht 2: riferimento alla ht 3: key che vuoi inserire 4: riferimento a una variabile intera
-    # k è la posizione dove si trova la chave appena inserita se è stata inserita (senza valore) OPPURE la posizione dove già era presente la chiave se già c'era.
-    # ret == 0 se l'elemento era già nella ht e ret>0 se invece non era presente (ed è stato inserito adesso)
-    kh_value(ht, k) = value #1: riferimento alla ht 2: variabile di appoggio
-
-    #Vedere se chiave è presente nella ht
-    k = kh_get(m32, ht, key);
-    kh_exist(ht, k); #restituisce true se esiste o false altrimenti
-
-    #Per scorrere tutti gli elementi nella ht
-    kh_foreach(ht, key, value, { #1: hash table, 2: variablie dove viene messa la key, 3: variabile dove viene messo il value, 4: blocco di codice eseguito per ogni coppia (key,value)
-        #...
-    });
-
-    #Hash annidate - voglio ciclare tutti i nodi figli di a (a->*)
-    k = kh_get(mm32, G->adj, a);
-    adj_list = kh_value(G->adj, k);
-    foreach(adj_list, b, _, {
-        #fai qualcosa
-    });
-
-*/
-
-
  /**
  * @brief Merge 2 graph and the merged graph is in graph_t * to
  * 
@@ -567,6 +525,14 @@ void graph_merge(graph_t *to, graph_t *from, double p){ //give a graph to and a 
     
 }
 
+/**
+ * @brief create a random graph with max_n_node node and each node have mean number of edge with a variance_edge
+ * 
+ * @param max_n_node number of node of graph
+ * @param mean_edges mean edge for each node
+ * @param variance_edges variance of number of edge for each node 
+ * @return graph_t* graph generated
+ */
 graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){ 
     int maxNumberOfEdges;
     graph_t *graph;
@@ -603,7 +569,13 @@ graph_t *graph_random(int max_n_node, int mean_edges, double variance_edges){
     }
     return graph;
 }
-
+/**
+ * @brief create a graph fully connected or fully disconnected with max_n_node
+ * 
+ * @param max_n_node number of node of graph
+ * @param isFullyConnected 0 create a fully disconneted graph 1 create a fully connected graph
+ * @return graph_t* graph generated
+ */
 graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected){ 
     graph_t *graph;
     int i=0;
@@ -620,10 +592,15 @@ graph_t *graph_fully_connected_disconnected(int max_n_node, int isFullyConnected
             }
         }
     }
-    //graph_print_debug(graph);
     return graph;
 }
 
+/**
+ * @brief geneate a copy of a graph
+ * 
+ * @param from graph to be copied 
+ * @return graph_t* graph generated
+ */
 graph_t * graph_copy(graph_t * from){
     int i=0;
     int initial_number_of_vertex_graph_from=graph_get_num_vertex(from);
@@ -648,7 +625,11 @@ graph_t * graph_copy(graph_t * from){
     }
     return to;
 }
-
+/**
+ * @brief print on standard output graph in input: number of edged, for earch line node -> adjacency list and node-> inverted adjacency list
+ * 
+ * @param G graph to be printed
+ */
 void graph_print_debug(graph_t *G){
     int key;
     khash_t(m32) *value;

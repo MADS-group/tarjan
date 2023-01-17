@@ -81,6 +81,26 @@ elif [[ $1 == "mpi_cuda" ]]; then
 			printf "\n"
 		done
 	done
+elif [[ $1 == "sequential_pre" ]]; then
+		for input_graph in "${ARRAY_RC[@]}"; do
+		for opt in "${ARRAY_OPT[@]}"; do
+			ths_str=$(printf "%02d" $ths)
+			
+			OUT_FILE=$SCRIPTPATH/measure/$1/graph_type-$input_graph-O$opt/$1-graph_type-$input_graph-O$opt.csv
+		
+			mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
+			
+			echo $(basename $OUT_FILE)
+			echo "verteces,verteces_after,init,destroy,tarjan,preprocess_time,user,system,elapsed,pCPU" >$OUT_FILE
+			
+			for ((i = 0 ; i < $NMEASURES; i++)); do
+				{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin; } 2>&1 | sed -e 's/%/;/g'>> $OUT_FILE
+				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+			done
+			printf "\n"
+		done
+	done
 else
 	for input_graph in "${ARRAY_RC[@]}"; do
 		for ths in "${ARRAY_THS[@]}"; do
