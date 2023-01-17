@@ -28,6 +28,25 @@
  * 
  */
 
+/**
+ * @file main.c
+ * @brief this tool generate a graph upscaled starting from a seed graph
+ * 
+ * this tool create 2^n copy of the graph seed and create edge \n
+ * between different copy \n
+ * the first parameter is the path of seed graph \n
+ * the second parameter is the path of graph generated \n
+ * the thrid parameter is an integer n that indicate the 2^n copy to be created \n
+ * the fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa \n
+ *
+ * es: seed 10 edge e second parameter 1 graph generated 20 edge \n  
+ * es: seed 10 edge e second parameter 2 graph generated 40 edge \n  
+ * es: seed 10 edge e second parameter 3 graph generated 80 edge \n  
+ * es: seed 10 edge e second parameter 4 graph generated 160 edge \n
+ *
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
