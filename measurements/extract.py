@@ -39,7 +39,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda_mpi"
+execution_type = "mpi"
 
 config_sequential = {
 				'vertices':{
@@ -334,9 +334,13 @@ def _make_table(header,rows,print_table=False,save=True,name=""):
 		raise Exception("No filename to save file")
 	x = PrettyTable()
 	x.field_names = header
+	print(header)
+	print(rows)
+	df =  pd.DataFrame(data=rows, columns=header)
 	x.add_rows(rows)
 	if save:
-		_save_table(x,name)
+		#_save_table(x,name)
+		_save_table_to_latex(df,name)
 	if print_table:
 		print(x)
 	return x
@@ -347,6 +351,14 @@ def _save_table(table,filename):
 		table.set_style(MSWORD_FRIENDLY)
 		data = table.get_string()
 		table_file.write(data)
+
+def _save_table_to_latex(df: pd.DataFrame,filename):
+	with open(filename,"w") as table_file:
+		column_format = ""
+		for col in df.columns:
+			column_format += "|c"
+		column_format += "|"
+		table_file.write(df.to_latex(index=False, float_format="{:0.3f}".format, column_format=column_format))
 
 def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	if save and not name:
@@ -447,7 +459,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
 		opt = splitted_folder[2]
-		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.csv"
+		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.tex"
 		plot_filename = joined_path + "/speedup-" + str(size) + "-" + str(opt) +  ".jpg"
 
 		table = _make_table(header['values'],cells['values'],name=table_filename)

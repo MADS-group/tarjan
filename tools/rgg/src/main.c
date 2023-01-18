@@ -44,7 +44,6 @@
  * es: seed 10 edge e second parameter 3 graph generated 80 edge \n  
  * es: seed 10 edge e second parameter 4 graph generated 160 edge \n
  *
- * @copyright Copyright (c) 2023
  * 
  */
 #include <stdlib.h>
