@@ -37,7 +37,7 @@
 #include "graph.h"
 #include "measurement.h"
 
-#define THREADxBLOCK 1024
+#define THREADxBLOCK 512
 
 using namespace std;
 
@@ -57,10 +57,10 @@ int main(int argc, char **argv){
     bool terminate = false;
     bool *d_terminate;
 
-    int num;
+    int num, thread_number;
     double temp=0.0,time_tarjan = 0.0,time_init = 0.0,time_preprocess=0.0,time_graph_conversion=0.0,time_destroy=0.0;
 
-    if(argc != 3 ){
+    if(argc < 3 || argc > 4){
         printf("Error! Wrong or missing parameters. Please run the program specifing the path of the graph to compute and the name the output file.\n");
         exit(1);
     }
@@ -74,8 +74,17 @@ int main(int argc, char **argv){
     int n_vertices = cuda_graph->n_vertex;
     int n_bitmask = ((n_vertices-1)/32)+1;
     bitmask = new int[n_bitmask](); //Instantiate an array and initialize it to 0
+    //Choose thread number
+    if(argc == 3){ //No thread number provided -> thread number equal the number of vertices
+      thread_number = n_vertices;
+    } else { //Thread number provided as argv[3]
+      sscanf(argv[3],"%d",&thread_number);
+      if(thread_number < 0){ //Negative thread numbers have a special meaning: -n -> n/4 * n_vertices
+        thread_number = ((-thread_number)/4.0) * n_vertices;
+      }
+    }
     //Eseguire il kernel
-    int gridsize = ((n_vertices-1)/THREADxBLOCK) + 1; //Numero blocchi su una dimensione della griglia
+    int gridsize = ((thread_number-1)/THREADxBLOCK) + 1; //Numero blocchi su una dimensione della griglia
     dim3 dimGrid(gridsize);
     dim3 dimBlock(THREADxBLOCK);
 
