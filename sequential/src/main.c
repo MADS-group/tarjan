@@ -30,7 +30,10 @@
 
 /**
  * @file main.c
- * @brief this program 
+ * @brief call sequential tarjan on graph from file 
+ * 
+ * the first parameter is the path of the graph whose SSC we want to find with tarjan \n
+ * the second parameter is the path of resul file with SCC disovered \n
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -53,13 +56,6 @@ void callback(array_int * scc){
     scc_set_add(SCCs,scc_id,scc);
 }
 
-/**
- * @brief call sequential tarjan on graph from file or from shared memory
- * 
- * @param argc number of parameter, considering the 1st is name of program
- * @param argv in case of graph from file the second parameters is the path of grapf file, in case graph is from shared memory the second paramenters is ID of shared memory
- * @return int 
- */
 int main(int argc, char* argv[]){
     main_parameters_t c;
     struct rlimit rl;

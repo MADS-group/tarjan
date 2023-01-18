@@ -30,13 +30,7 @@
 
 /**
  * @file mpi_logic.c
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2022-12-27
- * 
- * @copyright Copyright (c) 2022
- * 
+ * @brief This file implements a version of a parallelization of Tarjan's algorythm. 
  */
 #include <mpi.h>
 #include "mpi_logic.h"
@@ -45,28 +39,31 @@
 
 double time_split_graph = 0.0,time_merge_graph = 0.0;
 
-
+/**
+ * @brief This is a callback function. It is called every time the Tarjan'algorithm, run by a slave process on a portion of the graph, finds an scc. 
+ * \n The slave process sends the found scc to the master node along with its size.        
+ * 
+ * @param scc It is the scc discovered from the Tarjan's algorithm.
+ */
 void callback(array_int * scc){
     int scc_size = array_int_length(scc);
 
-    //printf("[SLAVE] request: %d, Sending size: %d\n",slave_request_size,scc_size);
     MPI_Send(&scc_size,1,MPI_INT,MASTER,MPI_TAG_SIZE,MPI_COMM_WORLD);
-    //MPI_Wait(&slave_request_size,&slave_status_size); //Da capire se funziona sulla Isend
-    //printf("[SLAVE]: Sent SCC with size %d. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",scc_size,slave_status_size.MPI_SOURCE, slave_status_size.MPI_TAG, slave_status_size.MPI_ERROR);
-    //printf("[Slave] Sending scc: \n");
-    //array_int_print(scc);
     MPI_Send(array_int_get_ptr(scc),array_int_length(scc),MPI_INT,MASTER,MPI_TAG_DATA,MPI_COMM_WORLD);
-    //MPI_Wait(&slave_request_data,&slave_status_data); //Da capire se funziona sulla Isend
-    //printf("[SLAVE]: Sent SCC. STATUS: SOURCE: %d TAG: %d ERROR: %d\n",slave_status_data.MPI_SOURCE, slave_status_data.MPI_TAG, slave_status_data.MPI_ERROR);
-
+    
 }
+
+
+
 /**
- * @brief The function divides the work, gives the work to the slaves and computes the SCCs 
+ * The function takes as input the graph, the size of the chunk, the number of slave processes and the data structure where to save all the scc found.
+ * \n The function sends a chunk of the graph to each slave node. Then, it waits for the slave nodes to find the scc by applying Tarjan's algorithm on their chunk of the graph. As soon as a slave node finishes execution, the master node assigns it another chunk of the graph. 
+ * \n The iterations terminate as soon as the whole graph for the fixed chunk size has been completed by the slave nodes.
  * 
- * @param graph 
- * @param N 
- * @param n_slaves 
- * @param SCCs 
+ * @param graph graph on which compute all the scc.
+ * @param N represents the chunk size.
+ * @param n_slaves number of slave precesses.
+ * @param SCCs data structure where to save all the scc found.
  */
 void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
     //codice del master
@@ -103,26 +100,20 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
         }
         //comunicazione dell'array agli slave
         MPI_Send(&msg_size,1,MPI_INT, i+1,MPI_TAG_SIZE,MPI_COMM_WORLD);
-        //printf("[MASTER] Sending array with size %d: ",msg_size);
-        //array_int_print(serialized_graph_chunk);
-        //printf("\n");
         MPI_Send(array_int_get_ptr(serialized_graph_chunk),msg_size,MPI_INT,i+1,MPI_TAG_DATA,MPI_COMM_WORLD);
 
     }
     
     while(!finished || still_working != 0){
+    
+        //I messaggi degli slave hanno due TAG. Il primo tag specifica che il contenuto del messaggio sono dati ed il secondo è per comunicare la size del messaggio. 
         
-        /*I messaggi degli slave hanno tre TAG. Il primo tag è per i messaggi di servizio, il secondo è per i dati ed il terzo è per comunicare la size. 
-        
-        //Devo poter ricevere messaggi asincroni da qualunque nodo slave. I nodi slave mi inviano gli scc.
-        //Ricevo un messaggio su un certo tag e devo decidere se gestire gli scc oppure 
-        //se il processo slave ha terminato la sua esecuzione, devo decrementare still_working.
-        //Da fare busy waiting su queste due receive
-        */
-        //printf("finished: %d, still_working: %d\n",finished,still_working);
-        //printf("[MASTER] Before Receiving");
+        //I nodi slave inviano gli scc che hanno trovato. Il nodo master deve poter riceverli.
+        //Il primo messaggio ricevuto dal nodo master è sempre la size di un messaggio. 
+        //Se il nodo master riceve un messaggio di size 0 allora questo significa che il processo slave ha terminato la sua esecuzione e il nodo master deve decrementare la variabile still_working.
+        //Se un processo slave ha iniviato un scc al nodo master, gli viene assegnato un nuovo chunk del grafo su cui lavorare.
+        //Il loop si interrompe se tutti gli slave hanno terminato e tutti i chunk del grafo sono stati elaborati.    
         MPI_Recv(&scc_size,1, MPI_INT,MPI_ANY_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD,&status_size);
-        //printf("[MASTER] Receiving SCC of size %d from (status)SOURCE: %d, TAG:%d, ERROR:%d\n", scc_size,status_size.MPI_SOURCE, status_size.MPI_TAG,status_size.MPI_ERROR);
         
         if(scc_size == 0 && !finished){
             STARTTIME(5);
@@ -130,20 +121,15 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
             ENDTIME(5,partial_time_split);
             time_split_graph += partial_time_split;
             msg_size = array_int_length(serialized_graph_chunk);
-            //printf("[MASTER] if. scc_size: %d, finished: %d, n_serialized: %d\n",scc_size,finished,array_int_get(serialized_graph_chunk, 1));
             if(array_int_get(serialized_graph_chunk, 1) == 0){ //Se la msg_size è 0 vuol dire che non ho più chunk da asseganare agli slave perché la struttura dati ha esaurito vertici
                 finished = 1;
                 still_working--;
             }else{ 
                 //Assegno allo slave che ha finito un altro chunck 
-                //printf("[MASTER] Sending another chunck of size: %d\n",msg_size);
                 MPI_Send(&msg_size,1,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_SIZE,MPI_COMM_WORLD);        
                 MPI_Send(array_int_get_ptr(serialized_graph_chunk),msg_size,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD);
-                //printf("[MASTER] Just Sent\n");
             }
         }else if(scc_size == 0){
-            //printf("[MASTER] else if. scc_size: %d, finished: %d\n",scc_size,finished);
-            //printf("[MASTER] decrementing still_working...\n");
             still_working--;
         }else{
             scc = array_int_init(scc_size);
@@ -151,24 +137,11 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
             MPI_Recv(array_int_get_ptr(scc),scc_size,MPI_INT,status_size.MPI_SOURCE,MPI_TAG_DATA,MPI_COMM_WORLD,&status_data);
             
             STARTTIME(6);
-
-            //DEBUG
-            //printf("[MASTER] Received a SCC with lenght %d with status: status_data.MPI_SOURCE: %d status_data.MPI_TAG: %d status_data.MPI_ERROR: %d \n", scc_size, status_data.MPI_SOURCE, status_data.MPI_TAG, status_data.MPI_ERROR);
-            //array_int_print(scc);
-            
             //Devo aggiungere l'scc che ho trovato in una NUOVA struttura dati. Così da poter ricordare quali sono gli scc trovati
             scc_id = array_int_get_min(scc);
-            //printf("[MASTER] scc_id: %d\n",scc_id);
-            //graph_print_debug(graph);
-            //array_int_print(scc);
             graph_merge_vertices(graph,scc_id,scc);
-            //printf("[MASTER] graph merged\n");
             scc_set_add(SCCs,scc_id,scc);
-            //printf("[MASTER] scc_set_add \n");
 
-            //DEBUG
-            //scc_set_print_debug(SCCs);
-            //graph_print_debug(graph);
             array_int_free(scc);
             ENDTIME(6,partial_time_merge);
             time_merge_graph += partial_time_merge;
@@ -179,6 +152,18 @@ void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
 
 }
 
+
+
+/**
+ * @brief The master node calls this function. 
+ * \n The function takes as input the name of a binary file that contains a graph represented by an adjacency map.
+ * \n The master_work function takes care of extracting the contents of the binary file and converting it into a graph, then calls the master_work2() function to execute the MPI algorithm. 
+ * 
+ * @param rank id of the process within the communicator.
+ * @param size size of the communicator.
+ * @param filename name of the file that contains a graph represented by an adjacency map.
+ * @param outputfilename name of the output binary file that will contain all the scc found.
+ */
 void master_work(int rank,int size,char* filename,char* outputfilename){
     graph_t* graph;
     double time_init;
@@ -199,19 +184,31 @@ void master_work(int rank,int size,char* filename,char* outputfilename){
     scc_set_free(SCCs);
 }
 
+
+/**
+ * @brief This function is called by the master node.
+ * \n The function takes as input the graph and an empty set, which will be filled with the scc found by Tarjan's algorithm.
+ * \n The function divides the graph into chunks of fixed size and will delegate the work to be done on the chunks to the master_schedule() function.
+ * \n In addition, the function is responsible of sending the termination message to all slave processes. This happens when all the work is done.
+ * 
+ * @param rank id of the process within the communicator.
+ * @param size size of the communicator.
+ * @param graph graph that will be computed in order to find its sccs. 
+ * @param SCCs empty set which will be filled with the scc found by Tarjan's algorithm.
+ * @param outputfilename name of the output binary file that will contain all the scc found.
+ * @param time_init initialization time.
+ */
 void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* outputfilename, double time_init){
     int v_graph,num_vertex;
     double time_mpi_tarjan;
 
     STARTTIME(2);
-    //graph_print_debug(graph);
     int i;
     int dim_chunk = graph_get_num_vertex(graph)/(size - 1);
     
     if (dim_chunk > MAX_DIM_CHUNK) {
         dim_chunk = MAX_DIM_CHUNK;
     }
-    //printf("Dim chunk=%d", dim_chunk);
     for(i = dim_chunk; i<=graph_get_num_vertex(graph); i *= 2){
         master_schedule(graph,i,size-1,SCCs);
     }
@@ -222,8 +219,7 @@ void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* output
     ENDTIME(2,time_mpi_tarjan);
     num_vertex = graph_get_num_vertex(graph);
     printf("%d,%f,%f,%f,%f,",num_vertex,time_init,time_mpi_tarjan,time_split_graph,time_merge_graph);
-    //DEBUG
-    //scc_set_print_debug(SCCs);
+
     scc_set_save_to_file(SCCs,outputfilename);
 
     //Stop the slaves
@@ -234,6 +230,13 @@ void master_work2(int rank,int size,graph_t* graph,scc_set_t * SCCs,char* output
     }
 }
 
+/**
+ * @brief This function is called by the slave nodes.
+ * The function receives messages containing the portion of the graph on which the slave node must find the scc through Tarjan's algorithm.
+ * \n The function ends when a master node sends a special termination message. The termination message is a message specifying that the size of the next message is 0.
+ * 
+ * @param rank id of the process within the communicator.
+ */
 void slave_work(int rank){
     graph_t* subgraph;
     array_int* array_scc; 
@@ -250,12 +253,9 @@ void slave_work(int rank){
     while(1){
         //Aspetto di ricevere l'array da deserialize
         MPI_Recv(&msg_size,1,MPI_INT,0,MPI_TAG_SIZE,MPI_COMM_WORLD,&slave_status);
-        //printf("[SLAVE] recieved msg_size=%d\n",msg_size);
         if(msg_size == 0){
-          //printf("[SLAVE] Aborting\n");
           return;
         }
-        //printf("\n[slave] msg_size: %d\n",msg_size);
         
         buff = array_int_init(msg_size);
         array_int_resize(buff, msg_size);
@@ -266,10 +266,6 @@ void slave_work(int rank){
         graph_deserialize(subgraph, buff);
         array_int_free(buff);
         //Compute scc for the given subgraph
-        
-        //DEBUG
-        //printf("[SLAVE] Printing subgraph...\n");
-        //graph_print_debug(subgraph);
 
         //Invio array_scc al master
         graph_tarjan_foreach(subgraph,&callback);

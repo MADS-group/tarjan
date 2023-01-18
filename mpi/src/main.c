@@ -69,14 +69,9 @@ int main(int argc,char* argv[]){
 
     if(rank == 0){
         master_work(rank,size,path,outputfilename);
-
-        //printf("\nFINITO DI FARE TUTTO.\n");
-        //MPI_Abort(MPI_COMM_WORLD, MPI_SUCCESS);
     }
 
     if(rank != 0){
-        //codice degli slave
-        //printf("Sono lo slave %d\n",rank);
         slave_work(rank);
     }
 
