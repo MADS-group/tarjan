@@ -354,7 +354,11 @@ def _save_table(table,filename):
 
 def _save_table_to_latex(df: pd.DataFrame,filename):
 	with open(filename,"w") as table_file:
-		table_file.write(df.to_latex())
+		column_format = ""
+		for col in df.columns:
+			column_format += "|c"
+		column_format += "|"
+		table_file.write(df.to_latex(index=False, float_format="{:0.3f}".format, column_format=column_format))
 
 def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	if save and not name:
