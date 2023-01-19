@@ -42,7 +42,9 @@
 using namespace std;
 
 scc_set_t *SCCs;
-
+//rappresentazione grafi texture
+texture<int, 1, cudaReadModeElementType> *d_adj_lists_texture;
+texture<int, 1, cudaReadModeElementType> *d_adj_list_indexes_texture;
 void callback(array_int * scc){
     int scc_id;
     scc_id = array_int_get_min(scc);
@@ -94,8 +96,17 @@ int main(int argc, char **argv){
 
     cudaMalloc(&d_adj_lists, cuda_graph->adj_lists_len * sizeof(int));
     cudaMemcpy(d_adj_lists, cuda_graph->adj_lists, cuda_graph->adj_lists_len * sizeof(int), cudaMemcpyHostToDevice);
+    cudaChannelFormatDesc channA = cudaCreateChannelDesc<int>();
+    cudaError_t errt = cudaBindTexture(NULL, d_adj_lists_texture, d_adj_lists, channA);
+    if (errt != cudaSuccess)
+      printf("Can not bind to texture\n");
+
     cudaMalloc(&d_adj_list_indexes, (n_vertices + 1) * sizeof(int));
     cudaMemcpy(d_adj_list_indexes, cuda_graph->adj_list_indexes, (n_vertices + 1) * sizeof(int), cudaMemcpyHostToDevice);
+    cudaChannelFormatDesc channB = cudaCreateChannelDesc<int>();
+    cudaError_t errt = cudaBindTexture(NULL, d_adj_list_indexes_texture, d_adj_list_indexes, channB);
+    if (errt != cudaSuccess)
+      printf("Can not bind to texture\n");
 
     cudaMalloc(&d_bitmask, n_bitmask * sizeof(int));
     cudaMemset(d_bitmask, 0, n_bitmask * sizeof(int));
