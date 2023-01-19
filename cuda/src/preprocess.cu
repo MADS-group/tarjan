@@ -36,7 +36,7 @@
 __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
     int vertices_per_thread = (n_vertices-1)/(blockDim.x * gridDim.x) + 1;
     int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
-    for(int vertex_id =  thread_id * vertices_per_thread, vertex_id < (thread_id + 1) * vertices_per_thread, vertex_id++){
+    for(int vertex_id =  thread_id * vertices_per_thread; vertex_id < (thread_id + 1) * vertices_per_thread; vertex_id++){
         //If thread is not associated with a vertex or the vertex has already been eliminated then do nothing
         //printf("vertex: %d vertex_id: %d n_vertices: %d\n", vertex_id, vertex_id, n_vertices);
         if(vertex_id >= n_vertices){

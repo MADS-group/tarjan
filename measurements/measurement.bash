@@ -4,7 +4,7 @@ TIME_STAMP=$(date +%s)
 NMEASURES=25 #200 anno scorso
 
 #input file graph
-ARRAY_RC=(fully-disconnected-1000000 fully-connected-12500 random-150000 random-250000 tile-52000 tile-205000 tile-410000)
+ARRAY_RC=(fully-disconnected-1000000 fully-connected-12500 random-150000 random-250000 random-500000 tile-52000 tile-205000 tile-410000 tile-820000)
 #ARRAY_RC=(random-1000 random-50000)
 #ARRAY_RC=(matrix_11k)
 
@@ -47,13 +47,17 @@ elif [[ $1 == "cuda" ]]; then
 		for ths in "${ARRAY_CUDA_THS[@]}"; do
 			for opt in "${ARRAY_OPT[@]}"; do
 				
-				IFS='-' array=($input_graph)
-				nodes=${array[3]}
+				#IFS='-' array=($input_graph)
+				#nodes=${array[-1]}
+				nodes=$(echo $input_graph | rev | cut -d'-' -f1 | rev )
+				echo $input_graph
+				echo $nodes
 				thread=$(($ths*$nodes/$COSTANT_CUDA_THS))
+				echo $thread
 
 				ths_str=$(printf "%02d" $thread)
 				OUT_FILE=$SCRIPTPATH/measure/$1/graph_type-$input_graph-O$opt/$1-graph_type-$input_graph-O$opt-NTH-$ths_str.csv
-			
+				echo $OUT_FILE
 				mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
 				
 				echo $(basename $OUT_FILE)
