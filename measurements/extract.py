@@ -39,10 +39,11 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "mpi"
+execution_type = "cuda_mpi"
 
 config_sequential = {
-				'vertices':{
+				#'vertices':{
+				'verteces':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -97,7 +98,8 @@ config_sequential_pre = {
 					'jpg':False,
 					'speedup':False
 				},
-				'preprocess_time':{
+				#'preprocess_time':{
+				'preprocess':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -119,12 +121,12 @@ config_sequential_pre = {
 					}
 				}
 
-
 config = {}
 if execution_type == "sequential":
 
 	config.update( { 
-				'vertices':{
+				#'vertices':{
+				'verteces':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -143,11 +145,13 @@ if execution_type == "sequential":
 			})
 elif execution_type == "cuda_mpi":
 	config.update( {	
-				'Nvert':{
+				#'Nvert':{
+				'verteces':{
 					'jpg':False,
 					'speedup':False
 				},
-				'NvertAfterCuda':{
+				#'NvertAfterCuda':{
+				'verteces_after':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -155,7 +159,8 @@ elif execution_type == "cuda_mpi":
 					'jpg':False,
 					'speedup':False
 				},
-				'mpi_tarjan':{
+				#'mpi_tarjan':{
+				'tarjan':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -213,7 +218,8 @@ elif execution_type == "cuda":
 			})
 elif execution_type == "mpi":
 	config.update( {	
-				'Nvert':{
+				#'Nvert':{
+				'verteces':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -240,7 +246,7 @@ elif execution_type == "sequential_pre":
 					'jpg':False,
 					'speedup':False
 				},
-				'vertices_after':{
+				'verteces_after':{
 					'jpg':False,
 					'speedup':False
 				},
@@ -256,7 +262,8 @@ elif execution_type == "sequential_pre":
 					'jpg':False,
 					'speedup':False
 				},
-				'preprocess_time':{
+				#'preprocess_time':{
+				'preprocess':{
 					'jpg':False,
 					'speedup':False
 				}
@@ -304,9 +311,19 @@ def _extract(path_to_folder,plot_columns):
 			x = x[:-1]
 			return int(x) 
 		ds['pCPU'] = ds['pCPU'].apply(f)
+		
+		#print(ds)
+		ds.rename(columns={"mpi_tarjan": "tarjan"}, inplace=True)
+		ds.rename(columns={"Nvert": "verteces"}, inplace=True)
+		ds.rename(columns={"vertices": "verteces"}, inplace=True)
+		ds.rename(columns={"preprocess_time": "preprocess"}, inplace=True)
+		ds.rename(columns={"NvertAfterCuda": "verteces_after"}, inplace=True)
+		#print(ds)
+		
 		for col in plot_columns.keys():
 			print('Processing : ' + filename + ", Col : " + col)
 			#extract the selected column
+			#print(ds)
 			x_data = ds[col]
 			mean,std=stats.norm.fit(x_data)
 			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
@@ -334,8 +351,8 @@ def _make_table(header,rows,print_table=False,save=True,name=""):
 		raise Exception("No filename to save file")
 	x = PrettyTable()
 	x.field_names = header
-	print(header)
-	print(rows)
+	#print(header)
+	#print(rows)
 	df =  pd.DataFrame(data=rows, columns=header)
 	x.add_rows(rows)
 	if save:
@@ -360,6 +377,72 @@ def _save_table_to_latex(df: pd.DataFrame,filename):
 		column_format += "|"
 		table_file.write(df.to_latex(index=False, float_format="{:0.3f}".format, column_format=column_format))
 
+def _upper_bound(header,rows):
+	X = [0]
+	Y = [0]
+	#CUDA ONLY RISPETTO AL SEQUENTIAL_PRE: preprocess_time/tempo elapsed
+	if execution_type == "cuda":	
+		preprocess_pos = header.index("preprocess")
+		elapsed_pos = header.index("elapsed")
+		thread_pos = header.index("Threads")
+
+		seq_preprocess = rows[0][preprocess_pos]
+		seq_elapsed = rows[0][elapsed_pos]
+		p = seq_preprocess/seq_elapsed
+
+		for x in range(1,rows[-1][thread_pos]+1):
+			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
+			X.append(x)
+			Y.append( 1 / ( (1-p) + (p/x) ) )
+
+		return (X,Y)
+
+	#MPI RISPETTO AL SEQUENTIAL: tempo tarjan/tempo elapsed
+	if execution_type == "mpi":	
+		#print("header: \n",header)
+		tarjan_pos = header.index("tarjan")
+		elapsed_pos = header.index("elapsed")
+		thread_pos = header.index("Threads")
+
+		seq_tarjan = rows[0][tarjan_pos]
+		seq_elapsed = rows[0][elapsed_pos]
+		p = seq_tarjan/seq_elapsed
+
+		for x in range(1,rows[-1][thread_pos]+1):
+			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
+			X.append(x)
+			Y.append( 1 / ( (1-p) + (p/x) ) )
+
+		return (X,Y)
+		
+	
+	#PER MPI_CUDA:  
+	if execution_type == "cuda_mpi":	
+		#print("header: \n",header)
+		preprocess_pos = header.index("preprocess")
+		tarjan_pos = header.index("tarjan")
+		elapsed_pos = header.index("elapsed")
+		thread_pos = header.index("Threads")
+		vert_pos = header.index("verteces") #Numero thread in cuda è pari al numero di vertici.
+
+		seq_preprocess = rows[0][preprocess_pos]
+		seq_tarjan = rows[0][tarjan_pos]
+		seq_elapsed = rows[0][elapsed_pos]
+		s1 = rows[0][vert_pos]
+		#print("preprocess_pos",preprocess_pos,"seq_preprocess",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"s1",s1)
+		#print(rows)
+		p1 = seq_preprocess/seq_elapsed
+		p2 = seq_tarjan/seq_elapsed
+		
+		for s2 in range(1,rows[-1][thread_pos]+1):
+			print("seq_preprocess:",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"p1",p1,"p2",p2,"s1",s1,"s2",s2)
+			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
+			X.append(s2)
+			Y.append( 1 / ( (1-p1-p2) + (p1/s1) + (p2/s2) ) )
+
+		return (X,Y)
+
+
 def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	if save and not name:
 		raise Exception("No filename to save file")
@@ -375,7 +458,17 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	x_th = np.array(x)
 	fig, ax = plt.subplots(figsize=(12, 8))
 	ax.plot(x_th, y, 'ro-', label='Experimental')
-	ax.plot(x_th, x_th, color='blue', label='Ideal')
+	if execution_type != "cuda_mpi":
+		ax.plot(x_th, x_th, color='blue', label='Ideal')
+	
+	X,Y = _upper_bound(header,rows)
+	#z_th = np.array(z)
+	ax.plot(X, Y, color='black', label='Theoretical Upper Bound')
+
+	#print("x_th",x_th)
+	#print("y",y)
+	#print("z_th",z_th)
+
 	#same as y_th, bisection
 	plt.style.use('seaborn-whitegrid')
 
@@ -409,21 +502,23 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		
 		#print(means)
 		if execution_type == "mpi":
-		    header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    #header = {'values':['Version','Threads','Nvert','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    header = {'values':['Version','Threads','verteces','init','tarjan','split','merge','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type ==  "sequential_pre":
-			header = {'values':['Version','Threads','verteces','verteces_after','init','destroy','tarjan','preprocess_time','user','system','pCPU','elapsed','Speedup','Efficiency']}
+			#header = {'values':['Version','Threads','verteces','verteces_after','init','destroy','tarjan','preprocess_time','user','system','pCPU','elapsed','Speedup','Efficiency']}
+			header = {'values':['Version','Threads','verteces','verteces_after','init','destroy','tarjan','preprocess','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "sequential":
-		    #header = {'values':['vertices','init','destroy','tarjan','user','system','elapsed','pCPU']}
-			header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    #header = {'values':['Version','Threads','vertices','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    header = {'values':['Version','Threads','verteces','init','destroy','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "cuda_mpi":
-		    header = {'values':['Version','Threads','Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    #header = {'values':['Version','Threads','Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
+		    header = {'values':['Version','Threads','verteces','verteces_after','init','tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		elif execution_type == "cuda":
 		    header = {'values':['Version','Threads','verteces','init','finalize','preprocess','conversion','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		else:
 		    print("Error!")
         
-		#header = {'values':['Version','Threads','Init','Dotprod','User','Sys','Elapsed','Speedup','Efficiency']}
-		
+
 		cells = {'values':[]}
 		nt = -1
 		for filename_key in means:
