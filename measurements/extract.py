@@ -39,7 +39,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda_mpi"
+execution_type = "mpi"
 
 config_sequential = {
 				#'vertices':{
@@ -555,8 +555,8 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
 		opt = splitted_folder[2]
-		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.tex"
-		plot_filename = joined_path + "/speedup-" + str(size) + "-" + str(opt) +  ".jpg"
+		table_filename = joined_path + "/psize-" + folder + "-table.tex"
+		plot_filename = joined_path + "/speedup-" + folder +  ".jpg"
 
 		table = _make_table(header['values'],cells['values'],name=table_filename)
 		_plot_from_table(header["values"],cells["values"],name=plot_filename)
