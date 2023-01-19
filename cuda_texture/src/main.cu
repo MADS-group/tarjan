@@ -28,9 +28,13 @@
  * 
  */
 
+#include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <iostream>
 #include <stdlib.h>
+#include <curand.h>
+#include <curand_kernel.h>
 #include "cuda_graph.h"
 #include "preprocess.cu"
 #include "array.h"
@@ -45,6 +49,7 @@ scc_set_t *SCCs;
 //rappresentazione grafi texture
 texture<int, 1, cudaReadModeElementType> *d_adj_lists_texture;
 texture<int, 1, cudaReadModeElementType> *d_adj_list_indexes_texture;
+
 void callback(array_int * scc){
     int scc_id;
     scc_id = array_int_get_min(scc);
@@ -104,7 +109,7 @@ int main(int argc, char **argv){
     cudaMalloc(&d_adj_list_indexes, (n_vertices + 1) * sizeof(int));
     cudaMemcpy(d_adj_list_indexes, cuda_graph->adj_list_indexes, (n_vertices + 1) * sizeof(int), cudaMemcpyHostToDevice);
     cudaChannelFormatDesc channB = cudaCreateChannelDesc<int>();
-    cudaError_t errt = cudaBindTexture(NULL, d_adj_list_indexes_texture, d_adj_list_indexes, channB);
+    errt = cudaBindTexture(NULL, d_adj_list_indexes_texture, d_adj_list_indexes, channB);
     if (errt != cudaSuccess)
       printf("Can not bind to texture\n");
 
