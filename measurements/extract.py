@@ -427,13 +427,14 @@ def _upper_bound(header,rows):
 
 		seq_preprocess = rows[0][preprocess_pos]
 		seq_tarjan = rows[0][tarjan_pos]
-		seq_elapsed = rows[0][elapsed_pos]
+		seq_elapsed = rows[0][elapsed_pos] + 0.01
 		s1 = rows[0][vert_pos]
 		#print("preprocess_pos",preprocess_pos,"seq_preprocess",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"s1",s1)
 		#print(rows)
+	
 		p1 = seq_preprocess/seq_elapsed
 		p2 = seq_tarjan/seq_elapsed
-		
+
 		for s2 in range(1,rows[-1][thread_pos]+1):
 			print("seq_preprocess:",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"p1",p1,"p2",p2,"s1",s1,"s2",s2)
 			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
