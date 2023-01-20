@@ -31,7 +31,9 @@ import os
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
+import matplotlib.axes as axes 
 import pandas as pd
+
 from scipy import stats
 import seaborn as sns
 from prettytable import PrettyTable
@@ -39,7 +41,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda_mpi"
+execution_type = "cuda"
 
 config_sequential = {
 				#'vertices':{
@@ -318,6 +320,7 @@ def _extract(path_to_folder,plot_columns):
 		ds.rename(columns={"vertices": "verteces"}, inplace=True)
 		ds.rename(columns={"preprocess_time": "preprocess"}, inplace=True)
 		ds.rename(columns={"NvertAfterCuda": "verteces_after"}, inplace=True)
+		#print("type:",type(ds))
 		#print(ds)
 		
 		for col in plot_columns.keys():
@@ -391,7 +394,7 @@ def _upper_bound(header,rows):
 		p = seq_preprocess/seq_elapsed
 
 		for x in range(1,rows[-1][thread_pos]+1):
-			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
+			#print("p:",p,"s:",x,"res:", 1 / ( (1-p) + (p/x) ))
 			X.append(x)
 			Y.append( 1 / ( (1-p) + (p/x) ) )
 
@@ -436,7 +439,7 @@ def _upper_bound(header,rows):
 		p2 = seq_tarjan/seq_elapsed
 
 		for s2 in range(1,rows[-1][thread_pos]+1):
-			print("seq_preprocess:",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"p1",p1,"p2",p2,"s1",s1,"s2",s2)
+			#print("seq_preprocess:",seq_preprocess,"seq_tarjan",seq_tarjan,"seq_elapsed",seq_elapsed,"p1",p1,"p2",p2,"s1",s1,"s2",s2)
 			#print("p:",p,"s:",x,"res:",(1 / ( (1-p) + (p/x) )))
 			X.append(s2)
 			Y.append( 1 / ( (1-p1-p2) + (p1/s1) + (p2/s2) ) )
@@ -455,14 +458,23 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	for row in rows[1:]:
 		x.append(row[thread_pos])
 		y.append(row[speedup_pos])
+	print("x:",x)
+	print("y:",y)
 
 	x_th = np.array(x)
 	fig, ax = plt.subplots(figsize=(12, 8))
+	
+	ax.ticklabel_format(style = "plain")
 	ax.plot(x_th, y, 'ro-', label='Experimental')
-	if execution_type != "cuda_mpi":
+	if execution_type != "cuda_mpi" and execution_type != "cuda":
 		ax.plot(x_th, x_th, color='blue', label='Ideal')
 	
 	X,Y = _upper_bound(header,rows)
+	
+	#if "fully-disconnected" in name:
+	#	print("X:",X)
+	#	print("Y:",Y)
+
 	#z_th = np.array(z)
 	ax.plot(X, Y, color='black', label='Theoretical Upper Bound')
 
@@ -472,7 +484,6 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 
 	#same as y_th, bisection
 	plt.style.use('seaborn-whitegrid')
-
 	plt.autoscale(enable=True, axis='x', tight=True)
 	plt.autoscale(enable=True, axis='y', tight=True)	
 
@@ -552,6 +563,9 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 			cells['values'].append(cell)
 		
 		
+		cells['values'].sort(key = lambda x: x[1])
+		print(cells['values'])
+
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
 		opt = splitted_folder[2]
