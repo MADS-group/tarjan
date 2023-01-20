@@ -30,9 +30,9 @@
 
 /**
  * @file main.c
- * @brief this tool print to standard output the graph from a file
+ * @brief This tool print to standard output the graph from a file in input.
  * 
- * the first parameter is the path of the graph file to be printed \n
+ * The first parameter is the path of the graph file to be printed. \n
  *
  * 
  */

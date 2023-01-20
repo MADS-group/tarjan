@@ -30,11 +30,11 @@
 
 /**
  * @file main.c
- * @brief this tool generate graph fully connected, graph fully disconnected or graph bipartite
+ * @brief This tool generate graph fully connected, graph fully disconnected or graph bipartite.
  * 
- * the first parameter is the path of graph generated
- * the second parameter is a integer that indicate the number of node of graph
- * the thrid parameter is an integer that indicate 0 for graph fully disconnected, 1 for graph fully connected, 2 for grapg bipartite
+ * The first parameter is the path of graph generated. \n
+ * The second parameter is a integer that indicate the number of node of graph. \n
+ * The thrid parameter is an integer that indicate 0 for graph fully disconnected, 1 for graph fully connected, 2 for grapg bipartite. \n
  *
  * 
  */

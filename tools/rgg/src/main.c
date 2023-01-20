@@ -30,19 +30,20 @@
 
 /**
  * @file main.c
- * @brief this tool generate a graph upscaled starting from a seed graph
+ * @brief This tool generates a graph starting from a seed.
  * 
- * this tool create 2^n copy of the graph seed and create edge \n
- * between different copy \n
- * the first parameter is the path of seed graph \n
- * the second parameter is the path of graph generated \n
- * the thrid parameter is an integer n that indicate the 2^n copy to be created \n
- * the fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa \n
+ * This tool uses the third parameter n to generate a graph with 2^n replicas of the seed keeping 
+ * all the edges already present in the seed, in addition edges are added between the different seeds 
+ * of the final graph following the probability passed as the fourth parameter. \n
+ * The first parameter is the path of seed graph. \n
+ * The second parameter is the path of graph generated. \n
+ * The thrid parameter is an integer n that indicate the 2^n copy to be created. \n
+ * The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa. \n
  *
- * es: seed 10 edge e second parameter 1 graph generated 20 edge \n  
- * es: seed 10 edge e second parameter 2 graph generated 40 edge \n  
- * es: seed 10 edge e second parameter 3 graph generated 80 edge \n  
- * es: seed 10 edge e second parameter 4 graph generated 160 edge \n
+ * Es: seed 10 edge e second parameter 1 graph generated 20 edge. \n  
+ * Es: seed 10 edge e second parameter 2 graph generated 40 edge. \n  
+ * Es: seed 10 edge e second parameter 3 graph generated 80 edge. \n  
+ * Es: seed 10 edge e second parameter 4 graph generated 160 edge. \n
  *
  * 
  */
@@ -68,7 +69,7 @@ int main(int argc, char* argv[]){
         sscanf(argv[3],"%d", &n);
         sscanf(argv[4],"%d", &p);
         if(n<0){
-            printf("inserire secondo parametro maggiore o uguale di 0\n");
+            printf("Enter second parameter greater than or equal to 0.\n");
             return 1;
         }
 
@@ -85,7 +86,7 @@ int main(int argc, char* argv[]){
 
         graph_free(seed);
     }else{
-        printf("inserire come primo paramentro path del grafo seed (graph.bin)\ninserire come secondo paramentro path del grafo uscita (out.bin)\ninserire come terzo parametro il numero di moltiplicazioni di tale seed\n  es: seed 10 nodi e secondo paramentro 1 grafo generato 20 nodi\n  es: seed 10 nodi e secondo paramentro 2 grafo generato 40 nodi\n  es: seed 10 nodi e secondo paramentro 3 grafo generato 80 nodi\n  es: seed 10 nodi e secondo paramentro 4 grafo generato 160 nodi\ninserire come quarto parametro probabilità di creare un arco tra un nodo del seed di partenza e il nuovo grafo aggiunto\n");
+        printf("Insert as first parameter path of the graph seed (graph.bin)\nInsert as second parameter path of the graph output (out. bin)\nInsert as the third parameter the number of multiplications of that seed\n e.g.: seed 10 nodes and second parameter 1 generated graph 20 nodes\n e.g.: seed 10 nodes and second parameter 2 generated graph 40 nodes\n e.g.: seed 10 nodes and second parameter 3 generated graph 80 nodes\n e.g.: seed 10 nodes and second parameter 4 generated graph 160 nodes\n Insert as fourth parameter probability of creating an arc between a node of the starting seed and the new added graph\n");
         return 1;
 
     }

@@ -30,10 +30,10 @@
 
 /**
  * @file main.c
- * @brief this tool compare two different SCC discovered file 
+ * @brief This tool compare two different SCC discovered file. 
  * 
- * the first parameter is the path of the first SCC file to be compered \n
- * the second parameter is the path of the second SCC file to be compered \n
+ * The first parameter is the path of the first SCC file to be compered. \n
+ * The second parameter is the path of the second SCC file to be compered. \n
  *
  * 
  */
