@@ -6,6 +6,7 @@
 # How to run
 
 ## Algorithms
+
 ### Sequential Tarjan Algorithms
 - This algorithm performs sequential Tarjan on a given input graph from a binary file (.bin) following the graph.h library representation.
 - To use such an algorithm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `./tarjan/bin/` folder after compilation, `./tarjan/bin/sequential_Ox.out` , x represents the chosen optimisation.
@@ -55,7 +56,9 @@
 - An example use in the root directory `./tarjan/` is as follows:  `mpiexec \-n 8 ./bin/cuda_mpi_Ox.out ./data/seed.bin ./data/SSC_discovered.bin`.
 
 ## Tools
+
 ### Generate graphs
+
 #### rsg: Random Seed Generator
 - This tool generate a random graph following the graph representation of the `graph.h` library, with max_n_node node and each node have mean number of edge with a variance_edge, the number of nodes follows the Bernoulli distribution.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rsg.out`.
