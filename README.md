@@ -63,14 +63,32 @@
 ## Tools
 ### Generate graphs
 #### Random
-- This tool generate a random graph with max_n_node node and each node have mean number of edge with a variance_edge. 
-- The first parameter is the path of graph generated. \n
-- The second parameter is a integer that indicate the number of node of graph. \n
-- The thrid parameter is an integer that indicate the the mean of edge for each node. \n
-- The fourth parameter is the variance of number of edge for each node. \n
+- This tool generate a random graph following the graph representation of the `graph.h` library, with max_n_node node and each node have mean number of edge with a variance_edge.
+- To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rsg.out`.
+- The first parameter is the path of graph generated `./tarjan/data/random-graph.bin`.
+- The second parameter is a integer that indicate the number of node of graph. 
+- The thrid parameter is an integer that indicate the the mean of edge for each node.
+- The fourth parameter is the variance of number of edge for each node.
+- An example use in the root directory `./tarjan/` is as follows: 
+`./bin/rsg.out ./data/random-graph.bin 1000 15 0.5`.
+### Tile
+- This tool generates a graph starting from a seed, representation of the `graph.h` library. This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping all the edges already present in the seed, in addition edges are added between the different seeds of the final graph following the probability passed.
+- To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rgg.out`.
+- The first parameter is the path of seed graph `./tarjan/data/seed.bin`.
+- The second parameter is the path of graph generated `./tarjan/data/tile-graph.bin`.
+- The thrid parameter is an integer n that indicate the 2^n copy to be created.
+- The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa.
+- An example use in the root directory `./tarjan/` is as follows: 
+`./bin/rgg.out ./data/seed.bin ./data/tile-graph.bin 2 0.2`.
+
+- Es: seed 10 edge and second parameter 1 graph generated 20 edge.  
+- Es: seed 10 edge and second parameter 2 graph generated 40 edge.  
+- Es: seed 10 edge and second parameter 3 graph generated 80 edge.  
+- Es: seed 10 edge and second parameter 4 graph generated 160 edge.
 
 ### Print Graph
-
+- This tool print to standard output the graph from a file in input.
+- The first parameter is the path of the graph file to be printed. 
 ### Print SSC discovered
 
 ### Compare
