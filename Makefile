@@ -31,7 +31,7 @@ BIN_DIR := ./bin
 DATA_DIR := ./data
 
 TARGETS += $(if $(shell which mpicxx), common_mpi mpi, ) #add mpi targets if mpi compiler is present
-TARGETS += $(if $(shell which nvcc), cuda, ) #add cuda targets if cuda compiler is present
+TARGETS += $(if $(shell which nvcc), cuda cuda_texture, ) #add cuda targets if cuda compiler is present
 TARGETS += $(if $(shell which nvcc && which mpicxx), cuda_mpi, ) #add cuda targets if cuda compiler is present
 
 green := "\033[0;32m"

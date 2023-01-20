@@ -35,7 +35,7 @@
 // atomicAdd(&arrayC[arrayA[i]], 1); -> atomicAdd(&C_shared[tex1Dfetch(vet_text, input_idx)], 1); __syncthreads();
 // kernel uses 10 registers
 __global__ void DeleteTrivialSCCs(int thread_number, cudaTextureObject_t tex_adj_lists, cudaTextureObject_t tex_adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
-    int vertices_per_thread = (n_vertices-1)/(blockDim.x * gridDim.x) + 1;
+    int vertices_per_thread = (n_vertices-1)/(thread_number) + 1;
     int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
     if(thread_id >= thread_number){
         return;
