@@ -16,15 +16,15 @@
 
 ### Preprocess sequential Tarjan Algorithms
 - This algorithm performs Tarjan's algorithm but with an antecedent step. Before passing the graph to Tarjan sequential we perform a preprocessing in which trivial SCCs (nodes that have an edge towards themselves) and nodes that cannot be part of SSCs, which are therefore useless to control (nodes without outgoing edges and nodes without incoming edges) are removed.
-- To use this algorythm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/sequential_pre_Ox.out` , x represents the chosen optimisation.
+- To use this algorithm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/sequential_pre_Ox.out` , x represents the chosen optimisation.
 - The first input parameter is the graph on which we want to run this algorithm `./tarjan/data/seed.bin`.
 - The second input parameter is the file that will contain the SCCs found `./tarjan/data/SSC_discovered.bin`.
 - An example of using it in the root directory `./tarjan/` is as follows: 
 `./bin/sequential_pre_O0.out ./data/seed.bin ./data/SSC_discovered.bin`.
 
 ### Parallel MPI Tarjan Algorithms
-- idea algoritmo
-- To use this algorythm, we launch the program with `mpiexec`.
+- This algorithm implements a version of a parallelization of Tarjan's algorithm using MPI.
+- To use this algorithm, we launch the program with `mpiexec`.
 - The first input parameter is the number of processes to instantiate `\-n y`, where y is the number of processes.
 - The second input parameter is the binary file of the mpi program, with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/mpi_Ox.out` , x representing the chosen optimisation.
 - The third input parameter is the graph on which we want to run this algorithm `./tarjan/data/seed.bin`.
@@ -34,7 +34,7 @@
 
 ### Parallel CUDA Global Memory Tarjan Algorithms
 - This algorithm performs Tarjan's algorithm but with a preprocessing step performed by the GPU, using CUDA (nvcc v12.0). Before passing the graph to Tarjan sequential, a preprocessing is performed in which trivial SCCs (nodes that have an arc to themselves) and nodes that cannot be part of SSCs, which are therefore useless to check (nodes without outgoing arcs and nodes without incoming arcs) are removed. The data structures used for this GPU preprocessing phase are located on the Global Memory.
-- To use this algorythm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder following compilation, `./tarjan/bin/cuda_Ox.out` , x representing the chosen optimisation.
+- To use this algorithm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder following compilation, `./tarjan/bin/cuda_Ox.out` , x representing the chosen optimisation.
 - The first input parameter is the graph on which we want to run this algorithm `./tarjan/data/seed.bin`.
 - The second input parameter is the file that will contain the SCCs found `./tarjan/data/SSC_discovered.bin`.
 - The third parameter indicates the total number of cuda threads created considering the fixed one-dimensional block size of 512 threads.
@@ -43,7 +43,7 @@
 
 ### Parallel CUDA Texture Memory Tarjan Algorithms
 - This algorithm performs Tarjan's algorithm but with a preprocessing step performed by the GPU, using CUDA (nvcc v12.0). Before passing the graph to Tarjan sequential, a preprocessing is performed in which trivial SCCs (nodes that have an arc to themselves) and nodes that cannot be part of SSCs, which are therefore useless to check (nodes without outgoing arcs and nodes without incoming arcs) are removed. The data structures used for this GPU preprocessing phase are located on the Texture Memory.
-- To use this algorythm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/cuda_texture_Ox.out` , x representing the chosen optimisation.
+- To use this algorithm, we run the program with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/cuda_texture_Ox.out` , x representing the chosen optimisation.
 - The first input parameter is the graph on which we want to run this algorithm `./tarjan/data/seed.bin`.
 - The second input parameter is the file that will contain the SCCs found `./tarjan/data/SSC_discovered.bin`.
 - The third parameter indicates the total number of cuda threads created considering the fixed one-dimensional block size of 512 threads.

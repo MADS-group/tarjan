@@ -30,7 +30,7 @@
 
 /**
  * @file mpi_logic.c
- * @brief This file implements a version of a parallelization of Tarjan's algorythm. 
+ * @brief This file implements a version of a parallelization of Tarjan's algorithm. 
  */
 #include <mpi.h>
 #include "mpi_logic.h"
