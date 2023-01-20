@@ -87,6 +87,7 @@ int main(int argc, char **argv){
         thread_number = ((-thread_number)/4.0) * n_vertices;
       }
     }
+
     //Eseguire il kernel
     int gridsize = ((thread_number-1)/THREADxBLOCK) + 1; //Numero blocchi su una dimensione della griglia
     dim3 dimGrid(gridsize);
@@ -112,7 +113,7 @@ int main(int argc, char **argv){
         //printf("start del kernel\n");
         
         STARTTIME(2);
-        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
+        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(thread_number, d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
         cudaDeviceSynchronize();
         ENDTIME(2,temp);
         time_preprocess += temp;
