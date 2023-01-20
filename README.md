@@ -1,4 +1,4 @@
-! [LOGO] (./logo.png)
+![LOGO](logo.png)
 # How to compile
 - In order to compile the entire project, you will use the make files, you need to do the command `make` in the main directory `tarjan/`. The binary files are created into the directory `tarjan/bin/`and subfolders containing in turn a bin folder. 
 - You can also individually fill in a sub-section of the project using the make file in the specific sub-section.
