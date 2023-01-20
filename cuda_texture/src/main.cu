@@ -141,7 +141,6 @@ int main(int argc, char **argv){
     cudaCreateTextureObject(&adj_list_indexes_tex, &adj_list_indexes_resDesc, &adj_list_indexes_texDesc, NULL);
 
     //Execute kernel
-    int iter = 0;
     while(!terminate){
         //printf di C++
         //cout << "Called " << iter++ << " times" <<endl;
