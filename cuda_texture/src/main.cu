@@ -128,7 +128,7 @@ int main(int argc, char **argv){
         //printf("start del kernel\n");
         
         STARTTIME(2);
-        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
+        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(thread_number, d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
         cudaDeviceSynchronize();
         ENDTIME(2,temp);
         time_preprocess += temp;

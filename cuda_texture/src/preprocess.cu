@@ -34,19 +34,22 @@
 
 // atomicAdd(&arrayC[arrayA[i]], 1); -> atomicAdd(&C_shared[tex1Dfetch(vet_text, input_idx)], 1); __syncthreads();
 // kernel uses 10 registers
-__global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
+__global__ void DeleteTrivialSCCs(int thread_number, int* adj_lists, int* adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
     int vertices_per_thread = (n_vertices-1)/(blockDim.x * gridDim.x) + 1;
     int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
+    if(thread_id >= thread_number){
+        return;
+    }
     for(int vertex_id =  thread_id * vertices_per_thread; vertex_id < (thread_id + 1) * vertices_per_thread; vertex_id++){
         //If thread is not associated with a vertex or the vertex has already been eliminated then do nothing
         //printf("vertex: %d vertex_id: %d n_vertices: %d\n", vertex_id, vertex_id, n_vertices);
         if(vertex_id >= n_vertices){
-            return;
+            continue;
         }
 
         if(test_bit(bitmask, vertex_id) != 0){ 
             //printf("vertex: %d has already been eliminated\n", vertex_id);
-            return;
+            continue;
         }
         int adj_list_start = tex1Dfetch(d_adj_list_indexes_texture, vertex_id); //adj_list_indexes[vertex_id];
         int adj_list_end = tex1Dfetch(d_adj_list_indexes_texture, vertex_id +1); //adj_list_indexes[vertex_id+1];
@@ -66,7 +69,7 @@ __global__ void DeleteTrivialSCCs(int* adj_lists, int* adj_list_indexes, int n_v
             (*terminate) = false;
             set_bit(bitmask, vertex_id);
             //printf("vertex: %d eliminated1\n", vertex_id);
-            return;
+            continue;
         }
 
         //If vertex has no incoming edges delete the vertex
