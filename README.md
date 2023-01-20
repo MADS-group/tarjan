@@ -57,7 +57,7 @@
 ## Tools
 ### Generate graphs
 #### rsg: Random Seed Generator
-- This tool generate a random graph following the graph representation of the `graph.h` library, with max_n_node node and each node have mean number of edge with a variance_edge.
+- This tool generate a random graph following the graph representation of the `graph.h` library, with max_n_node node and each node have mean number of edge with a variance_edge, the number of nodes follows the Bernoulli distribution.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rsg.out`.
 - The first parameter is the path of graph generated `./tarjan/data/random-graph.bin`.
 - The second parameter is a integer that indicate the number of node of graph. 
@@ -73,21 +73,34 @@
 - The thrid parameter is an integer n that indicate the 2^n copy to be created.
 - The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa.
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/rgg.out ./data/seed.bin ./data/tile-graph.bin 2 0.2`.
-- Es: seed 10 edge and second parameter 1 graph generated 20 edge.  
-- Es: seed 10 edge and second parameter 2 graph generated 40 edge.  
-- Es: seed 10 edge and second parameter 3 graph generated 80 edge.  
-- Es: seed 10 edge and second parameter 4 graph generated 160 edge.
 
 ### sgg: Special Graph Generator
+- This tool generate graph fully connected, graph fully disconnected or graph bipartite, representation of the `graph.h` library.
+- The first parameter is the path of graph generated. `./tarjan/data/generated-graph.bin`.
+- The second parameter is a integer that indicate the number of node of graph. 
+- The thrid parameter is an integer that indicate 0 for graph fully disconnected, 1 for graph fully connected, 2 for grapg bipartite.
+- An example use in the root directory `./tarjan/` is as follows:  `./bin/sgg.out ./data/generated-graph.bin 1`.
 
 ### Print Graph
 - This tool print to standard output the graph from a file in input.
-- The first parameter is the path of the graph file to be printed. 
+- To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/print-graph.out`.
+- The first parameter is the path of the graph file to be printed `./data/seed.bin`.
+- An example use in the root directory `./tarjan/` is as follows:  `./bin/print-graph.out ./data/seed.bin`.
+
 ### Print SSC discovered
+- This tool print to standard output the SCC discovered from a file.
+- To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/print-SCC.out`.
+- The first parameter is the path of the SCC file to be printed `./data/SSC_discovered.bin`.
+- An example use in the root directory `./tarjan/` is as follows:  `./bin/print-SCC.out ./data/SSC_discovered.bin`.
 
 ### Compare
+- This tool compare two different SCC discovered file. Checks whether all SSCs in the first file are contained in the second file and vice versa. This is useful to verify the correctness of the parallel algortims by comparing the SSCs found with those found by sequential Tarjan. 
+- To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/compare.out`.
+- The first parameter is the path of the first SCC file to be compered `./data/SSC_discovered_sequantial.bin`
+- The second parameter is the path of the second SCC file to be compered. `./data/SSC_discovered_parallel.bin`
+- An example use in the root directory `./tarjan/` is as follows:  `./bin/compare.out ./data/SSC_discovered_sequantial.bin ./data/SSC_discovered_parallel.bin`. 
 
-## How to obtain report***********************************************************
+## How to obtain report***************nome più decente cercasi********************************************
 ### Generate measure
 
 
