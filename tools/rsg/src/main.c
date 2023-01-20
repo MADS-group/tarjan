@@ -31,7 +31,7 @@
 
 /**
  * @file main.c
- * @brief This tool generate a random graph with max_n_node node and each node have mean number of edge with a variance_edge.
+ * @brief This tool generate a random graph with max_n_node node and each node have mean number of edge with a variance_edge, the number of nodes follows the Bernoulli distribution.
  * 
  * The first parameter is the path of graph generated. \n
  * The second parameter is a integer that indicate the number of node of graph. \n
