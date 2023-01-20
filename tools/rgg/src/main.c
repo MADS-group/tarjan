@@ -32,18 +32,18 @@
  * @file main.c
  * @brief This tool generates a graph starting from a seed.
  * 
- * This tool uses the third parameter n to generate a graph with 2^n replicas of the seed keeping 
+ * This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping 
  * all the edges already present in the seed, in addition edges are added between the different seeds 
- * of the final graph following the probability passed as the fourth parameter. \n
+ * of the final graph following the probability passed. \n
  * The first parameter is the path of seed graph. \n
  * The second parameter is the path of graph generated. \n
  * The thrid parameter is an integer n that indicate the 2^n copy to be created. \n
  * The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa. \n
  *
- * Es: seed 10 edge e second parameter 1 graph generated 20 edge. \n  
- * Es: seed 10 edge e second parameter 2 graph generated 40 edge. \n  
- * Es: seed 10 edge e second parameter 3 graph generated 80 edge. \n  
- * Es: seed 10 edge e second parameter 4 graph generated 160 edge. \n
+ * Es: seed 10 edge and second parameter 1 graph generated 20 edge. \n  
+ * Es: seed 10 edge and second parameter 2 graph generated 40 edge. \n  
+ * Es: seed 10 edge and second parameter 3 graph generated 80 edge. \n  
+ * Es: seed 10 edge and second parameter 4 graph generated 160 edge. \n
  *
  * 
  */
