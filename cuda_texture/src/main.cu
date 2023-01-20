@@ -46,9 +46,6 @@
 using namespace std;
 
 scc_set_t *SCCs;
-//rappresentazione grafi texture
-texture<int, 1, cudaReadModeElementType> *d_adj_lists_texture;
-texture<int, 1, cudaReadModeElementType> *d_adj_list_indexes_texture;
 
 void callback(array_int * scc){
     int scc_id;
@@ -94,24 +91,17 @@ int main(int argc, char **argv){
         thread_number = ((-thread_number)/4.0) * n_vertices;
       }
     }
-    //Eseguire il kernel
+    //Calculate gridsize and blocksize
     int gridsize = ((thread_number-1)/THREADxBLOCK) + 1; //Numero blocchi su una dimensione della griglia
     dim3 dimGrid(gridsize);
     dim3 dimBlock(THREADxBLOCK);
 
+    //Allocate data on GPU
     cudaMalloc(&d_adj_lists, cuda_graph->adj_lists_len * sizeof(int));
     cudaMemcpy(d_adj_lists, cuda_graph->adj_lists, cuda_graph->adj_lists_len * sizeof(int), cudaMemcpyHostToDevice);
-    cudaChannelFormatDesc channA = cudaCreateChannelDesc<int>();
-    cudaError_t errt = cudaBindTexture(NULL, d_adj_lists_texture, d_adj_lists, channA);
-    if (errt != cudaSuccess)
-      printf("Can not bind to texture\n");
 
     cudaMalloc(&d_adj_list_indexes, (n_vertices + 1) * sizeof(int));
     cudaMemcpy(d_adj_list_indexes, cuda_graph->adj_list_indexes, (n_vertices + 1) * sizeof(int), cudaMemcpyHostToDevice);
-    cudaChannelFormatDesc channB = cudaCreateChannelDesc<int>();
-    errt = cudaBindTexture(NULL, d_adj_list_indexes_texture, d_adj_list_indexes, channB);
-    if (errt != cudaSuccess)
-      printf("Can not bind to texture\n");
 
     cudaMalloc(&d_bitmask, n_bitmask * sizeof(int));
     cudaMemset(d_bitmask, 0, n_bitmask * sizeof(int));
@@ -119,6 +109,38 @@ int main(int argc, char **argv){
     cudaMalloc(&d_terminate, sizeof(bool));
     ENDTIME(1,time_init);
     
+    //Create textures
+    cudaResourceDesc adj_lists_resDesc;
+    memset(&adj_lists_resDesc, 0, sizeof(adj_lists_resDesc));
+    adj_lists_resDesc.resType = cudaResourceTypeLinear;
+    adj_lists_resDesc.res.linear.devPtr = d_adj_lists;
+    adj_lists_resDesc.res.linear.desc.f = cudaChannelFormatKindFloat;
+    adj_lists_resDesc.res.linear.desc.x = 32; // bits per channel
+    adj_lists_resDesc.res.linear.sizeInBytes = cuda_graph->adj_lists_len * sizeof(int);
+
+    cudaTextureDesc adj_lists_texDesc;
+    memset(&adj_lists_texDesc, 0, sizeof(adj_lists_texDesc));
+    adj_lists_texDesc.readMode = cudaReadModeElementType;
+
+    cudaTextureObject_t adj_lists_tex=0;
+    cudaCreateTextureObject(&adj_lists_tex, &adj_lists_resDesc, &adj_lists_texDesc, NULL);
+
+    cudaResourceDesc adj_list_indexes_resDesc;
+    memset(&adj_list_indexes_resDesc, 0, sizeof(adj_list_indexes_resDesc));
+    adj_list_indexes_resDesc.resType = cudaResourceTypeLinear;
+    adj_list_indexes_resDesc.res.linear.devPtr = d_adj_list_indexes;
+    adj_list_indexes_resDesc.res.linear.desc.f = cudaChannelFormatKindFloat;
+    adj_list_indexes_resDesc.res.linear.desc.x = 32; // bits per channel
+    adj_list_indexes_resDesc.res.linear.sizeInBytes = (n_vertices + 1) * sizeof(int);
+
+    cudaTextureDesc adj_list_indexes_texDesc;
+    memset(&adj_list_indexes_texDesc, 0, sizeof(adj_list_indexes_texDesc));
+    adj_list_indexes_texDesc.readMode = cudaReadModeElementType;
+
+    cudaTextureObject_t adj_list_indexes_tex=0;
+    cudaCreateTextureObject(&adj_list_indexes_tex, &adj_list_indexes_resDesc, &adj_list_indexes_texDesc, NULL);
+
+    //Execute kernel
     int iter = 0;
     while(!terminate){
         //printf di C++
@@ -128,7 +150,7 @@ int main(int argc, char **argv){
         //printf("start del kernel\n");
         
         STARTTIME(2);
-        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(thread_number, d_adj_lists, d_adj_list_indexes, n_vertices, d_bitmask, d_terminate);
+        DeleteTrivialSCCs<<<dimGrid, dimBlock>>>(thread_number, adj_lists_tex, adj_list_indexes_tex, n_vertices, d_bitmask, d_terminate);
         cudaDeviceSynchronize();
         ENDTIME(2,temp);
         time_preprocess += temp;
@@ -179,6 +201,8 @@ int main(int argc, char **argv){
     
     STARTTIME(5);
     scc_set_save_to_file(SCCs,output_filename);
+    cudaDestroyTextureObject(adj_lists_tex);
+    cudaDestroyTextureObject(adj_list_indexes_tex);
     cuda_graph_free(cuda_graph);
     cudaFree(d_adj_list_indexes);
     cudaFree(d_adj_lists);

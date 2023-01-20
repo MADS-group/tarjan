@@ -34,7 +34,7 @@
 
 // atomicAdd(&arrayC[arrayA[i]], 1); -> atomicAdd(&C_shared[tex1Dfetch(vet_text, input_idx)], 1); __syncthreads();
 // kernel uses 10 registers
-__global__ void DeleteTrivialSCCs(int thread_number, int* adj_lists, int* adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
+__global__ void DeleteTrivialSCCs(int thread_number, cudaTextureObject_t tex_adj_lists, cudaTextureObject_t tex_adj_list_indexes, int n_vertices, int *bitmask, bool *terminate) {
     int vertices_per_thread = (n_vertices-1)/(blockDim.x * gridDim.x) + 1;
     int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
     if(thread_id >= thread_number){
@@ -51,16 +51,16 @@ __global__ void DeleteTrivialSCCs(int thread_number, int* adj_lists, int* adj_li
             //printf("vertex: %d has already been eliminated\n", vertex_id);
             continue;
         }
-        int adj_list_start = tex1Dfetch(d_adj_list_indexes_texture, vertex_id); //adj_list_indexes[vertex_id];
-        int adj_list_end = tex1Dfetch(d_adj_list_indexes_texture, vertex_id +1); //adj_list_indexes[vertex_id+1];
+        int adj_list_start = tex1Dfetch<int>(tex_adj_list_indexes, vertex_id); //adj_list_indexes[vertex_id];
+        int adj_list_end = tex1Dfetch<int>(tex_adj_list_indexes, vertex_id + 1); //adj_list_indexes[vertex_id+1];
         int elim = false;
         //printf("vertex: %d adj_list_start: %d adj_list_end: %d\n", vertex_id, adj_list_start, adj_list_end);
         //If adjacency list is empty or has a self-loop delete the vertex
         if(adj_list_start == adj_list_end){
             elim = true;
         }
-        int adj_list_start_texture= tex1Dfetch(d_adj_lists_texture, adj_list_start);
-        if(((adj_list_start + 1) == adj_list_end) && adj_list_start_texture == vertex_id){ //if(((adj_list_start + 1) == adj_list_end) && adj_lists[adj_list_start] == vertex_id){
+
+        if(((adj_list_start + 1) == adj_list_end) && tex1Dfetch<int>(tex_adj_lists, adj_list_start) == vertex_id){ //if(((adj_list_start + 1) == adj_list_end) && adj_lists[adj_list_start] == vertex_id){
             elim = true;
         }
 
@@ -75,10 +75,9 @@ __global__ void DeleteTrivialSCCs(int thread_number, int* adj_lists, int* adj_li
         //If vertex has no incoming edges delete the vertex
         elim = true;
         //printf("adj_list_indexes[n_vertices]%d\n",adj_list_indexes[n_vertices]);
-        int k =  tex1Dfetch(d_adj_list_indexes_texture, n_vertices);
-        for(int i = 0; i < k; i++){//for(int i = 0; i < adj_list_indexes[n_vertices]; i++){
-            int adj_list_i =  tex1Dfetch(d_adj_lists_texture,i); //if(adj_lists[i] == vertex_id){
-            if(adj_list_i == vertex_id){ //! Per migliorare si potrebbe controllare che l'arco trovato non parte da un nodo che è stato già cancellato!
+        int k =  tex1Dfetch<int>(tex_adj_list_indexes, n_vertices);
+        for(int i = 0; i < k; i++){//for(int i = 0; i < adj_list_indexes[n_vertices]; i++){ 
+            if(tex1Dfetch<int>(tex_adj_lists,i) == vertex_id){ //if(adj_lists[i] == vertex_id){
                 //printf("vertex: %d found\n", vertex_id);
                 elim = false;
                 break;
