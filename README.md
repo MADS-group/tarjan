@@ -62,7 +62,7 @@
 
 ## Tools
 ### Generate graphs
-#### Random
+#### rsg: Random Seed Generator
 - This tool generate a random graph following the graph representation of the `graph.h` library, with max_n_node node and each node have mean number of edge with a variance_edge.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rsg.out`.
 - The first parameter is the path of graph generated `./tarjan/data/random-graph.bin`.
@@ -71,8 +71,8 @@
 - The fourth parameter is the variance of number of edge for each node.
 - An example use in the root directory `./tarjan/` is as follows: 
 `./bin/rsg.out ./data/random-graph.bin 1000 15 0.5`.
-### Tile
-- This tool generates a graph starting from a seed, representation of the `graph.h` library. This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping all the edges already present in the seed, in addition edges are added between the different seeds of the final graph following the probability passed.
+### rgg: Random Graph Generator
+- This tool generates a tile graph starting from a seed, representation of the `graph.h` library. This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping all the edges already present in the seed, in addition edges are added between the different seeds of the final graph following the probability passed.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rgg.out`.
 - The first parameter is the path of seed graph `./tarjan/data/seed.bin`.
 - The second parameter is the path of graph generated `./tarjan/data/tile-graph.bin`.
@@ -85,6 +85,8 @@
 - Es: seed 10 edge and second parameter 2 graph generated 40 edge.  
 - Es: seed 10 edge and second parameter 3 graph generated 80 edge.  
 - Es: seed 10 edge and second parameter 4 graph generated 160 edge.
+
+### sgg: Special Graph Generator
 
 ### Print Graph
 - This tool print to standard output the graph from a file in input.
