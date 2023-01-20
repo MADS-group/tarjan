@@ -72,6 +72,36 @@ elif [[ $1 == "cuda" ]]; then
 			done
 		done
 	done
+elif [[ $1 == "cuda_texture" ]]; then
+	for input_graph in "${ARRAY_RC[@]}"; do
+		for ths in "${ARRAY_CUDA_THS[@]}"; do
+			for opt in "${ARRAY_OPT[@]}"; do
+				
+				#IFS='-' array=($input_graph)
+				#nodes=${array[-1]}
+				nodes=$(echo $input_graph | rev | cut -d'-' -f1 | rev )
+				echo $input_graph
+				echo $nodes
+				thread=$(($ths*$nodes/$COSTANT_CUDA_THS))
+				echo $thread
+
+				ths_str=$(printf "%02d" $thread)
+				OUT_FILE=$SCRIPTPATH/measure/$1/graph_type-$input_graph-O$opt/$1-graph_type-$input_graph-O$opt-NTH-$ths_str.csv
+				echo $OUT_FILE
+				mkdir -p $(dirname $OUT_FILE) #Se non esiste la cartella di OUTFILE viene creata
+				
+				echo $(basename $OUT_FILE)
+				echo "verteces,init,finalize,preprocess,conversion,tarjan,user,system,elapsed,pCPU" >$OUT_FILE
+				
+				for ((i = 0 ; i < $NMEASURES; i++)); do
+					{ /usr/bin/time -f "%U,%S,%e,%P" ../bin/$1_O$opt.out ../data/$input_graph.bin ../data/$1_output_$input_graph.bin $thread; } 2>&1 | sed -e 's/%/;/g' >> $OUT_FILE
+					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+				done
+				printf "\n"
+			done
+		done
+	done
 elif [[ $1 == "mpi_cuda" ]]; then
 	for input_graph in "${ARRAY_RC[@]}"; do
 		for opt in "${ARRAY_OPT[@]}"; do
