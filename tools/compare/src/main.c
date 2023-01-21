@@ -32,6 +32,10 @@
  * @file main.c
  * @brief This tool compare two different SCC discovered file. 
  * 
+ * Checks whether all SSCs in the first file are contained in the second file and vice versa. 
+ * This is useful to verify the correctness of the parallel algortims by comparing the SSCs 
+ * found with those found by sequential Tarjan. \n
+ * 
  * The first parameter is the path of the first SCC file to be compered. \n
  * The second parameter is the path of the second SCC file to be compered. \n
  *
