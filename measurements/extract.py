@@ -41,7 +41,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "sequential"
+execution_type = "cuda"
 measurement_folder = "measure"
 
 config_sequential = {
