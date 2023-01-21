@@ -30,7 +30,7 @@
 
 /**
  * @file cuda_graph.c
- * @brief ...
+ * @brief This file contains the implementation for the operations involving the data structure cuda_graph: loading from a file, cuda_graph to graph conversion and cuda_graph deallocation.
  */
 #include <cuda_graph.h>
 #include <bitarray.h>
