@@ -41,8 +41,8 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "mpi"
-measurement_folder = "measure_raspberry"
+execution_type = "sequential"
+measurement_folder = "measure"
 
 config_sequential = {
 				#'vertices':{
