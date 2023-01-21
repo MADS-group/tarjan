@@ -28,6 +28,11 @@
  * 
  */
 
+/**
+ * @file random.c
+ * @brief ....
+ */
+
 #include "random.h"
 #include <stdlib.h>
 #include <math.h>

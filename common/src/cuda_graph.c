@@ -28,6 +28,10 @@
  * 
  */
 
+/**
+ * @file cuda_graph.c
+ * @brief ...
+ */
 #include <cuda_graph.h>
 #include <bitarray.h>
 #include <stdio.h>
