@@ -104,9 +104,20 @@
 - The second parameter is the path of the second SCC file to be compered. `./data/SSC_discovered_parallel.bin`
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/compare.out ./data/SSC_discovered_sequantial.bin ./data/SSC_discovered_parallel.bin`. 
 
-## How to obtain report***************nome più decente cercasi********************************************
 ### Generate measure
+- This tool makes the measurements
+- For the use of this tool we have to indicate as the only parameter the algorithm to be used to make the measurements, the possible alternatives: `sequential`, `cuda`, `cuda_texture`, `mpi_cuda` and `sequential_pre`.
+- An example use in the root directory `./tarjan/` is as follows:  `./measurements/measurement.bash cuda`. 
 
+### Extract Graphs and Tables
+- Are required:
 
-### Generate tables and Speedup graph
-- In order to generate the graphs and tables of all the measuraments you need to execute the file `extract.py` in the directory `measurements\` with the command `python3 measurements\extract.py`.
+    sudo apt-get install python3-pip
+
+    pip install numpy scipy pandas matplotlib seaborn prettytable
+    
+- Tool that generates tables containing averages of measurements the graphs related to speedup , Amdahl's law and the ideal speedup limit. 
+- To use such a tool in the extrract.py file, two varaibles `execution_type = ` [line 44], `measurement_folder = ` [line 45] must be configured
+- `execution_type ` allows graphs to be generated depending on the algorithm used. 
+- `measurement_folder `indicates the folder where the measurements are located, in our case only measure and measure_rasperry can be used.
+-  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the root directory `./tarjan/` is as follows:  `python3 ./measurements/extract.py`
