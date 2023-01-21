@@ -41,7 +41,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda"
+execution_type = "cuda_texture"
 measurement_folder = "measure"
 
 config_sequential = {
@@ -193,6 +193,33 @@ elif execution_type == "cuda_mpi":
 				}
 			})
 elif execution_type == "cuda":
+	config.update( {	
+				'verteces':{
+					'jpg':False,
+					'speedup':False
+				},
+				'init':{
+					'jpg':False,
+					'speedup':False
+				},
+				'finalize':{
+					'jpg':False,
+					'speedup':False
+				},
+				'preprocess':{
+					'jpg':False,
+					'speedup':False
+				},
+				'conversion':{
+					'jpg':False,
+					'speedup':False
+				},
+				'tarjan':{
+					'jpg':False,
+					'speedup':False
+				}
+			})
+elif execution_type == "cuda_texture":
 	config.update( {	
 				'verteces':{
 					'jpg':False,
@@ -387,7 +414,7 @@ def _upper_bound(header,rows):
 	X = [0]
 	Y = [0]
 	#CUDA ONLY RISPETTO AL SEQUENTIAL_PRE: preprocess_time/tempo elapsed
-	if execution_type == "cuda":	
+	if execution_type == "cuda" or execution_type == "cuda_texture":	
 		preprocess_pos = header.index("preprocess")
 		elapsed_pos = header.index("elapsed")
 		thread_pos = header.index("Threads")
@@ -469,7 +496,7 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	
 	ax.ticklabel_format(style = "plain")
 	ax.plot(x_th, y, 'ro-', label='Experimental')
-	if execution_type != "cuda_mpi" and execution_type != "cuda":
+	if execution_type != "cuda_mpi" and execution_type != "cuda" and execution_type != "cuda_texture":
 		ax.plot(x_th, x_th, color='blue', label='Ideal')
 	
 	X,Y = _upper_bound(header,rows)
@@ -509,7 +536,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),mea
 		joined_path = os.path.join(root,folder)
 		if execution_type == "mpi":
 			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),measurement_folder,"sequential",folder),config_sequential)
-		elif execution_type == "cuda" or execution_type == "cuda_mpi":
+		elif execution_type == "cuda" or execution_type == "cuda_mpi" or execution_type == "cuda_texture":
 			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),measurement_folder,"sequential_pre",folder),config_sequential_pre)
 		
 		temp = _extract(joined_path,cols)
@@ -528,7 +555,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),mea
 		elif execution_type == "cuda_mpi":
 		    #header = {'values':['Version','Threads','Nvert','NvertAfterCuda','init','mpi_tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		    header = {'values':['Version','Threads','verteces','verteces_after','init','tarjan','split','merge','total_only_mpi','preprocess','conversion','finalize','user','system','pCPU','elapsed','Speedup','Efficiency']}
-		elif execution_type == "cuda":
+		elif execution_type == "cuda" or execution_type == "cuda_texture":
 		    header = {'values':['Version','Threads','verteces','init','finalize','preprocess','conversion','tarjan','user','system','pCPU','elapsed','Speedup','Efficiency']}
 		else:
 		    print("Error!")
