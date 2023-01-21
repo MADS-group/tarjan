@@ -30,7 +30,7 @@
 
 /**
  * @file graph.c
- * @brief This file implements the abstract data type graph offering basic operation on the graph and also specific operation requested by the MPI and CUDA algorithm.  
+ * @brief This file implements the abstract data type graph with adjacency maps. It also contains basic operation on the graph (vertices and edges insert and deletion) as well as specific operations needed by the * * MPI and CUDA algorithms. The file also defines the scc_set data structure which is used to store SCCs found by Tarjan's algorithm as well as operations on this data structure.
  */
 #include <assert.h>
 #include <stdio.h>
@@ -53,7 +53,7 @@
  * 
  * @param a first integer.
  * @param b second integer.
- * @return int.
+ * @return minimum.
  */
 int min(int a, int b){
     return a<b ? a:b;
