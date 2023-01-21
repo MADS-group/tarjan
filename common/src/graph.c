@@ -30,13 +30,7 @@
 
 /**
  * @file graph.c
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2023-01-17
- * 
- * @copyright Copyright (c) 2022
- * 
+ * @brief This file implements the abstract data type graph offering basic operation on the graph and also specific operation requested by the MPI and CUDA algorithm.  
  */
 #include <assert.h>
 #include <stdio.h>
@@ -54,11 +48,22 @@
     khash_t(mm32) *adj; //Hash table which maps a node with the forward adjacency list
     khash_t(mm32) *inverted_adj; //Hash table which maps a node with the backwards adjacency list
 };*/
-
+/**
+ * @brief This function takes two integers as input and returns the minimum integer.
+ * 
+ * @param a first integer.
+ * @param b second integer.
+ * @return int.
+ */
 int min(int a, int b){
     return a<b ? a:b;
 }
 
+/**
+ * @brief This function declares and initializes an empty graph_t data structure.
+ * 
+ * @return graph_t* 
+ */
 graph_t *graph_init(){
     graph_t *G = (graph_t *) malloc(sizeof(graph_t));
     G->n_vertex=0;
@@ -67,16 +72,33 @@ graph_t *graph_init(){
     return G;
 }
 
+/**
+ * @brief This function takes as input a graph_t data structure and takes care of deallocating the entire memory occupied by the data structure.
+ * 
+ * @param G graph data structure to be deallocated.
+ */
 void graph_free(graph_t *G){
     kh_destroy(mm32, G->adj);
     kh_destroy(mm32, G->inverted_adj);
     free(G);
 }
 
+/**
+ * @brief This function takes as input a graph_t data structure and returns the number of vertices in the graph.
+ * 
+ * @param G graph data structure of which we want to know the number of vertices.
+ * @return int.
+ */
 int graph_get_num_vertex(graph_t *G){
     return G->n_vertex;
 }
 
+/**
+ * @brief This function takes as input a graph_t data structure and a vertex v; it takes care of inserting the vertex v within the graph.
+ * 
+ * @param G graph data structure.
+ * @param v vertex to be inserted.
+ */
 void graph_insert_vertex(graph_t *G, int v){
     int ret;
     khint_t k;
@@ -91,9 +113,14 @@ void graph_insert_vertex(graph_t *G, int v){
     k = kh_put(mm32,G->inverted_adj,v,&ret); //ret == 0 if v is already present in the ht, ret>0 otherwise
     kh_value(G->inverted_adj, k) = kh_init(m32); //create a new adjacency map for the node v
 }
-/*
- * Throws an error is edge already exists
-*/
+/**
+ * @brief This function takes as input a graph_t data structure and two vertices u and v. It takes care of inserting an edge from vertex u to vertex v of the graph.
+ * \n Throws an error is the edge already exists.
+ * 
+ * @param G graph data structure.
+ * @param u vertex of the graph.
+ * @param v vertex of the graph.
+ */
 void graph_insert_edge(graph_t *G, int u, int v){
     khint_t k;
     bool is_present;
@@ -119,6 +146,14 @@ void graph_insert_edge(graph_t *G, int u, int v){
 /*
  * Deletes an edge from node u to node v if it exists. Otherwise does nothing.
  */
+
+/**
+ * @brief This function takes as input a graph_t data structure and two vertices u and v. It deletes the edge from the node u to the node v if it exists. Otherwise does nothing.
+ * 
+ * @param G graph data structure.
+ * @param u vertex of the graph.
+ * @param v vertex of the graph.
+ */
 void graph_delete_edge(graph_t *G, int u, int v){
     khint_t k;
     bool is_present;
@@ -141,7 +176,7 @@ void graph_delete_edge(graph_t *G, int u, int v){
 }
 
 /**
- * @brief Deletes a vertex and every edge incident on the vertex. 
+ * @brief This function takes as input a graph_t data structure and a vertex v. It deletes the vertex v and every edge incident on the vertex.
  * 
  * @param G input graph
  * @param v vertex to be deleted
@@ -182,8 +217,14 @@ void graph_delete_vertex(graph_t *G, int v){
     kh_del(mm32, G->inverted_adj, k);
 }
 
-/*
- * See documentation for graph_tarjan()
+/**
+ * @brief This function is an helper function for graph_tarjan(). For more info see documentation for graph_tarjan().
+ * 
+ * @param G graph data structure.
+ * @param node pointer to an integer.
+ * @param stack stack data structure.
+ * @param time pointer to an integer.
+ * @param result array data structure.
  */
 void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
    linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *result){ 
@@ -245,15 +286,19 @@ void graph_tarjan_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) 
         array_int_push(result,-1); //SCC terminator
     }
 }
-/* 
- * Tarjan's algorithm implementation using recursion.
- * This is a modified version of the algorithm on the geeksforgeeks.com website.
- * The main differences are:
- * - disc, low and stackMember are now hash tables because we remove the hypotesis that vertex ids go from 0 to N-1:
- *   when working on a subgraph (as a slave process), there are no guarantees on the order nor continuity of the vertex ids.
- *   Using hash tables instead of arrays we save a lot of memory.
- * - we remove the hypotesis that every vertex in an adjacency map exists in the graph. This is also caused by executions
- *   on subgraphs of a given graph.
+
+/**
+ * @brief This function is a Tarjan's algorithm implementation using recursion.
+ * \n This is a modified version of the algorithm on the geeksforgeeks.com website.
+ * \n The main differences are:
+ * \n - disc, low and stackMember are now hash tables because we remove the hypotesis that vertex ids go from 0 to N-1:
+ * \n  when working on a subgraph (as a slave process), there are no guarantees on the order nor continuity of the vertex ids.
+ * \n  Using hash tables instead of arrays we save a lot of memory.
+ * \n - we remove the hypotesis that every vertex in an adjacency map exists in the graph. This is also caused by executions
+ * \n on subgraphs of a given graph.
+ * 
+ * @param G graph data structure.
+ * @return array_int* array containing all the found SCCs.
  */
 array_int *graph_tarjan(graph_t *G){
     khash_t(m32) *disc = kh_init(m32);
@@ -285,7 +330,16 @@ array_int *graph_tarjan(graph_t *G){
     kh_destroy(m32,stackMember);
     return result;
 }
-
+/**
+ * @brief This function is an helper function for graph_tarjan_foreach(). For more info see documentation for graph_tarjan_foreach().
+ * 
+ * @param G graph data structure.
+ * @param node integer which represents the node.
+ * @param stack stack data structure.
+ * @param time pointer to an integer.
+ * @param scc array containing the SCCs.
+ * @param f callback function.
+ */
 void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash_t(m32) *low,
    linkedlist_int *stack, khash_t(m32) *stackMember,int *time, array_int *scc, void (*f)(array_int *)){ 
     khint_t k, j;
@@ -352,6 +406,12 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
     }
 }
 
+/**
+ * @brief This function takes as input a graph and a callback function f. It finds all the SCCs in the graph and each time it finds one it calls the callback function f. 
+ * 
+ * @param G graph data structure.
+ * @param f callback function.
+ */
 void graph_tarjan_foreach(graph_t *G, void (*f)(array_int *)){
     khash_t(m32) *disc = kh_init(m32);
     khash_t(m32) *low = kh_init(m32);
@@ -383,6 +443,16 @@ void graph_tarjan_foreach(graph_t *G, void (*f)(array_int *)){
     array_int_free(scc);
 }
 
+/**
+ * @brief This function takes as input a graph, the number of vertices to be serialized n, and a variable to store the reference to the adicence map.
+ * \n The function returns an array of integers representing the serialization of the first n vertices of the graph.
+ * \n In other words, we go from a representation using pointers to a representation that uses integers only.
+ * 
+ * @param G graph data structure.
+ * @param n number of vertices to be serialized.
+ * @param bucket variable to store the reference to the adicence map.
+ * @return array_int* array of integers representing the serialization of the first n vertices.
+ */
 array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     array_int *result = array_int_init(G->n_vertex);
     int words = 0, node_a, node_b, _, serialized = 0; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
@@ -392,7 +462,7 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     words++;
     khint_t i;
     for(i = *bucket; i != kh_end(G->adj) && serialized < n; ++i){
-        if(!kh_exist(G->adj, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
+        if(!kh_exist(G->adj, i)) // STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
             continue;
         node_a = kh_key(G->adj,i);
         adj_list = kh_value(G->adj,i);
@@ -412,6 +482,13 @@ array_int *graph_serialize(graph_t *G, int n, khint_t * bucket){
     return result;
 }
 
+/**
+ * @brief This function takes as input an array representing a deserialized graph and a reference to a graph. 
+ * \n The function transforms the serialized representation of the graph to a graph_t representation via pointers on which all library operations are defined.
+ * 
+ * @param G graph data structure.
+ * @param buff array representing a deserialized graph.
+ */
 void graph_deserialize(graph_t *G, array_int *buff){
     //int words = array_int_get(buff,0);
     int n_vertex = array_int_get(buff,1);
@@ -431,6 +508,12 @@ void graph_deserialize(graph_t *G, array_int *buff){
     }
 }
 
+/**
+ * @brief This function takes as input a graph and a string. It serializes the input graph and stores it on a binary file.
+ * 
+ * @param G graph data structure.
+ * @param filename string representing the filename of the output file.
+ */
 void graph_save_to_file(graph_t *G, char *filename){
     khint_t pos = 0;
     array_int *array = graph_serialize(G, G->n_vertex, &pos);
@@ -444,6 +527,11 @@ void graph_save_to_file(graph_t *G, char *filename){
     array_int_free(array);
 }
 
+/**
+ * @brief This function takes a string as input. It extracts a serialized graph from a file and returns a graph in the graph_t format.
+ * 
+ * @param filename string representing the filename of the input file.
+ */
 graph_t *graph_load_from_file(char *filename){
     FILE *fp = fopen(filename, "r");
     if (fp == NULL){
@@ -463,7 +551,13 @@ graph_t *graph_load_from_file(char *filename){
     array_int_free(array);
     return graph;
 }
-
+/**
+ * @brief This function takes as input graph, a vertex identifier 'dest' and an array of vertices. It merges all vertices in the array into the vertex 'dest'.
+ * 
+ * @param G graph data structure.
+ * @param dest a vertex identifier.
+ * @param src an array of vertices.
+ */
 void graph_merge_vertices(graph_t *G, int dest, array_int *src){
     int src_node, cpy, _; (void) _; //_ is a needed unused variable variable. We do this to silence -Wunused-but-set-variable warning
     khash_t(m32) *adj_list_src, *adj_list_dest, *inv_adj_list_src, *inv_adj_list_dest;
