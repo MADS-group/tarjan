@@ -120,4 +120,4 @@
 - To use such a tool in the extrract.py file, two varaibles `execution_type = ` [line 44], `measurement_folder = ` [line 45] must be configured
 - `execution_type ` allows graphs to be generated depending on the algorithm used. 
 - `measurement_folder `indicates the folder where the measurements are located, in our case only measure and measure_rasperry can be used.
--  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the root directory `./tarjan/` is as follows:  `python3 ./measurements/extract.py`
+-  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the directory `./tarjan/measurements/` is as follows:  `python3 extract.py`
