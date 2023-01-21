@@ -110,8 +110,11 @@
 - An example use in the root directory `./tarjan/` is as follows:  `./measurements/measurement.bash cuda`. 
 
 ### Extract Graphs and Tables
+- Are required:
+    sudo apt-get install python3-pip
+    pip install numpy scipy pandas matplotlib seaborn prettytable
 - Tool that generates tables containing averages of measurements the graphs related to speedup , Amdahl's law and the ideal speedup limit. 
 - To use such a tool in the extrract.py file, two varaibles `execution_type = ` [line 44], `measurement_folder = ` [line 45] must be configured
 - `execution_type ` allows graphs to be generated depending on the algorithm used. 
 - `measurement_folder `indicates the folder where the measurements are located, in our case only measure and measure_rasperry can be used.
--  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the root directory `./tarjan/` is as follows:  `./measurements/extract.py`
+-  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the root directory `./tarjan/` is as follows:  `python3 ./measurements/extract.py`
