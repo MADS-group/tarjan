@@ -41,8 +41,8 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda_texture"
-measurement_folder = "measure"
+execution_type = "mpi"
+measurement_folder = "measure_raspberry"
 
 config_sequential = {
 				#'vertices':{
