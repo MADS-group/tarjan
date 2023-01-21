@@ -64,7 +64,7 @@ void callback(array_int * scc){
  * @param N represents the chunk size.
  * @param n_slaves number of slave precesses.
  * @param SCCs data structure where to save all the scc found.
- */
+*/
 void master_schedule(graph_t* graph,int N,int n_slaves,scc_set_t *SCCs){
     //codice del master
     MPI_Status status_send_size,status_send_data;
