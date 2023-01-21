@@ -34,14 +34,15 @@ import matplotlib.pyplot as plt
 import matplotlib.axes as axes 
 import pandas as pd
 
-from scipy import stats
+from scipy import stats 
 import seaborn as sns
 from prettytable import PrettyTable
 from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-execution_type = "cuda"
+execution_type = "mpi"
+measurement_folder = "measure_raspberry"
 
 config_sequential = {
 				#'vertices':{
@@ -320,11 +321,13 @@ def _extract(path_to_folder,plot_columns):
 		ds.rename(columns={"vertices": "verteces"}, inplace=True)
 		ds.rename(columns={"preprocess_time": "preprocess"}, inplace=True)
 		ds.rename(columns={"NvertAfterCuda": "verteces_after"}, inplace=True)
+		if measurement_folder == "measure_raspberry":
+			ds.rename(columns={"finalize": "destroy"}, inplace=True)
 		#print("type:",type(ds))
 		#print(ds)
 		
 		for col in plot_columns.keys():
-			print('Processing : ' + filename + ", Col : " + col)
+			#print('Processing : ' + filename + ", Col : " + col)
 			#extract the selected column
 			#print(ds)
 			x_data = ds[col]
@@ -458,8 +461,8 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	for row in rows[1:]:
 		x.append(row[thread_pos])
 		y.append(row[speedup_pos])
-	print("x:",x)
-	print("y:",y)
+	#print("x:",x)
+	#print("y:",y)
 
 	x_th = np.array(x)
 	fig, ax = plt.subplots(figsize=(12, 8))
@@ -496,7 +499,7 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 		plt.savefig(name)
 	plt.close()
 
-def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/" + execution_type), cols=config, threads=[0,1,2,4,8]):
+def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),measurement_folder,execution_type), cols=config, threads=[0,1,2,4,8]):
 	print("Listing folder for problem size")
 	folders = [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match("graph_type*",f))]
 	print(f"Found folders : {folders}")
@@ -505,9 +508,9 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
 		if execution_type == "mpi":
-			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential",folder),config_sequential)
+			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),measurement_folder,"sequential",folder),config_sequential)
 		elif execution_type == "cuda" or execution_type == "cuda_mpi":
-			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/sequential_pre",folder),config_sequential_pre)
+			means = _extract(os.path.join(os.path.dirname(os.path.realpath(__file__)),measurement_folder,"sequential_pre",folder),config_sequential_pre)
 		
 		temp = _extract(joined_path,cols)
 		means.update(temp)
@@ -564,7 +567,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 		
 		
 		cells['values'].sort(key = lambda x: x[1])
-		print(cells['values'])
+		#print(cells['values'])
 
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
