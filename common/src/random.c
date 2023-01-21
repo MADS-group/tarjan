@@ -30,7 +30,7 @@
 
 /**
  * @file random.c
- * @brief ....
+ * @brief This file contains the implementations for utility functions that are useful for randomly generating graphs. 
  */
 
 #include "random.h"

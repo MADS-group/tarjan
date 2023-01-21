@@ -1,8 +1,9 @@
 ![LOGO](logo.png)
 # How to compile
 - In order to compile the entire project, you will use the make files, you need to do the command `make` in the main directory `tarjan/`. The binary files are created into the directory `tarjan/bin/`and subfolders containing in turn a bin folder. 
+- The makefile automatically searches for mpicc and nvcc in the system and only compiles the portions of the project that can be compiled in the current environment (e.g. if cuda is not installed in the system, the makefile won't build targets 'cuda' and 'cuda_texture' that need nvcc)
 - You can also individually fill in a sub-section of the project using the make file in the specific sub-section.
--The `make clean` command deletes all files required for compilation (binary and object files).
+- The `make clean` command deletes all files required for compilation (binary and object files).
 
 # How to run
 
@@ -29,7 +30,8 @@
 - The second input parameter is the binary file of the mpi program, with one of the four possible optimisations (0,1,2 and 3) in the `tarjan/bin/` folder after compilation, `./tarjan/bin/mpi_Ox.out` , x representing the chosen optimisation.
 - The third input parameter is the graph on which we want to run this algorithm `./tarjan/data/seed.bin`.
 - The fourth input parameter is the file that will contain the SCCs found `./tarjan/data/SSC_discovered.bin`.
-- An example of using it in the root directory `./tarjan/` is as follows:  `mpiexec \-n 8 ./bin/mpi_O0.out ./data/seed.bin ./data/SSC_discovered.bin`.
+- An example of using it in the root directory `./tarjan/` is as follows:  `mpiexec -n 8 ./bin/mpi_O0.out ./data/seed.bin ./data/SSC_discovered.bin`.
+- In order to execute the application on a cluster of nodes, a host file must be provided with the argument `--hostfile path_to_hostfile` (see MPICH docs).
 
 ### Parallel CUDA Global Memory Tarjan Algorithms
 - This algorithm performs Tarjan's algorithm but with a preprocessing step performed by the GPU, using CUDA (nvcc v12.0). Before passing the graph to Tarjan sequential, a preprocessing is performed in which trivial SCCs (nodes that have an arc to themselves) and nodes that cannot be part of SSCs, which are therefore useless to check (nodes without outgoing arcs and nodes without incoming arcs) are removed. The data structures used for this GPU preprocessing phase are located on the Global Memory.
@@ -69,7 +71,7 @@
 - The fourth parameter is the variance of number of edge for each node.
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/rsg.out ./data/random-graph.bin 1000 15 0.5`.
 
-### rgg: Random Graph Generator
+#### rgg: Random Graph Generator
 - This tool generates a graph starting from a seed, representation of the `graph.h` library. This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping all the edges already present in the seed, in addition edges are added between the different seeds of the final graph following the probability passed.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rgg.out`.
 - The first parameter is the path of seed graph `./tarjan/data/seed.bin`.
@@ -78,7 +80,7 @@
 - The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa.
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/rgg.out ./data/seed.bin ./data/tile-graph.bin 2 0.2`.
 
-### sgg: Special Graph Generator
+#### sgg: Special Graph Generator
 - This tool generate graph fully connected, graph fully disconnected or graph bipartite, representation of the `graph.h` library.
 - The first parameter is the path of graph generated. `./tarjan/data/generated-graph.bin`.
 - The second parameter is a integer that indicate the number of node of graph. 
@@ -110,7 +112,7 @@
 - An example use in the root directory `./tarjan/` is as follows:  `./measurements/measurement.bash cuda`. 
 
 ### Extract Graphs and Tables
-- Are required:
+- To exctract graphs and tables the following pip modules are required:
 
     sudo apt-get install python3-pip
 
@@ -121,3 +123,6 @@
 - `execution_type ` allows graphs to be generated depending on the algorithm used. 
 - `measurement_folder `indicates the folder where the measurements are located, in our case only measure and measure_rasperry can be used.
 -  An example, after setting `execution_type = mpi` and `measurement_folder = measure` use in the directory `./tarjan/measurements/` is as follows:  `python3 extract.py`
+
+## Tests
+- To execute tests AFTER building the tests with `make tests`, run `make test` (notice the difference between the two).

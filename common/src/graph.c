@@ -407,7 +407,7 @@ void graph_tarjan_foreach_helper(graph_t *G, int node, khash_t(m32) *disc, khash
 }
 
 /**
- * @brief This function takes as input a graph and a callback function f. It finds all the SCCs in the graph and each time it finds one it calls the callback function f. 
+ * @brief This function takes as input a graph and a callback function f. It finds all the SCCs in the graph and each time it finds one it calls the callback function f on the SCC. 
  * 
  * @param G graph data structure.
  * @param f callback function.
@@ -500,7 +500,7 @@ void graph_deserialize(graph_t *G, array_int *buff){
             i++;
             node_b = array_int_get(buff,i);
             if(node_b != -1){
-                graph_insert_vertex(G,node_b); //TODO: this adds nodes that are not owned by the slave to the graph. This needs further investigation as it may not be a problem at all.
+                graph_insert_vertex(G,node_b); //NOTE: this adds nodes that are not owned by the slave to the graph. This is not a problem.
                 graph_insert_edge(G,node_a,node_b);
             }
         } while(node_b != -1);
@@ -761,7 +761,7 @@ void graph_print_debug(graph_t *G){
     kh_foreach(G->adj, key, value, {
         printf("%d -->", key);
         for(khint_t i = 0; i != kh_end(value); ++i){
-            if(!kh_exist(value, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
+            if(!kh_exist(value, i))
                 continue;
             printf(" %d", kh_key(value, i));
         }
@@ -772,7 +772,7 @@ void graph_print_debug(graph_t *G){
     kh_foreach(G->inverted_adj, key, value, {
         printf("%d -->", key);
         for(khint_t i = 0; i != kh_end(value); ++i){
-            if(!kh_exist(value, i)) //! STRANGE BEHAVIOUR OF kh_esist. Sometimes it segfaults.
+            if(!kh_exist(value, i))
                 continue;
             printf(" %d", kh_key(value, i));
         }
@@ -781,7 +781,6 @@ void graph_print_debug(graph_t *G){
 }
 
 struct scc_set_t {
-    //??? Random thougths: what happens if i have an SCC 3 -> 4,5,6 and I find a new one 2 -> 3,11,12,13 ???
     khash_t(ms32) *scc_map; //The key is the lowest node in the SCC, the value is the set of nodes in the SCC (key included)
     khash_t(m32) *nodes_to_scc_map; //The key is a node of the graph, the value is the SCC where it belongs
 };

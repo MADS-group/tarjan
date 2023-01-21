@@ -44,7 +44,6 @@ void linkedlist_int_delete(linkedlist_int *a, int elem); //Delete the element if
 void linkedlist_int_enqueue(linkedlist_int *a, int elem); //enqueue an element at the end of the linkedlist
 int linkedlist_int_dequeue(linkedlist_int *a); //dequeue of the linkedlist
 void linkedlist_int_print(linkedlist_int *a); //Prints all the elements of the linkedlist
-void linkedlist_int_cpy(linkedlist_int *to,linkedlist_int *from); //Copy all the elements from a linkedlist to another
 int linkedlist_int_top(linkedlist_int *a);
 /*
 typedef struct linkedlist_ptr linkedlist_ptr;

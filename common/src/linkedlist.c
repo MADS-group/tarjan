@@ -419,10 +419,4 @@ int linkedlist_int_top(linkedlist_int *a){
     return a->LastNode->info;
 }
 
-void linkedlist_int_cpy(linkedlist_int *to,linkedlist_int *from){
-    //Copy all the elements from a linkedlist to another
-
-}
-
-
 typedef struct linkedlist_ptr linkedlist_ptr;

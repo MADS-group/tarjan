@@ -224,10 +224,9 @@ void test_deserialize(){
 }
 
 void test_merge_vertices(){
-    khint_t pos = 0;
     int x=0;
     bool inserito=false;
-    array_int *temp=array_int_init(5), *tarjan, *serial;
+    array_int *temp=array_int_init(5), *tarjan;
     graph_t *graph = graph_init();
     char test[]="9 -1 7 -1 6 -1 3 -1 10 -1 \n";
     char s1[30];
@@ -344,9 +343,9 @@ void test_graph_save_to_and_load_from_file(){
     pos = 0;
     array_int_sprint(serial,test);
 
-    graph_save_to_file(graph,"../../data/prova.bin");
+    graph_save_to_file(graph,"./data/prova.bin");
 
-    graph_load=graph_load_from_file("../../data/prova.bin");
+    graph_load=graph_load_from_file("./data/prova.bin");
 
     serial = graph_serialize(graph_load,graph_get_num_vertex(graph_load),&pos);
     array_int_sprint(serial,s1);
@@ -372,7 +371,7 @@ void test_graph_save_to_and_load_from_file(){
 
 // Pippooooo
 
-int main(int argc, char* argv[]){
+int main(){
     test_init_destroy();
     test_serialize();
     test_deserialize();
