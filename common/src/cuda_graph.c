@@ -32,6 +32,11 @@
 #include <bitarray.h>
 #include <stdio.h>
 
+/**
+ * @brief This function loads a cuda_graph from a file
+ * @param filename the name of the file to be loaded.
+ * @return The loaded cuda_graph
+ */
 cuda_graph_t *cuda_graph_load_from_file(char *filename){
     FILE *fp = fopen(filename, "r");
     if (fp == NULL){
@@ -76,6 +81,12 @@ cuda_graph_t *cuda_graph_load_from_file(char *filename){
     return G;
 }
 
+/**
+ * @brief This function converts a cuda_graph in a graph, ignoring the nodes marked in the bitmask
+ * @param G the cuda_graph that must be converted
+ * @param deleted_bitarray the bitmask containing the nodes that must be ignored during the converion
+ * @return the resulting graph
+ */
 graph_t *cuda_graph_to_graph(cuda_graph_t *G, int *deleted_bitarray){
     graph_t *result_G = graph_init();
     int src_vertex, target_vertex;
@@ -96,12 +107,18 @@ graph_t *cuda_graph_to_graph(cuda_graph_t *G, int *deleted_bitarray){
     return result_G;
 }
 
+/**
+ * @brief This function deallocates a cuda_graph
+ */
 void cuda_graph_free(cuda_graph_t *G){
     free(G->adj_list_indexes);
     free(G->adj_lists);
     free(G);
 }
 
+/**
+ * @brief This function prints the content of a cuda_graph on stdout
+ */
 void cuda_graph_print_debug(cuda_graph_t *G){
     printf("Adj list indexes:\n");
     for(int i = 0; i < G->n_vertex + 1; i++){

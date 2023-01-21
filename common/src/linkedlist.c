@@ -110,6 +110,7 @@ void linkedlist_int_push(linkedlist_int *a, int elem){
     return;
 }
 
+
 int linkedlist_int_pop(linkedlist_int *a){
     //Pops last element of the linkedlist
     if(a == NULL){
