@@ -69,7 +69,7 @@
 - The fourth parameter is the variance of number of edge for each node.
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/rsg.out ./data/random-graph.bin 1000 15 0.5`.
 
-### rgg: Random Graph Generator
+#### rgg: Random Graph Generator
 - This tool generates a graph starting from a seed, representation of the `graph.h` library. This tool uses an interger n to generate a graph with 2^n replicas of the seed keeping all the edges already present in the seed, in addition edges are added between the different seeds of the final graph following the probability passed.
 - To use this tool, we run the program in the `tarjan/bin/` folder after compilation, `./bin/rgg.out`.
 - The first parameter is the path of seed graph `./tarjan/data/seed.bin`.
@@ -78,7 +78,7 @@
 - The fourth parameter is the  probability of create an edge between a node of a copy and another and viceversa.
 - An example use in the root directory `./tarjan/` is as follows:  `./bin/rgg.out ./data/seed.bin ./data/tile-graph.bin 2 0.2`.
 
-### sgg: Special Graph Generator
+#### sgg: Special Graph Generator
 - This tool generate graph fully connected, graph fully disconnected or graph bipartite, representation of the `graph.h` library.
 - The first parameter is the path of graph generated. `./tarjan/data/generated-graph.bin`.
 - The second parameter is a integer that indicate the number of node of graph. 
