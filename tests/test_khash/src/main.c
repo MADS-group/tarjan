@@ -49,15 +49,15 @@ int main(int argc, char* argv[]){
         if(ret!=0){ //If key is not present in the ht put smth
             kh_value(ht, k) = 42;
         }
-        printf("k: %d ret:%d value:%d exists:%d\n", k , ret, kh_value(ht, k), kh_exist(ht, k));
+        //printf("k: %d ret:%d value:%d exists:%d\n", k , ret, kh_value(ht, k), kh_exist(ht, k));
 	}
     kh_put(m32, ht, 7777, &ret);
     for (int i = 1; i <= 400; ++i) {
-        printf("k: %d exists:%d\n", i,kh_exist(ht,i));
+        //printf("k: %d exists:%d\n", i,kh_exist(ht,i));
 	}
 
     k = kh_get(m32, ht, 0);
-    printf("k: %d, exist: %d, val: %d, kh_end: %d\n",k,kh_exist(ht, k),kh_value(ht,k), kh_end(ht));
+    //printf("k: %d, exist: %d, val: %d, kh_end: %d\n",k,kh_exist(ht, k),kh_value(ht,k), kh_end(ht));
     
     kh_destroy(m32, ht);
 }

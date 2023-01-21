@@ -60,6 +60,14 @@ $(TARGETS): pre-build
 	@echo ${cyan}Building $@...${color_off}
 	@cd $@ && $(MAKE) --no-print-directory
 
+.PHONY: test
+test:
+	@for test in ./bin/test*; do \
+		echo ${cyan}Executing test $$test ${color_off}; \
+		$$test ./data/seed.bin && echo ${green}Test $$test passed successfully ${color_off}; \
+	done
+#	@$(foreach test, find bin -name "*test*", echo $(test);)
+
 .PHONY: clean
 clean:
 	@$(foreach target,$(TARGETS),cd $(target); $(MAKE) clean; cd ..;)
